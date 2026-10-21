@@ -146,52 +146,71 @@
     font-size: 0.7rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
+    gap: 1rem;
   }
 
+  #text-panel-header .header-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  #text-panel-header a.src-link,
   #text-panel-header .close-btn {
     background: none;
     border: 1px solid var(--line-dim);
     color: var(--line);
     font-family: inherit;
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     padding: 0.3rem 0.7rem;
     cursor: pointer;
     letter-spacing: 0.12em;
+    text-decoration: none;
+    text-transform: uppercase;
+    white-space: nowrap;
   }
+  #text-panel-header a.src-link:hover,
   #text-panel-header .close-btn:hover {
     background: rgba(0, 229, 255, 0.08);
   }
 
-  #text-content {
+  #text-iframe {
     flex: 1;
-    overflow-y: auto;
-    padding: 1.4rem 1.6rem;
-    font-size: 0.82rem;
-    line-height: 1.7;
-    color: #b8d8e8;
+    width: 100%;
+    border: none;
+    background: #0b141c;
   }
-  #text-content h2, #text-content h3, #text-content h4 {
-    color: var(--accent);
-    font-size: 0.95rem;
-    letter-spacing: 0.08em;
-    margin: 1.4rem 0 0.6rem;
-  }
-  #text-content p { margin: 0.8rem 0; }
-  #text-content a { color: var(--line); text-decoration: none; border-bottom: 1px dotted var(--line-dim); }
-  #text-content a:hover { color: var(--accent); }
 
-  .no-text {
-    color: var(--line-dim);
-    font-size: 0.78rem;
-    letter-spacing: 0.06em;
+  #fallback {
+    flex: 1;
+    padding: 2rem;
+    font-size: 0.8rem;
     line-height: 1.8;
+    color: #b8d8e8;
+    overflow-y: auto;
   }
-  .no-text a {
+  #fallback .warning {
     color: var(--accent);
-    display: inline-block;
-    margin-top: 0.8rem;
-    border-bottom: 1px solid var(--accent);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
   }
+  #fallback code {
+    color: var(--line);
+    background: rgba(0, 229, 255, 0.06);
+    padding: 0.1rem 0.4rem;
+    border-radius: 2px;
+    font-size: 0.75rem;
+  }
+  #fallback a {
+    color: var(--accent);
+    border-bottom: 1px dotted var(--accent);
+    text-decoration: none;
+  }
+  #fallback a:hover { color: var(--line); border-color: var(--line); }
+
+  .hidden { display: none !important; }
 
   .status-line {
     position: absolute;
@@ -242,15 +261,19 @@
   <aside id="text-panel">
     <div id="text-panel-header">
       <span id="panel-title">TEXT</span>
-      <button class="close-btn" id="close-panel">CLOSE</button>
+      <div class="header-actions">
+        <a id="src-link" class="src-link" href="#" target="_blank" rel="noopener">SOURCE ↗</a>
+        <button class="close-btn" id="close-panel">CLOSE</button>
+      </div>
     </div>
-    <div id="text-content"></div>
+    <iframe id="text-iframe" title="Hegel text"></iframe>
+    <div id="fallback" class="hidden"></div>
   </aside>
 </div>
 
 <script>
 /* ============================================================
-   1. Triadic tree (embedded; unchanged)
+   1. Triadic tree (embedded)
    ============================================================ */
 const TREE = {
   id: "root",
@@ -485,54 +508,21 @@ const TREE = {
 };
 
 /* ============================================================
-   2. Corpus loading & indexing
+   2. URL translation: Marxists.org -> local hegel_works/
    ============================================================ */
-const CORPUS_URL = "https://raw.githubusercontent.com/tkmdj46r67-tech/hegel-viz/refs/heads/main/hegel_corpus.json";
+const LOCAL_DIR = "hegel_works/";
 
-let corpusIndex = { byId: {}, byTitle: {} };
-
-function indexCorpus(node) {
-  if (!node) return;
-  if (node.id) corpusIndex.byId[node.id] = node;
-  if (node.title) corpusIndex.byTitle[node.title.toLowerCase()] = node;
-  (node.subsections || []).forEach(indexCorpus);
-}
-
-async function loadCorpus() {
-  try {
-    const res = await fetch(CORPUS_URL, { cache: "no-cache" });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    // The corpus is an array of roots; index each.
-    data.forEach(indexCorpus);
-    console.log(`Corpus indexed: ${Object.keys(corpusIndex.byId).length} ids, ${Object.keys(corpusIndex.byTitle).length} titles`);
-  } catch (err) {
-    console.warn("Could not load corpus:", err);
-  }
-}
-
-function findCorpusNode(node) {
-  // 1. exact id
-  if (corpusIndex.byId[node.id]) return corpusIndex.byId[node.id];
-  // 2. exact title (lowercase)
-  if (corpusIndex.byTitle[node.label?.toLowerCase()]) return corpusIndex.byTitle[node.label.toLowerCase()];
-  // 3. short label
-  if (corpusIndex.byTitle[node.shortLabel?.toLowerCase()]) return corpusIndex.byTitle[node.shortLabel.toLowerCase()];
-  // 4. try stripping common suffixes
-  for (const key of Object.keys(corpusIndex.byId)) {
-    if (key.includes(node.id) || node.id.includes(key)) return corpusIndex.byId[key];
-  }
-  return null;
-}
-
-function unescapeHtml(str) {
-  const txt = document.createElement("textarea");
-  txt.innerHTML = str;
-  return txt.value;
+function toLocalPath(remoteUrl) {
+  if (!remoteUrl) return null;
+  const m = remoteUrl.match(/\/archive\/hegel\/(.+?)(#.*)?$/);
+  if (!m) return null;
+  const path = m[1];
+  const anchor = m[2] || "";
+  return LOCAL_DIR + path.replace(/\//g, "_") + anchor;
 }
 
 /* ============================================================
-   3. Triad rendering (unchanged logic)
+   3. Triad rendering
    ============================================================ */
 let currentNode = TREE;
 let pathStack = [TREE];
@@ -541,8 +531,12 @@ const svg = document.getElementById('triad-svg');
 const breadcrumb = document.getElementById('breadcrumb');
 const panel = document.getElementById('text-panel');
 const panelTitle = document.getElementById('panel-title');
-const textContent = document.getElementById('text-content');
+const iframe = document.getElementById('text-iframe');
+const fallback = document.getElementById('fallback');
+const srcLink = document.getElementById('src-link');
 const closeBtn = document.getElementById('close-panel');
+
+let pendingAnchor = null;
 
 const CX = 300, CY = 260;
 
@@ -573,7 +567,6 @@ function render(node) {
     return;
   }
 
-  // central
   const centralPts = trianglePoints(CX, CY + 30, 260, 'down');
   const centralG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
   centralG.setAttribute('class', 'tri central');
@@ -610,39 +603,124 @@ function render(node) {
 }
 
 /* ============================================================
-   4. Text panel (corpus-backed)
+   4. Text panel
    ============================================================ */
-function openText(node) {
+async function openText(node) {
   panelTitle.textContent = node.shortLabel || node.label;
   panel.classList.add('open');
 
-  const corpusNode = findCorpusNode(node);
-  let html = '';
+  srcLink.href = node.textUrl || '#';
 
-  if (corpusNode && corpusNode.text && corpusNode.text.trim().length > 0) {
-    html = unescapeHtml(corpusNode.text);
-    // Rewrite relative links so they open the Marxists.org page in a new tab
-    html = html.replace(/href="([^"]+)"/g, (m, href) => {
-      if (href.startsWith('http') || href.startsWith('#')) return m;
-      return `href="https://www.marxists.org/reference/archive/hegel/${href.replace(/^\/+/, '')}" target="_blank" rel="noopener"`;
-    });
-  } else {
-    html = `
-      <div class="no-text">
-        No local passage text is available for this section in the current corpus.<br>
-        The corpus file contains navigation links rather than the full body text of the works.<br><br>
-        You can open the original passage on Marxists.org:
-        <br><a href="${node.textUrl}" target="_blank" rel="noopener">Open “${node.label}” on Marxists.org</a>
-      </div>`;
+  const localUrl = toLocalPath(node.textUrl);
+  if (!localUrl) {
+    showFallback(node, "This node has no text URL.");
+    return;
   }
 
-  textContent.innerHTML = html;
-  textContent.scrollTop = 0;
+  const [path, hash] = localUrl.split('#');
+  pendingAnchor = hash || null;
+
+  // Verify the file exists before pointing the iframe at it,
+  // so we can show a clean fallback instead of a 404 page.
+  let ok = false;
+  try {
+    const res = await fetch(path, { method: 'HEAD', cache: 'no-cache' });
+    ok = res.ok;
+  } catch {
+    ok = false;
+  }
+
+  if (!ok) {
+    showFallback(node, `Local file not found: <code>${path}</code>`);
+    return;
+  }
+
+  hideFallback();
+  iframe.src = path;
 }
+
+function showFallback(node, reason) {
+  iframe.classList.add('hidden');
+  iframe.src = 'about:blank';
+  fallback.classList.remove('hidden');
+  fallback.innerHTML = `
+    <div class="warning">Local text unavailable</div>
+    <p>${reason}</p>
+    <p>If you ran the download script, check that <code>hegel_works/</code> is
+    in the same directory as <code>index.html</code> and that the file name
+    matches the URL convention (slashes become underscores:
+    <code>works/na/nature2.htm</code> → <code>works_na_nature2.htm</code>).</p>
+    <p>You can read this passage on Marxists.org instead:
+    <br><a href="${node.textUrl}" target="_blank" rel="noopener">
+      Open “${node.label}” ↗</a></p>`;
+}
+
+function hideFallback() {
+  fallback.classList.add('hidden');
+  iframe.classList.remove('hidden');
+}
+
+/* Inject a dark theme into same-origin iframes so the text matches the HUD */
+iframe.addEventListener('load', () => {
+  const src = iframe.src || '';
+  if (!src || src === 'about:blank') return;
+
+  try {
+    const doc = iframe.contentDocument;
+    if (!doc || !doc.head || !doc.body) return;
+
+    const style = doc.createElement('style');
+    style.textContent = `
+      html, body {
+        background: #0b141c !important;
+        color: #b8d8e8 !important;
+      }
+      body {
+        font-family: 'JetBrains Mono', ui-monospace, monospace !important;
+        font-size: 13px !important;
+        line-height: 1.75 !important;
+        padding: 22px 28px !important;
+        margin: 0 !important;
+      }
+      a {
+        color: #00e5ff !important;
+        text-decoration: none !important;
+        border-bottom: 1px dotted #007a8a !important;
+      }
+      a:hover { color: #ffb300 !important; }
+      h1, h2, h3, h4, h5 {
+        color: #ffb300 !important;
+        letter-spacing: 0.05em !important;
+        font-weight: 600 !important;
+      }
+      p { margin: 0.8em 0 !important; }
+      center { text-align: left !important; }
+      hr { border: none !important; border-top: 1px solid #00e5ff33 !important; }
+      img { max-width: 100% !important; height: auto !important; }
+      table { border-collapse: collapse; }
+      td, th { padding: 0.3em 0.6em; border: 1px solid #00e5ff22; }
+    `;
+    doc.head.appendChild(style);
+
+    // Manual anchor scroll (anchor-in-src is unreliable for iframes)
+    if (pendingAnchor) {
+      const target =
+        doc.getElementById(pendingAnchor) ||
+        doc.querySelector(`a[name="${pendingAnchor}"]`);
+      if (target) {
+        target.scrollIntoView({ block: 'start' });
+      }
+      pendingAnchor = null;
+    }
+  } catch {
+    // Cross-origin or otherwise unreadable — leave default styling.
+  }
+});
 
 closeBtn.addEventListener('click', () => {
   panel.classList.remove('open');
-  textContent.innerHTML = '';
+  iframe.src = 'about:blank';
+  hideFallback();
 });
 
 /* ============================================================
@@ -661,9 +739,7 @@ document.getElementById('download-btn').addEventListener('click', () => {
 /* ============================================================
    6. Boot
    ============================================================ */
-loadCorpus().then(() => {
-  render(TREE);
-});
+render(TREE);
 </script>
 </body>
 </html>
