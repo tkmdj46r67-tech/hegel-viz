@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hegel Triadic Navigator</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600&display=swap');
+
+    :root {
+      --bg: #060a0f;
+      --bg-glow: #0a1420;
+      --line: #00e5ff;
+      --line-dim: #007a8a;
+      --accent: #ffb300;
+      --text: #c8e6f0;
+      --panel-bg: rgba(8, 18, 28, 0.92);
+      --panel-border: #00e5ff44;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at 30% 20%, #0a1a28 0%, var(--bg) 60%);
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      overflow: hidden;
+    }
+
+    #app {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+      position: relative;
+    }
+
+    /* ---------- MAIN CANVAS ---------- */
+    #canvas-wrap {
+      flex: 1;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    /* HUD corner brackets */
+    #canvas-wrap::before,
+    #canvas-wrap::after {
+      content: '';
+      position: absolute;
+      width: 42px;
+      height: 42px;
+      border-color: var(--line-dim);
+      border-style: solid;
+      pointer-events: none;
+    }
+    #canvas-wrap::before {
+      top: 16px; left: 16px;
+      border-width: 1px 0 0 1px;
+    }
+    #canvas-wrap::after {
+      bottom: 16px; right: 16px;
+      border-width: 0 1px 1px 0;
+    }
+
+    #breadcrumb {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--line-dim);
+      z-index: 10;
+      white-space: nowrap;
+    }
+
+    #breadcrumb span { color: var(--accent); }
+
+    #triad-svg {
+      width: min(78vw, 720px);
+      height: auto;
+      overflow: visible;
+    }
+
+    .tri {
+      cursor: pointer;
+      transition: filter 0.25s ease, opacity 0.25s ease;
+    }
+
+    .tri polygon {
+      fill: rgba(0, 229, 255, 0.03);
+      stroke: var(--line-dim);
+      stroke-width: 1.2;
+      transition: stroke 0.25s, fill 0.25s, stroke-width 0.25s;
+    }
+
+    .tri:hover polygon {
+      stroke: var(--line);
+      fill: rgba(0, 229, 255, 0.09);
+      stroke-width: 1.8;
+      filter: drop-shadow(0 0 6px var(--line));
+    }
+
+    .tri text {
+      fill: var(--text);
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      pointer-events: none;
+      text-anchor: middle;
+      dominant-baseline: middle;
+      letter-spacing: 0.04em;
+    }
+
+    .tri.central polygon {
+      stroke: var(--accent);
+      fill: rgba(255, 179, 0, 0.04);
+    }
+
+    .tri.central text {
+      fill: var(--accent);
+      font-size: 9px;
+    }
+
+    .tri.central:hover polygon {
+      stroke: var(--accent);
+      fill: rgba(255, 179, 0, 0.10);
+      filter: drop-shadow(0 0 8px var(--accent));
+    }
+
+    /* ---------- RIGHT TEXT PANEL ---------- */
+    #text-panel {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+      width: min(46vw, 560px);
+      background: var(--panel-bg);
+      border-left: 1px solid var(--panel-border);
+      backdrop-filter: blur(12px);
+      transform: translateX(100%);
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+      display: flex;
+      flex-direction: column;
+      z-index: 20;
+    }
+
+    #text-panel.open {
+      transform: translateX(0);
+    }
+
+    #text-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.2rem;
+      border-bottom: 1px solid var(--panel-border);
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    #text-panel-header .close-btn {
+      background: none;
+      border: 1px solid var(--line-dim);
+      color: var(--line);
+      font-family: inherit;
+      font-size: 0.65rem;
+      padding: 0.3rem 0.7rem;
+      cursor: pointer;
+      letter-spacing: 0.12em;
+    }
+
+    #text-panel-header .close-btn:hover {
+      background: rgba(0, 229, 255, 0.08);
+    }
+
+    #text-iframe {
+      flex: 1;
+      width: 100%;
+      border: none;
+      background: #0b141c;
+    }
+
+    /* ---------- MISC ---------- */
+    .status-line {
+      position: absolute;
+      bottom: 18px;
+      left: 18px;
+      font-size: 0.6rem;
+      letter-spacing: 0.14em;
+      color: var(--line-dim);
+      text-transform: uppercase;
+      pointer-events: none;
+    }
+
+    .status-line .accent { color: var(--accent); }
+
+    @media (max-width: 900px) {
+      #text-panel { width: 100vw; }
+      #triad-svg { width: 94vw; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-wrap">
+      <div id="breadcrumb"></div>
+      <svg id="triad-svg" viewBox="0 0 600 520">
+        <!-- Triangles injected by JS -->
+      </svg>
+      <div class="status-line">
+        TRIADIC NAVIGATOR // <span class="accent">ENCYCLOPEDIA</span> // 1830
+      </div>
+    </div>
+
+    <aside id="text-panel">
+      <div id="text-panel-header">
+        <span id="panel-title">TEXT</span>
+        <button class="close-btn" id="close-panel">CLOSE</button>
+      </div>
+      <iframe id="text-iframe" title="Hegel text"></iframe>
+    </aside>
+  </div>
+
+  <script>
+    // ---------- TREE DATA (partial, expandable) ----------
+    const TREE = {
+      id: 'root',
+      label: 'System of Science',
+      children: [
+        {
+          id: 'logic',
+          label: 'Logic',
+          children: [
+            { id: 'logic.being', label: 'Being' },
+            { id: 'logic.essence', label: 'Essence' },
+            { id: 'logic.notion', label: 'Notion' }
+          ]
+        },
+        {
+          id: 'nature',
+          label: 'Nature',
+          children: [
+            {
+              id: 'nature.mathematics',
+              label: 'Mathematics',
+              children: [
+                { id: 'nature.mathematics.abstract', label: 'Abstract Generality' },
+                { id: 'nature.mathematics.finite', label: 'Finite Mechanics' },
+                { id: 'nature.mathematics.celestial', label: 'Celestial Mechanics' }
+              ]
+            },
+            {
+              id: 'nature.physics',
+              label: 'Physics',
+              children: [
+                { id: 'nature.physics.particle', label: 'Material Individuality' },
+                { id: 'nature.physics.elements', label: 'Elementary Physics' },
+                {
+                  id: 'nature.physics.corporeal',
+                  label: 'Corporeality',
+                  children: [
+                    { id: 'nature.physics.corporeal.shape', label: 'Shape (Gestalt)' },
+                    { id: 'nature.physics.corporeal.properties', label: 'Properties of Bodies' },
+                    {
+                      id: 'nature.physics.corporeal.chemical',
+                      label: 'The Chemical Process',
+                      shortLabel: 'Chemistry',
+                      textUrl: 'https://www.marxists.org/reference/archive/hegel/works/na/nature2.htm#N251'
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              id: 'nature.organic',
+              label: 'Organic Nature',
+              children: [
+                { id: 'nature.organic.geology', label: 'Geology' },
+                { id: 'nature.organic.botany', label: 'Botany' },
+                { id: 'nature.organic.zoology', label: 'Zoology' }
+              ]
+            }
+          ]
+        },
+        {
+          id: 'spirit',
+          label: 'Spirit',
+          children: [
+            { id: 'spirit.subjective', label: 'Subjective Spirit' },
+            { id: 'spirit.objective', label: 'Objective Spirit' },
+            { id: 'spirit.absolute', label: 'Absolute Spirit' }
+          ]
+        }
+      ]
+    };
+
+    // ---------- STATE ----------
+    let currentNode = TREE;
+    let pathStack = [TREE]; // for breadcrumb
+
+    // ---------- DOM ----------
+    const svg = document.getElementById('triad-svg');
+    const breadcrumb = document.getElementById('breadcrumb');
+    const panel = document.getElementById('text-panel');
+    const panelTitle = document.getElementById('panel-title');
+    const iframe = document.getElementById('text-iframe');
+    const closeBtn = document.getElementById('close-panel');
+
+    // ---------- GEOMETRY ----------
+    // We draw a large central triangle plus three child triangles.
+    // The child triangles are positioned at the corners of the main triangle.
+    const CX = 300, CY = 260; // centre of viewBox
+    const R = 190;            // distance from centre to outer vertices
+
+    function trianglePoints(cx, cy, size, orientation = 'up') {
+      // orientation: 'up' or 'down'
+      const h = size * Math.sqrt(3) / 2;
+      if (orientation === 'up') {
+        return `${cx},${cy - h * 2/3} ${cx - size/2},${cy + h/3} ${cx + size/2},${cy + h/3}`;
+      } else {
+        return `${cx},${cy + h * 2/3} ${cx - size/2},${cy - h/3} ${cx + size/2},${cy - h/3}`;
+      }
+    }
+
+    // ---------- RENDER ----------
+    function render(node) {
+      svg.innerHTML = '';
+      breadcrumb.innerHTML = pathStack
+        .map((n, i) => (i === pathStack.length - 1 ? `<span>${n.label}</span>` : n.label))
+        .join(' / ');
+
+      const children = node.children || [];
+      if (children.length === 0) {
+        // Leaf: show a single large triangle with the label
+        const pts = trianglePoints(CX, CY, 320, 'up');
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.setAttribute('class', 'tri central');
+        g.innerHTML = `<polygon points="${pts}" /><text x="${CX}" y="${CY + 10}">${node.label}</text>`;
+        g.addEventListener('click', () => openText(node));
+        svg.appendChild(g);
+        return;
+      }
+
+      // Draw central triangle (the current node)
+      const centralPts = trianglePoints(CX, CY + 30, 260, 'down');
+      const centralG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      centralG.setAttribute('class', 'tri central');
+      centralG.innerHTML = `<polygon points="${centralPts}" /><text x="${CX}" y="${CY + 30}">${node.label}</text>`;
+      // Central triangle can be clicked to go back (if not root)
+      if (pathStack.length > 1) {
+        centralG.addEventListener('click', goBack);
+      }
+      svg.appendChild(centralG);
+
+      // Draw the three child triangles around it
+      const positions = [
+        { cx: CX, cy: CY - 140, orient: 'up' },      // top
+        { cx: CX - 150, cy: CY + 100, orient: 'up' }, // bottom-left
+        { cx: CX + 150, cy: CY + 100, orient: 'up' }  // bottom-right
+      ];
+
+      children.forEach((child, i) => {
+        const pos = positions[i];
+        const size = 170;
+        const pts = trianglePoints(pos.cx, pos.cy, size, pos.orient);
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.setAttribute('class', 'tri');
+        g.innerHTML = `<polygon points="${pts}" /><text x="${pos.cx}" y="${pos.cy}">${child.shortLabel || child.label}</text>`;
+
+        g.addEventListener('click', () => {
+          if (child.children && child.children.length > 0) {
+            currentNode = child;
+            pathStack.push(child);
+            render(currentNode);
+          } else if (child.textUrl) {
+            openText(child);
+          } else {
+            // leaf without text: just show it as a leaf view
+            currentNode = child;
+            pathStack.push(child);
+            render(currentNode);
+          }
+        });
+
+        svg.appendChild(g);
+      });
+    }
+
+    function goBack() {
+      if (pathStack.length > 1) {
+        pathStack.pop();
+        currentNode = pathStack[pathStack.length - 1];
+        render(currentNode);
+      }
+    }
+
+    function openText(node) {
+      panelTitle.textContent = node.shortLabel || node.label;
+      iframe.src = node.textUrl;
+      panel.classList.add('open');
+    }
+
+    closeBtn.addEventListener('click', () => {
+      panel.classList.remove('open');
+      iframe.src = 'about:blank';
+    });
+
+    // ---------- INIT ----------
+    render(TREE);
+  </script>
+</body>
+</html>
