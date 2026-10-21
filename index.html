@@ -29,9 +29,13 @@
       overflow: hidden;
     }
 
-    #app { display: flex; height: 100vh; width: 100vw; position: relative; }
+    #app {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+      position: relative;
+    }
 
-    /* ---------- CANVAS ---------- */
     #canvas-wrap {
       flex: 1;
       position: relative;
@@ -41,10 +45,13 @@
       justify-content: center;
       padding: 2rem;
     }
-    #canvas-wrap::before, #canvas-wrap::after {
+
+    #canvas-wrap::before,
+    #canvas-wrap::after {
       content: '';
       position: absolute;
-      width: 42px; height: 42px;
+      width: 42px;
+      height: 42px;
       border-color: var(--line-dim);
       border-style: solid;
       pointer-events: none;
@@ -54,7 +61,8 @@
 
     #breadcrumb {
       position: absolute;
-      top: 20px; left: 50%;
+      top: 20px;
+      left: 50%;
       transform: translateX(-50%);
       font-size: 0.7rem;
       letter-spacing: 0.18em;
@@ -62,50 +70,63 @@
       color: var(--line-dim);
       z-index: 10;
       white-space: nowrap;
-      max-width: 90vw;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
+
     #breadcrumb span { color: var(--accent); }
 
-    #triad-svg { width: min(78vw, 720px); height: auto; overflow: visible; }
+    #triad-svg {
+      width: min(78vw, 720px);
+      height: auto;
+      overflow: visible;
+    }
 
     .tri { cursor: pointer; transition: filter 0.25s ease, opacity 0.25s ease; }
+
     .tri polygon {
       fill: rgba(0, 229, 255, 0.03);
       stroke: var(--line-dim);
       stroke-width: 1.2;
       transition: stroke 0.25s, fill 0.25s, stroke-width 0.25s;
     }
+
     .tri:hover polygon {
       stroke: var(--line);
       fill: rgba(0, 229, 255, 0.09);
       stroke-width: 1.8;
       filter: drop-shadow(0 0 6px var(--line));
     }
+
     .tri text {
       fill: var(--text);
       font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
       pointer-events: none;
       text-anchor: middle;
       dominant-baseline: middle;
       letter-spacing: 0.04em;
     }
+
     .tri.central polygon {
       stroke: var(--accent);
       fill: rgba(255, 179, 0, 0.04);
     }
-    .tri.central text { fill: var(--accent); font-size: 9px; }
+
+    .tri.central text {
+      fill: var(--accent);
+      font-size: 9px;
+    }
+
     .tri.central:hover polygon {
       stroke: var(--accent);
       fill: rgba(255, 179, 0, 0.10);
       filter: drop-shadow(0 0 8px var(--accent));
     }
 
-    /* ---------- RIGHT PANEL ---------- */
+    /* ---------- RIGHT TEXT PANEL ---------- */
     #text-panel {
       position: absolute;
-      top: 0; right: 0;
+      top: 0;
+      right: 0;
       height: 100%;
       width: min(46vw, 560px);
       background: var(--panel-bg);
@@ -117,6 +138,7 @@
       flex-direction: column;
       z-index: 20;
     }
+
     #text-panel.open { transform: translateX(0); }
 
     #text-panel-header {
@@ -128,8 +150,8 @@
       font-size: 0.7rem;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      flex-shrink: 0;
     }
+
     #text-panel-header .close-btn {
       background: none;
       border: 1px solid var(--line-dim);
@@ -140,74 +162,40 @@
       cursor: pointer;
       letter-spacing: 0.12em;
     }
+
     #text-panel-header .close-btn:hover { background: rgba(0, 229, 255, 0.08); }
 
-    /* JSON-rendered body */
-    #text-body {
+    #text-content {
       flex: 1;
       overflow-y: auto;
-      padding: 1.2rem 1.4rem 3rem;
+      padding: 1.2rem;
       font-size: 0.82rem;
-      line-height: 1.65;
-      color: #b8d4e0;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      color: #d6eef7;
+      scrollbar-width: thin;
+      scrollbar-color: var(--line-dim) transparent;
     }
-    #text-body h1, #text-body h2, #text-body h3 {
-      color: var(--accent);
-      font-size: 0.85rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin: 1.4rem 0 0.6rem;
-    }
-    #text-body p { margin: 0 0 0.9rem; }
-    #text-body a { color: var(--line); }
-    #text-body em, #text-body i { color: #dce8ee; }
-    #text-body .loading {
-      color: var(--line-dim);
-      font-size: 0.72rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-    }
-    #text-body .error { color: #ff6b6b; font-size: 0.75rem; }
 
-    /* iframe fallback */
-    #text-iframe {
-      flex: 1;
-      width: 100%;
-      border: none;
-      background: #0b141c;
-      display: none;
+    #text-content::-webkit-scrollbar { width: 6px; }
+    #text-content::-webkit-scrollbar-thumb {
+      background: var(--line-dim);
+      border-radius: 3px;
     }
-    #text-panel.iframe-mode #text-iframe { display: block; }
-    #text-panel.iframe-mode #text-body { display: none; }
 
     /* ---------- MISC ---------- */
     .status-line {
       position: absolute;
-      bottom: 18px; left: 18px;
+      bottom: 18px;
+      left: 18px;
       font-size: 0.6rem;
       letter-spacing: 0.14em;
       color: var(--line-dim);
       text-transform: uppercase;
       pointer-events: none;
     }
-    .status-line .accent { color: var(--accent); }
 
-    #boot-overlay {
-      position: fixed;
-      inset: 0;
-      background: var(--bg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.75rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--line-dim);
-      z-index: 100;
-      transition: opacity 0.4s;
-    }
-    #boot-overlay.hidden { opacity: 0; pointer-events: none; }
-    #boot-overlay .error { color: #ff6b6b; }
+    .status-line .accent { color: var(--accent); }
 
     @media (max-width: 900px) {
       #text-panel { width: 100vw; }
@@ -216,8 +204,6 @@
   </style>
 </head>
 <body>
-  <div id="boot-overlay">Loading triadic structure…</div>
-
   <div id="app">
     <div id="canvas-wrap">
       <div id="breadcrumb"></div>
@@ -232,31 +218,25 @@
         <span id="panel-title">TEXT</span>
         <button class="close-btn" id="close-panel">CLOSE</button>
       </div>
-      <div id="text-body"></div>
-      <iframe id="text-iframe" title="Hegel text"></iframe>
+      <div id="text-content"></div>
     </aside>
   </div>
 
   <script>
-    // ============================================================ config
-    const TREE_URL = 'triad_tree.json';
-
-    // ============================================================ state
-    let TREE = null;
+    // ---------- GLOBALS ----------
+    let CORPUS = null;       // loaded from hegel_corpus.json
     let currentNode = null;
-    let pathStack = [];
+    let pathStack = [];      // breadcrumb stack
 
-    // ============================================================ dom
-    const svg        = document.getElementById('triad-svg');
+    // ---------- DOM ----------
+    const svg = document.getElementById('triad-svg');
     const breadcrumb = document.getElementById('breadcrumb');
-    const panel      = document.getElementById('text-panel');
+    const panel = document.getElementById('text-panel');
     const panelTitle = document.getElementById('panel-title');
-    const textBody   = document.getElementById('text-body');
-    const iframe     = document.getElementById('text-iframe');
-    const closeBtn   = document.getElementById('close-panel');
-    const boot       = document.getElementById('boot-overlay');
+    const textContent = document.getElementById('text-content');
+    const closeBtn = document.getElementById('close-panel');
 
-    // ============================================================ geometry
+    // ---------- GEOMETRY ----------
     const CX = 300, CY = 260;
 
     function trianglePoints(cx, cy, size, orientation = 'up') {
@@ -267,7 +247,17 @@
       return `${cx},${cy + h * 2/3} ${cx - size/2},${cy - h/3} ${cx + size/2},${cy - h/3}`;
     }
 
-    // ============================================================ render
+    // ---------- DATA ACCESS ----------
+    function getTextForNode(node) {
+      if (!CORPUS || !node || !node.textUrl) return null;
+      // Exact match first
+      if (CORPUS.texts[node.textUrl]) return CORPUS.texts[node.textUrl];
+      // Try stripping anchor
+      const base = node.textUrl.split('#')[0];
+      return CORPUS.texts[base] || null;
+    }
+
+    // ---------- RENDER ----------
     function render(node) {
       svg.innerHTML = '';
       breadcrumb.innerHTML = pathStack
@@ -276,38 +266,33 @@
 
       const children = node.children || [];
 
-      // Leaf view: one big triangle, clickable if it has text
+      // Leaf view
       if (children.length === 0) {
         const pts = trianglePoints(CX, CY, 320, 'up');
         const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
         g.setAttribute('class', 'tri central');
         g.innerHTML = `<polygon points="${pts}" /><text x="${CX}" y="${CY + 10}">${node.label}</text>`;
-        if (node.textUrl) g.addEventListener('click', () => openText(node));
+        g.addEventListener('click', () => openText(node));
         svg.appendChild(g);
         return;
       }
 
-      // Centre triangle = current node (click to go back if not root)
+      // Central context triangle
       const centralPts = trianglePoints(CX, CY + 30, 260, 'down');
       const centralG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
       centralG.setAttribute('class', 'tri central');
       centralG.innerHTML = `<polygon points="${centralPts}" /><text x="${CX}" y="${CY + 30}">${node.label}</text>`;
       if (pathStack.length > 1) centralG.addEventListener('click', goBack);
-      // Also allow reading text for the central node if it has one
-      if (node.textUrl) {
-        // shift-click? No — simpler: clicking centre back-navigates;
-        // a node's own text is accessible from its parent's view.
-      }
       svg.appendChild(centralG);
 
-      // Three child triangles
+      // Child triangles
       const positions = [
-        { cx: CX,       cy: CY - 140, orient: 'up' },
+        { cx: CX, cy: CY - 140, orient: 'up' },
         { cx: CX - 150, cy: CY + 100, orient: 'up' },
         { cx: CX + 150, cy: CY + 100, orient: 'up' }
       ];
 
-      children.slice(0, 3).forEach((child, i) => {
+      children.forEach((child, i) => {
         const pos = positions[i];
         const pts = trianglePoints(pos.cx, pos.cy, 170, pos.orient);
         const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -320,11 +305,6 @@
             pathStack.push(child);
             render(currentNode);
           } else if (child.textUrl) {
-            // Leaf with text: open panel, but also drill to leaf view so the
-            // user can see context
-            currentNode = child;
-            pathStack.push(child);
-            render(currentNode);
             openText(child);
           } else {
             currentNode = child;
@@ -332,6 +312,7 @@
             render(currentNode);
           }
         });
+
         svg.appendChild(g);
       });
     }
@@ -344,106 +325,33 @@
       }
     }
 
-    // ============================================================ text panel
-    async function openText(node) {
+    function openText(node) {
       panelTitle.textContent = node.shortLabel || node.label;
+      const text = getTextForNode(node);
+      textContent.textContent = text || 'No text available for this node.';
       panel.classList.add('open');
-
-      const url = node.textUrl;
-
-      // External or local .htm/.html → use iframe (browser handles it)
-      if (/^https?:/i.test(url) || /\.html?($|#)/i.test(url)) {
-        panel.classList.add('iframe-mode');
-        iframe.src = url;
-        return;
-      }
-
-      // Otherwise: assume JSON. Try to fetch and render.
-      panel.classList.remove('iframe-mode');
-      iframe.src = 'about:blank';
-      textBody.innerHTML = '<div class="loading">Loading text…</div>';
-
-      try {
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        renderTextJSON(data);
-      } catch (err) {
-        textBody.innerHTML = `<div class="error">Could not load ${url}<br>${err.message}</div>`;
-      }
+      // Scroll to top
+      textContent.scrollTop = 0;
     }
 
-    function renderTextJSON(data) {
-      // Accept a few common shapes so you don't have to reshape your corpus:
-      //   { html: "..." }
-      //   { text: "..." }
-      //   { title, text } or { title, html }
-      //   { sections: [ {title, text|html}, ... ] }
-      //   { paragraphs: ["...", "..."] }
-      const pieces = [];
+    closeBtn.addEventListener('click', () => panel.classList.remove('open'));
 
-      const escape = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-
-      const emitBlock = (b) => {
-        if (!b) return;
-        if (typeof b === 'string') {
-          // Plain string: split into paragraphs on blank lines
-          b.split(/\n{2,}/).forEach(par => {
-            const t = par.trim();
-            if (t) pieces.push(`<p>${t.replace(/\n/g, '<br>')}</p>`);
-          });
-          return;
-        }
-        if (b.html) { pieces.push(b.html); return; }
-        if (b.text) { emitBlock(b.text); return; }
-      };
-
-      if (data.title) pieces.push(`<h1>${escape(data.title)}</h1>`);
-      if (data.sections) {
-        for (const s of data.sections) {
-          if (s.title) pieces.push(`<h2>${escape(s.title)}</h2>`);
-          emitBlock(s.html ? s : s.text);
-        }
-      } else if (data.paragraphs) {
-        data.paragraphs.forEach(p => emitBlock(p));
-      } else {
-        emitBlock(data);
-      }
-
-      textBody.innerHTML = pieces.join('\n') || '<div class="error">Empty document.</div>';
-      textBody.scrollTop = 0;
-    }
-
-    closeBtn.addEventListener('click', () => {
-      panel.classList.remove('open', 'iframe-mode');
-      iframe.src = 'about:blank';
-    });
-
-    // ============================================================ boot
-    async function boot_() {
+    // ---------- BOOTSTRAP ----------
+    async function init() {
       try {
-        const res = await fetch(TREE_URL);
-        if (!res.ok) throw new Error(`HTTP ${res.status} fetching ${TREE_URL}`);
-        TREE = await res.json();
-
-        // Support either a single root or {root: {...}} or an array of roots
-        if (Array.isArray(TREE)) {
-          TREE = { id: 'root', label: 'System of Science', children: TREE };
-        } else if (TREE.root) {
-          TREE = TREE.root;
-        }
-
-        currentNode = TREE;
-        pathStack  = [TREE];
+        const resp = await fetch('hegel_corpus.json');
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        CORPUS = await resp.json();
+        currentNode = CORPUS.tree;
+        pathStack = [currentNode];
         render(currentNode);
-        boot.classList.add('hidden');
       } catch (err) {
-        boot.innerHTML = `<span class="error">Failed to load tree: ${err.message}</span>`;
-        console.error(err);
+        console.error('Failed to load corpus:', err);
+        svg.innerHTML = `<text x="${CX}" y="${CY}" fill="#ff5555" text-anchor="middle">Failed to load hegel_corpus.json</text>`;
       }
     }
 
-    boot_();
+    init();
   </script>
 </body>
 </html>
