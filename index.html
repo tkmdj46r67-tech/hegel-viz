@@ -97,9 +97,8 @@
     display: flex; flex-direction: column; overflow: hidden;
     z-index: 20;
   }
-  #text-panel.open {
-    width: min(46vw, 620px); border-left-width: 1px;
-  }
+  #text-panel.open { width: min(46vw, 620px); border-left-width: 1px; }
+
   #panel-header {
     display: flex; justify-content: space-between; align-items: center;
     padding: 1rem 1.2rem;
@@ -369,15 +368,14 @@ const TREE = {
 /* ============================================================
    2. CONFIG
    ============================================================ */
-const FLOOR_HEIGHT = 180;      // vertical gap between floors
-const GRID_SPACING = 130;      // horizontal gap between groups
-const MAJOR_R      = 25;       // circumradius of major triangle
+const FLOOR_HEIGHT = 180;
+const GRID_SPACING = 130;
+const MAJOR_R      = 25;
 const MINOR_R      = 17;
-const MINOR_DIST   = 45;       // distance from major centre to minor centres
+const MINOR_DIST   = 45;
 const LOCAL_DIR    = "hegel_works/";
 
-const CAM_OFFSET   = new THREE.Vector3(0, 130, 100);   // relative to focused group
-const CAM_OVERVIEW = new THREE.Vector3(0, 900, 600);   // initial overview offset
+const CAM_OFFSET   = new THREE.Vector3(0, 130, 100);
 
 /* ============================================================
    3. SCENE
@@ -394,7 +392,7 @@ scene.fog = new THREE.Fog(0x060a0f, 1000, 3600);
 const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 6000);
 
 /* ============================================================
-   4. FLOOR COMPUTATION
+   4. FLOOR COMPUTATION (root excluded; deepest floor → bottom)
    ============================================================ */
 const floors = [];
 const nodeToGroup = {};
@@ -402,23 +400,31 @@ const parentOf = {};
 
 function collectFloors(node, depth) {
   if (!node.children || node.children.length === 0) return;
-  if (!floors[depth]) {
-    floors[depth] = {
-      index: depth, nodes: [], groups: [],
-      y: depth * FLOOR_HEIGHT,
-      targetOpacity: 1, opacity: 1
-    };
+  // The root (depth 0) is not rendered as a floor — the overview
+  // camera acts as its position. Floors 1, 2, 3, ... are rendered.
+  if (depth > 0) {
+    if (!floors[depth]) {
+      floors[depth] = {
+        index: depth, nodes: [], groups: [],
+        y: 0, targetOpacity: 1, opacity: 1
+      };
+    }
+    floors[depth].nodes.push(node);
   }
-  floors[depth].nodes.push(node);
   node.children.forEach(c => {
     parentOf[c.id] = node;
     collectFloors(c, depth + 1);
   });
 }
 collectFloors(TREE, 0);
-for (let i = 0; i < floors.length; i++) {
-  if (!floors[i]) floors[i] = { index: i, nodes: [], groups: [], y: i * FLOOR_HEIGHT, targetOpacity: 0, opacity: 0 };
-}
+
+// Reverse Y: deepest depth sits at y=0 (ground floor);
+// shallowest depth sits at the top.
+const maxDepth = floors.filter(Boolean).reduce((m, f) => Math.max(m, f.index), 0);
+floors.forEach(f => {
+  if (!f) return;
+  f.y = (maxDepth - f.index) * FLOOR_HEIGHT;
+});
 
 /* ============================================================
    5. GRID LAYOUT
@@ -449,7 +455,6 @@ function triangleGeometry(R, orientation) {
   shape.lineTo(-R * Math.sqrt(3) / 2, -R / 2);
   shape.lineTo( R * Math.sqrt(3) / 2, -R / 2);
   shape.closePath();
-
   const geo = new THREE.ShapeGeometry(shape);
   geo.rotateX(-Math.PI / 2);
   if (orientation === 'down') geo.rotateY(Math.PI);
@@ -458,30 +463,27 @@ function triangleGeometry(R, orientation) {
 
 function makeTriangle(R, fillColor, strokeColor, fillOpacity, strokeOpacity, orientation) {
   const geo = triangleGeometry(R, orientation);
-
   const fillMat = new THREE.MeshBasicMaterial({
     color: fillColor, transparent: true, opacity: fillOpacity,
     side: THREE.DoubleSide, depthWrite: false
   });
   const fill = new THREE.Mesh(geo, fillMat);
-
   const edges = new THREE.EdgesGeometry(geo);
   const lineMat = new THREE.LineBasicMaterial({
     color: strokeColor, transparent: true, opacity: strokeOpacity,
     depthWrite: false
   });
   const line = new THREE.LineSegments(edges, lineMat);
-
   const group = new THREE.Group();
   group.add(fill, line);
   return { group, fill, line, fillMat, lineMat };
 }
 
 /* ============================================================
-   7. LABELS (HTML projected overlay)
+   7. LABELS
    ============================================================ */
 const labelsOverlay = document.getElementById('labels-overlay');
-const labels = [];  // { el, worldPos, floorIdx }
+const labels = [];
 
 function addLabel(text, worldPos, color, size, weight, floorIdx) {
   const el = document.createElement('div');
@@ -508,21 +510,21 @@ function addLabel(text, worldPos, color, size, weight, floorIdx) {
    8. BUILD FLOORS
    ============================================================ */
 const clickableFills = [];
+const linkLines = [];
 
 function buildTriangleGroup(node, floorIdx) {
   const group = new THREE.Group();
   group.userData = { kind: 'group', node, floorIdx };
 
-  // Major (points +Z, i.e., toward viewer/south)
   const major = makeTriangle(MAJOR_R, 0xffb300, 0xffb300, 0.10, 0.9, 'down');
   major.fill.userData = { kind: 'major', node, floorIdx };
   clickableFills.push(major.fill);
   group.add(major.group);
 
   const minorPos = [
-    { x: 0,                    z: -MINOR_DIST },
-    { x: -MINOR_DIST * 0.87,   z:  MINOR_DIST * 0.5 },
-    { x:  MINOR_DIST * 0.87,   z:  MINOR_DIST * 0.5 }
+    { x: 0,                  z: -MINOR_DIST },
+    { x: -MINOR_DIST * 0.87, z:  MINOR_DIST * 0.5 },
+    { x:  MINOR_DIST * 0.87, z:  MINOR_DIST * 0.5 }
   ];
 
   const minors = node.children || [];
@@ -543,7 +545,7 @@ function buildTriangleGroup(node, floorIdx) {
 
 function buildAll() {
   floors.forEach((floor, floorIdx) => {
-    if (!floor.nodes.length) return;
+    if (!floor || !floor.nodes.length) return;
     const positions = layoutFloor(floor.nodes);
 
     floor.nodes.forEach((node, i) => {
@@ -575,6 +577,44 @@ function buildAll() {
   });
 }
 
+function buildLinkLines() {
+  for (const nodeId in nodeToGroup) {
+    const parent = nodeToGroup[nodeId];
+    if (!parent.node.children) continue;
+
+    for (const child of parent.node.children) {
+      const childEntry = nodeToGroup[child.id];
+      if (!childEntry) continue;   // child has no group (leaf or deeper)
+      if (childEntry === parent) continue;
+
+      const mat = new THREE.LineDashedMaterial({
+        color: 0x00e5ff,
+        dashSize: 5,
+        gapSize: 5,
+        transparent: true,
+        opacity: 0.25,
+        depthWrite: false
+      });
+
+      const points = [
+        new THREE.Vector3(parent.center.x, parent.center.y, parent.center.z),
+        new THREE.Vector3(childEntry.center.x, childEntry.center.y, childEntry.center.z)
+      ];
+      const geo = new THREE.BufferGeometry().setFromPoints(points);
+      const line = new THREE.Line(geo, mat);
+      line.computeLineDistances();
+      line.userData = {
+        fromNodeId: parent.node.id,
+        toNodeId: childEntry.node.id,
+        fromFloor: parent.floorIdx,
+        toFloor: childEntry.floorIdx
+      };
+      scene.add(line);
+      linkLines.push(line);
+    }
+  }
+}
+
 /* ============================================================
    9. CAMERA / FOCUS STATE
    ============================================================ */
@@ -594,6 +634,7 @@ function focusOn(entry, immediate = false) {
   camTargetPos.copy(entry.center).add(CAM_OFFSET);
 
   floors.forEach((f, i) => {
+    if (!f) return;
     f.targetOpacity = (i === entry.floorIdx) ? 1 : 0.12;
   });
 
@@ -607,12 +648,16 @@ function focusOn(entry, immediate = false) {
 
 function setOverview(immediate = false) {
   inOverview = true;
-  focusedEntry = nodeToGroup[TREE.id];
+  focusedEntry = null;
 
-  camTargetLook.copy(focusedEntry.center);
-  camTargetPos.copy(focusedEntry.center).add(CAM_OVERVIEW);
+  const valid = floors.filter(Boolean);
+  const highestY = valid.reduce((m, f) => Math.max(m, f.y), 0);
+  const stackHeight = highestY;
 
-  floors.forEach(f => { f.targetOpacity = 1; });
+  camTargetLook.set(0, stackHeight / 2, 0);
+  camTargetPos.set(0, stackHeight + 500, 550);
+
+  valid.forEach(f => { f.targetOpacity = 1; });
 
   updateHud();
   if (immediate) {
@@ -626,13 +671,26 @@ function setOverview(immediate = false) {
    10. NAVIGATION
    ============================================================ */
 function goUp() {
-  if (!focusedEntry) return;
+  if (inOverview || !focusedEntry) return;
   const parent = parentOf[focusedEntry.node.id];
-  if (parent) focusOn(nodeToGroup[parent.id]);
+  if (parent && nodeToGroup[parent.id]) {
+    focusOn(nodeToGroup[parent.id]);
+  } else {
+    // No parent floor above — return to the overview.
+    setOverview();
+  }
 }
 
 function goDown() {
-  if (!focusedEntry) return;
+  if (inOverview || !focusedEntry) {
+    // From overview, jump to the topmost rendered floor's first group.
+    const top = floors.filter(Boolean).slice().sort((a, b) => b.y - a.y)[0];
+    if (top && top.nodes[0]) {
+      const entry = nodeToGroup[top.nodes[0].id];
+      if (entry) focusOn(entry);
+    }
+    return;
+  }
   const node = focusedEntry.node;
   if (!node.children) return;
   const c = node.children.find(c => c.children && c.children.length);
@@ -757,32 +815,34 @@ closeBtn.addEventListener('click', () => {
    12. HUD
    ============================================================ */
 function updateHud() {
-  // Breadcrumb
-  if (focusedEntry) {
-    const path = [];
-    let n = focusedEntry.node;
-    while (n) { path.unshift(n); n = parentOf[n.id]; }
-    document.getElementById('breadcrumb').innerHTML = path
-      .map((n, i) => i === path.length - 1
-        ? `<span class="current">${n.shortLabel || n.label}</span>`
-        : `<span>${n.shortLabel || n.label}</span>`)
-      .join(' / ');
-  }
-
-  // Floor indicator
-  if (focusedEntry) {
-    document.getElementById('floor-indicator').textContent =
-      `FLOOR ${focusedEntry.floorIdx + 1} / ${floors.length}`;
-  }
-
-  // Buttons
+  const breadcrumb = document.getElementById('breadcrumb');
+  const floorIndicator = document.getElementById('floor-indicator');
   const upBtn = document.getElementById('up-btn');
   const downBtn = document.getElementById('down-btn');
-  if (focusedEntry) {
-    upBtn.disabled = !parentOf[focusedEntry.node.id];
-    const hasChild = focusedEntry.node.children?.some(c => c.children?.length);
-    downBtn.disabled = !hasChild;
+
+  if (!focusedEntry) {
+    breadcrumb.innerHTML = `<span class="current">SYSTEM</span>`;
+    floorIndicator.textContent = 'OVERVIEW';
+    upBtn.disabled = true;
+    const hasTopFloor = floors.filter(Boolean).length > 0;
+    downBtn.disabled = !hasTopFloor;
+    return;
   }
+
+  const path = [];
+  let n = focusedEntry.node;
+  while (n) { path.unshift(n); n = parentOf[n.id]; }
+  breadcrumb.innerHTML = path
+    .map((n, i) => i === path.length - 1
+      ? `<span class="current">${n.shortLabel || n.label}</span>`
+      : `<span>${n.shortLabel || n.label}</span>`)
+    .join(' / ');
+
+  floorIndicator.textContent = `FLOOR ${focusedEntry.floorIdx} / ${maxDepth}`;
+
+  upBtn.disabled = false;
+  const hasChild = focusedEntry.node.children?.some(c => c.children?.length);
+  downBtn.disabled = !hasChild;
 }
 
 /* ============================================================
@@ -851,6 +911,25 @@ function updateLabels() {
   }
 }
 
+function updateLinkLines() {
+  for (const line of linkLines) {
+    const d = line.userData;
+    if (inOverview || !focusedEntry) {
+      line.material.opacity = 0.22;
+      continue;
+    }
+    const focusId = focusedEntry.node.id;
+    const isConnected = d.fromNodeId === focusId || d.toNodeId === focusId;
+    const touchesFocusedFloor =
+      d.fromFloor === focusedEntry.floorIdx ||
+      d.toFloor   === focusedEntry.floorIdx;
+
+    if (isConnected)         line.material.opacity = 0.60;
+    else if (touchesFocusedFloor) line.material.opacity = 0.30;
+    else                     line.material.opacity = 0.07;
+  }
+}
+
 let lastTime = performance.now();
 
 function animate() {
@@ -860,24 +939,20 @@ function animate() {
   const dt  = Math.min(0.1, (now - lastTime) / 1000);
   lastTime = now;
 
-  // Camera smoothing (frame-rate independent)
   const camLerp = 1 - Math.pow(0.001, dt);
   camera.position.lerp(camTargetPos, camLerp);
   camCurLook.lerp(camTargetLook, camLerp);
   camera.lookAt(camCurLook);
 
-  // Floor opacity smoothing
   for (const f of floors) {
+    if (!f) continue;
     f.opacity += (f.targetOpacity - f.opacity) * (1 - Math.pow(0.005, dt));
   }
-  // Apply to materials
   for (const f of floors) {
-    if (!f.groups) continue;
+    if (!f || !f.groups) continue;
     for (const tg of f.groups) {
-      // Major
-      tg.major.fillMat.opacity  = 0.10 * f.opacity;
-      tg.major.lineMat.opacity  = 0.90 * f.opacity;
-      // Minors
+      tg.major.fillMat.opacity = 0.10 * f.opacity;
+      tg.major.lineMat.opacity = 0.90 * f.opacity;
       for (const m of tg.minors) {
         m.mesh.fillMat.opacity = 0.06 * f.opacity;
         m.mesh.lineMat.opacity = 0.85 * f.opacity;
@@ -885,7 +960,8 @@ function animate() {
     }
   }
 
-  // Hover (only on focused floor, or all floors in overview)
+  updateLinkLines();
+
   raycaster.setFromCamera(pointer, camera);
   const hits = raycaster.intersectObjects(clickableFills, false);
   let newHover = null;
@@ -899,11 +975,7 @@ function animate() {
   if (newHover !== hoveredFill) {
     if (hoveredFill) {
       const d = hoveredFill.userData;
-      if (d.kind === 'major') {
-        hoveredFill.material.color.setHex(0xffb300);
-      } else {
-        hoveredFill.material.color.setHex(0x00e5ff);
-      }
+      hoveredFill.material.color.setHex(d.kind === 'major' ? 0xffb300 : 0x00e5ff);
       hoveredFill = null;
     }
     hoveredFill = newHover;
@@ -913,12 +985,10 @@ function animate() {
     }
     canvas.style.cursor = hoveredFill ? 'pointer' : 'default';
   }
-  // Boost hover fill opacity each frame (so it survives the floor-opacity overwrite)
   if (hoveredFill) {
     const d = hoveredFill.userData;
     const f = floors[d.floorIdx];
-    const boost = 0.35 * (f ? f.opacity : 1);
-    hoveredFill.material.opacity = boost;
+    hoveredFill.material.opacity = 0.35 * (f ? f.opacity : 1);
   }
 
   updateLabels();
@@ -929,8 +999,9 @@ function animate() {
    15. BOOT
    ============================================================ */
 buildAll();
+buildLinkLines();
 onResize();
-setOverview(true);   // start above the building looking down
+setOverview(true);
 animate();
 </script>
 </body>
