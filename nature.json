@@ -1,0 +1,58 @@
+{
+  "id": "nature",
+  "label": "Philosophy of Nature",
+  "children": [
+    {
+      "id": "nature.mathematics",
+      "label": "Mathematics / Mechanical Nature",
+      "children": [
+        { "id": "nature.mathematics.abstract", "label": "Abstract Generality" },
+        { "id": "nature.mathematics.finite", "label": "Finite Mechanics" },
+        { "id": "nature.mathematics.celestial", "label": "Celestial Mechanics" }
+      ]
+    },
+    {
+      "id": "nature.physics",
+      "label": "Physics",
+      "children": [
+        {
+          "id": "nature.physics.particle",
+          "label": "Material Individuality"
+        },
+        {
+          "id": "nature.physics.elements",
+          "label": "Elementary Physics"
+        },
+        {
+          "id": "nature.physics.corporeal",
+          "label": "Corporeality",
+          "children": [
+            {
+              "id": "nature.physics.corporeal.shape",
+              "label": "Shape (Gestalt)"
+            },
+            {
+              "id": "nature.physics.corporeal.properties",
+              "label": "Properties of Bodies"
+            },
+            {
+              "id": "nature.physics.corporeal.chemical",
+              "label": "The Chemical Process",
+              "shortLabel": "Chemistry",
+              "textUrl": "https://www.marxists.org/reference/archive/hegel/works/na/nature2.htm#N251"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nature.organic",
+      "label": "Organic Nature",
+      "children": [
+        { "id": "nature.organic.geology", "label": "Geology" },
+        { "id": "nature.organic.botany", "label": "Botany" },
+        { "id": "nature.organic.zoology", "label": "Zoology" }
+      ]
+    }
+  ]
+}
