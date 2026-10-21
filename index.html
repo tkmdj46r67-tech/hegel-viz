@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Hegel Triadic Navigator</title>
+<title>Hegel Triadic Navigator — Floors</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600&display=swap');
 
@@ -13,16 +13,16 @@
     --line-dim: #007a8a;
     --accent: #ffb300;
     --text: #c8e6f0;
-    --panel-bg: rgba(8, 18, 28, 0.95);
+    --panel-bg: rgba(8, 18, 28, 0.96);
     --panel-border: #00e5ff44;
   }
 
   * { box-sizing: border-box; }
 
-  body {
+  html, body {
     margin: 0;
-    min-height: 100vh;
-    background: radial-gradient(circle at 30% 20%, #0a1a28 0%, var(--bg) 60%);
+    height: 100%;
+    background: radial-gradient(circle at 50% 40%, #0a1a28 0%, var(--bg) 70%);
     color: var(--text);
     font-family: 'JetBrains Mono', monospace;
     overflow: hidden;
@@ -35,18 +35,15 @@
     position: relative;
   }
 
-  #canvas-wrap {
+  #stage-wrap {
     flex: 1;
     position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
+    overflow: hidden;
   }
 
-  #canvas-wrap::before,
-  #canvas-wrap::after {
+  /* HUD corner brackets */
+  #stage-wrap::before,
+  #stage-wrap::after {
     content: '';
     position: absolute;
     width: 42px;
@@ -54,88 +51,153 @@
     border-color: var(--line-dim);
     border-style: solid;
     pointer-events: none;
+    z-index: 5;
   }
-  #canvas-wrap::before {
+  #stage-wrap::before {
     top: 16px; left: 16px;
     border-width: 1px 0 0 1px;
   }
-  #canvas-wrap::after {
+  #stage-wrap::after {
     bottom: 16px; right: 16px;
     border-width: 0 1px 1px 0;
   }
 
-  #breadcrumb {
+  #stage {
     position: absolute;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 0.7rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--line-dim);
-    z-index: 10;
-    white-space: nowrap;
+    inset: 0;
+    overflow: hidden;
   }
 
-  #breadcrumb span { color: var(--accent); }
-
-  #triad-svg {
-    width: min(78vw, 720px);
-    height: auto;
-    overflow: visible;
+  .floor {
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform-origin: center center;
+    transition:
+      transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.7s ease,
+      filter 0.7s ease;
+    will-change: transform, opacity;
   }
 
-  .tri { cursor: pointer; }
-  .tri polygon {
-    fill: rgba(0, 229, 255, 0.03);
-    stroke: var(--line-dim);
-    stroke-width: 1.2;
-    transition: stroke 0.25s, fill 0.25s, stroke-width 0.25s;
+  .floor.inactive {
+    cursor: pointer;
   }
-  .tri:hover polygon {
-    stroke: var(--line);
-    fill: rgba(0, 229, 255, 0.09);
-    stroke-width: 1.8;
-    filter: drop-shadow(0 0 6px var(--line));
+
+  /* --- SVG triangles --- */
+  .tri-major polygon {
+    fill: rgba(255, 179, 0, 0.05);
+    stroke: var(--accent);
+    stroke-width: 1.5;
+    transition: fill 0.2s, stroke-width 0.2s;
   }
-  .tri text {
-    fill: var(--text);
+  .tri-major:hover polygon {
+    fill: rgba(255, 179, 0, 0.18);
+    stroke-width: 2.2;
+    filter: drop-shadow(0 0 10px var(--accent));
+  }
+  .tri-major text {
+    fill: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
-    pointer-events: none;
     text-anchor: middle;
     dominant-baseline: middle;
+    pointer-events: none;
     letter-spacing: 0.04em;
   }
-  .tri.central polygon {
-    stroke: var(--accent);
-    fill: rgba(255, 179, 0, 0.04);
+
+  .tri-minor polygon {
+    fill: rgba(0, 229, 255, 0.03);
+    stroke: var(--line);
+    stroke-width: 1.2;
+    transition: fill 0.2s, stroke-width 0.2s;
   }
-  .tri.central text {
-    fill: var(--accent);
+  .tri-minor:hover polygon {
+    fill: rgba(0, 229, 255, 0.16);
+    stroke-width: 1.9;
+    filter: drop-shadow(0 0 8px var(--line));
+  }
+  /* Drillable (has children) — subtle dotted outline */
+  .tri-minor.has-children polygon {
+    stroke-dasharray: 5 3;
+  }
+  .tri-minor text {
+    fill: var(--text);
+    font-family: 'JetBrains Mono', monospace;
     font-size: 9px;
-  }
-  .tri.central:hover polygon {
-    stroke: var(--accent);
-    fill: rgba(255, 179, 0, 0.10);
-    filter: drop-shadow(0 0 8px var(--accent));
+    text-anchor: middle;
+    dominant-baseline: middle;
+    pointer-events: none;
+    letter-spacing: 0.02em;
   }
 
-  #text-panel {
+  /* --- Floor nav --- */
+  #floor-nav {
     position: absolute;
-    top: 0;
-    right: 0;
-    height: 100%;
-    width: min(48vw, 620px);
-    background: var(--panel-bg);
-    border-left: 1px solid var(--panel-border);
-    backdrop-filter: blur(12px);
-    transform: translateX(100%);
-    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
     display: flex;
     flex-direction: column;
-    z-index: 20;
+    align-items: center;
+    gap: 0.7rem;
+    z-index: 30;
+    pointer-events: none;
   }
-  #text-panel.open { transform: translateX(0); }
+  #floor-nav button {
+    pointer-events: auto;
+    background: rgba(8, 18, 28, 0.85);
+    border: 1px solid var(--line-dim);
+    color: var(--line);
+    font-family: inherit;
+    font-size: 0.65rem;
+    letter-spacing: 0.14em;
+    padding: 0.55rem 0.85rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s;
+    min-width: 44px;
+  }
+  #floor-nav button:hover:not(:disabled) {
+    background: rgba(0, 229, 255, 0.12);
+    border-color: var(--line);
+    color: var(--accent);
+  }
+  #floor-nav button:disabled {
+    opacity: 0.25;
+    cursor: default;
+  }
+  #floor-indicator {
+    pointer-events: auto;
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    text-transform: uppercase;
+    text-align: center;
+    padding: 0.4rem 0;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    user-select: none;
+  }
+
+  /* --- Text panel --- */
+  #text-panel {
+    width: 0;
+    height: 100%;
+    background: var(--panel-bg);
+    border-left: 0 solid var(--panel-border);
+    transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+                border-left-width 0.4s;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    z-index: 40;
+  }
+  #text-panel.open {
+    width: min(46vw, 620px);
+    border-left-width: 1px;
+  }
 
   #text-panel-header {
     display: flex;
@@ -147,14 +209,13 @@
     letter-spacing: 0.12em;
     text-transform: uppercase;
     gap: 1rem;
+    flex-shrink: 0;
   }
-
-  #text-panel-header .header-actions {
+  #text-panel-header .actions {
     display: flex;
     gap: 0.5rem;
     align-items: center;
   }
-
   #text-panel-header a.src-link,
   #text-panel-header .close-btn {
     background: none;
@@ -181,7 +242,7 @@
     background: #0b141c;
   }
 
-  #fallback {
+  #text-fallback {
     flex: 1;
     padding: 2rem;
     font-size: 0.8rem;
@@ -189,71 +250,74 @@
     color: #b8d8e8;
     overflow-y: auto;
   }
-  #fallback .warning {
+  #text-fallback .warning {
     color: var(--accent);
     font-size: 0.7rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     margin-bottom: 1.2rem;
   }
-  #fallback code {
+  #text-fallback code {
     color: var(--line);
     background: rgba(0, 229, 255, 0.06);
     padding: 0.1rem 0.4rem;
     border-radius: 2px;
     font-size: 0.75rem;
   }
-  #fallback a {
+  #text-fallback a {
     color: var(--accent);
     border-bottom: 1px dotted var(--accent);
     text-decoration: none;
   }
-  #fallback a:hover { color: var(--line); border-color: var(--line); }
-
   .hidden { display: none !important; }
 
-  .status-line {
+  /* --- Status / breadcrumb --- */
+  #floor-breadcrumb {
     position: absolute;
-    bottom: 18px;
-    left: 18px;
+    top: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--line-dim);
+    z-index: 10;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  #floor-breadcrumb span {
+    color: var(--accent);
+  }
+
+  #status-line {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
     font-size: 0.6rem;
     letter-spacing: 0.14em;
     color: var(--line-dim);
     text-transform: uppercase;
     pointer-events: none;
+    z-index: 10;
   }
-  .status-line .accent { color: var(--accent); }
-
-  #download-btn {
-    position: absolute;
-    top: 18px;
-    left: 18px;
-    background: rgba(0, 229, 255, 0.06);
-    border: 1px solid var(--line-dim);
-    color: var(--line);
-    font-family: inherit;
-    font-size: 0.6rem;
-    letter-spacing: 0.12em;
-    padding: 0.35rem 0.7rem;
-    cursor: pointer;
-    text-transform: uppercase;
-    z-index: 30;
-  }
-  #download-btn:hover { background: rgba(0, 229, 255, 0.12); }
+  #status-line .accent { color: var(--accent); }
 
   @media (max-width: 900px) {
-    #text-panel { width: 100vw; }
-    #triad-svg { width: 94vw; }
+    #text-panel.open { width: 100vw; }
   }
 </style>
 </head>
 <body>
 <div id="app">
-  <div id="canvas-wrap">
-    <button id="download-btn" title="Download triad_tree.json">Download JSON</button>
-    <div id="breadcrumb"></div>
-    <svg id="triad-svg" viewBox="0 0 600 520"></svg>
-    <div class="status-line">
+  <div id="stage-wrap">
+    <div id="floor-breadcrumb"></div>
+    <div id="stage"></div>
+    <div id="floor-nav">
+      <button id="floor-up" title="Up one floor (↑)">▲</button>
+      <div id="floor-indicator">1 / 4</div>
+      <button id="floor-down" title="Down one floor (↓)">▼</button>
+    </div>
+    <div id="status-line">
       TRIADIC NAVIGATOR // <span class="accent">ENCYCLOPEDIA</span> // 1830
     </div>
   </div>
@@ -261,53 +325,43 @@
   <aside id="text-panel">
     <div id="text-panel-header">
       <span id="panel-title">TEXT</span>
-      <div class="header-actions">
+      <div class="actions">
         <a id="src-link" class="src-link" href="#" target="_blank" rel="noopener">SOURCE ↗</a>
         <button class="close-btn" id="close-panel">CLOSE</button>
       </div>
     </div>
     <iframe id="text-iframe" title="Hegel text"></iframe>
-    <div id="fallback" class="hidden"></div>
+    <div id="text-fallback" class="hidden"></div>
   </aside>
 </div>
 
 <script>
 /* ============================================================
-   1. Triadic tree (embedded)
+   1. TRIADIC TREE (same data as before; edit as needed)
    ============================================================ */
 const TREE = {
-  id: "root",
-  label: "System of Science",
-  shortLabel: "System",
+  id: "root", label: "System of Science", shortLabel: "System",
   textUrl: "https://www.marxists.org/reference/archive/hegel/works/sl/slintro.htm",
   children: [
     {
-      id: "logic",
-      label: "Logic",
-      shortLabel: "Logic",
+      id: "logic", label: "Logic", shortLabel: "Logic",
       textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlbegin.htm",
       children: [
         {
-          id: "being",
-          label: "Being",
-          shortLabel: "Being",
-          textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlbegin.htm#0123",
+          id: "being", label: "Being", shortLabel: "Being",
+          textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlbeing.htm",
           children: [
             {
-              id: "quality",
-              label: "Quality",
-              shortLabel: "Quality",
+              id: "quality", label: "Quality", shortLabel: "Quality",
               textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlbeing.htm#HL1_81",
               children: [
-                { id: "purebeing", label: "Indeterminate Being (Being, Nothing, Becoming)", shortLabel: "Pure Being", textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlbeing.htm#HL1_81" },
-                { id: "dasein", label: "Determinate Being (Dasein)", shortLabel: "Dasein", textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlbeing.htm#HL1_81" },
+                { id: "purebeing", label: "Indeterminate Being", shortLabel: "Pure Being", textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlbeing.htm#HL1_81" },
+                { id: "dasein", label: "Determinate Being", shortLabel: "Dasein", textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlbeing.htm#HL1_81" },
                 { id: "beingforself", label: "Being-for-Self", shortLabel: "Being-for-Self", textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlbeing.htm#HL1_81" }
               ]
             },
             {
-              id: "magnitude",
-              label: "Magnitude (Quantity)",
-              shortLabel: "Magnitude",
+              id: "magnitude", label: "Quantity", shortLabel: "Quantity",
               textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlbeing.htm#HL1_185",
               children: [
                 { id: "quantity", label: "Quantity", shortLabel: "Quantity", textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlbeing.htm#HL1_185" },
@@ -316,9 +370,7 @@ const TREE = {
               ]
             },
             {
-              id: "measure",
-              label: "Measure",
-              shortLabel: "Measure",
+              id: "measure", label: "Measure", shortLabel: "Measure",
               textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlbeing.htm#HL1_327",
               children: [
                 { id: "specificmeasure", label: "Specific Quantity", shortLabel: "Specific Measure", textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlbeing.htm#HL1_327" },
@@ -329,67 +381,53 @@ const TREE = {
           ]
         },
         {
-          id: "essence",
-          label: "Essence",
-          shortLabel: "Essence",
+          id: "essence", label: "Essence", shortLabel: "Essence",
           textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlessenc.htm",
           children: [
             {
-              id: "reflection",
-              label: "Reflection",
-              shortLabel: "Reflection",
+              id: "reflection", label: "Reflection", shortLabel: "Reflection",
               textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlessenc.htm#HL2_393",
               children: [
                 { id: "schein", label: "Illusory Being", shortLabel: "Illusory Being", textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlessenc.htm#HL2_393" },
-                { id: "determinations", label: "Determinations of Reflection", shortLabel: "Determinations", textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlessenc.htm#HL2_393" },
+                { id: "determinations", label: "Determinations", shortLabel: "Determinations", textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlessenc.htm#HL2_393" },
                 { id: "ground", label: "Ground", shortLabel: "Ground", textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlessenc.htm#HL2_393" }
               ]
             },
             {
-              id: "appearance",
-              label: "Appearance",
-              shortLabel: "Appearance",
+              id: "appearance", label: "Appearance", shortLabel: "Appearance",
               textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlessenc.htm#HL2_479",
               children: [
                 { id: "existence", label: "Existence", shortLabel: "Existence", textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlessenc.htm#HL2_479" },
-                { id: "appearanceassuch", label: "Appearance as Such", shortLabel: "Appearance as Such", textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlessenc.htm#HL2_479" },
-                { id: "essentialrelation", label: "Essential Relation", shortLabel: "Essential Relation", textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlessenc.htm#HL2_479" }
+                { id: "appearanceassuch", label: "Appearance as Such", shortLabel: "App. as Such", textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlessenc.htm#HL2_479" },
+                { id: "essentialrelation", label: "Essential Relation", shortLabel: "Ess. Relation", textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlessenc.htm#HL2_479" }
               ]
             },
             {
-              id: "actuality",
-              label: "Actuality",
-              shortLabel: "Actuality",
+              id: "actuality", label: "Actuality", shortLabel: "Actuality",
               textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlessenc.htm#HL2_529",
               children: [
                 { id: "theabsolute", label: "The Absolute", shortLabel: "The Absolute", textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlessenc.htm#HL2_529" },
-                { id: "actualityassuch", label: "Actuality as Such", shortLabel: "Actuality as Such", textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlessenc.htm#HL2_529" },
-                { id: "absoluterelation", label: "The Absolute Relation", shortLabel: "Absolute Relation", textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlessenc.htm#HL2_529" }
+                { id: "actualityassuch", label: "Actuality as Such", shortLabel: "Act. as Such", textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlessenc.htm#HL2_529" },
+                { id: "absoluterelation", label: "Absolute Relation", shortLabel: "Abs. Relation", textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlessenc.htm#HL2_529" }
               ]
             }
           ]
         },
         {
-          id: "notion",
-          label: "Notion",
-          shortLabel: "Notion",
+          id: "notion", label: "Notion", shortLabel: "Notion",
           textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlidea.htm",
           children: [
             {
-              id: "subjectivity",
-              label: "Subjectivity",
-              shortLabel: "Subjectivity",
+              id: "subjectivity", label: "Subjectivity", shortLabel: "Subjectivity",
               textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlidea.htm",
               children: [
-                { id: "abstractnotion", label: "Abstract Notion", shortLabel: "Abstract Notion", textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlidea.htm" },
+                { id: "abstractnotion", label: "Abstract Notion", shortLabel: "Abs. Notion", textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlidea.htm" },
                 { id: "judgment", label: "Judgment", shortLabel: "Judgment", textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlidea.htm" },
                 { id: "syllogism", label: "Syllogism", shortLabel: "Syllogism", textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlidea.htm" }
               ]
             },
             {
-              id: "objectivity",
-              label: "Objectivity",
-              shortLabel: "Objectivity",
+              id: "objectivity", label: "Objectivity", shortLabel: "Objectivity",
               textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlidea.htm",
               children: [
                 { id: "mechanism", label: "Mechanism", shortLabel: "Mechanism", textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlidea.htm" },
@@ -398,14 +436,12 @@ const TREE = {
               ]
             },
             {
-              id: "idea",
-              label: "The Idea",
-              shortLabel: "The Idea",
+              id: "idea", label: "The Idea", shortLabel: "The Idea",
               textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlidea.htm",
               children: [
                 { id: "life", label: "Life", shortLabel: "Life", textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlidea.htm" },
                 { id: "cognition", label: "Cognition", shortLabel: "Cognition", textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlidea.htm" },
-                { id: "method", label: "The Absolute Method", shortLabel: "Method", textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlidea.htm" }
+                { id: "method", label: "Absolute Method", shortLabel: "Method", textUrl: "https://www.marxists.org/reference/archive/hegel/works/hl/hlidea.htm" }
               ]
             }
           ]
@@ -413,37 +449,29 @@ const TREE = {
       ]
     },
     {
-      id: "nature",
-      label: "Philosophy of Nature",
-      shortLabel: "Nature",
+      id: "nature", label: "Philosophy of Nature", shortLabel: "Nature",
       textUrl: "https://www.marxists.org/reference/archive/hegel/works/na/nature.htm",
       children: [
         {
-          id: "mathematics",
-          label: "Mathematics / Mechanical Nature",
-          shortLabel: "Mathematics",
+          id: "mathematics", label: "Mathematics", shortLabel: "Mathematics",
           textUrl: "https://www.marxists.org/reference/archive/hegel/works/na/nature1.htm",
           children: [
-            { id: "abstractgenerality", label: "Abstract Generality (Space, Time, Position)", shortLabel: "Abstract Generality", textUrl: "https://www.marxists.org/reference/archive/hegel/works/na/nature1.htm" },
-            { id: "finitemechanics", label: "Finite Mechanics", shortLabel: "Finite Mechanics", textUrl: "https://www.marxists.org/reference/archive/hegel/works/na/nature1.htm#N203" },
-            { id: "celestial", label: "Celestial Mechanics", shortLabel: "Celestial Mechanics", textUrl: "https://www.marxists.org/reference/archive/hegel/works/na/nature1.htm#N203" }
+            { id: "abstractgenerality", label: "Abstract Generality", shortLabel: "Abs. Generality", textUrl: "https://www.marxists.org/reference/archive/hegel/works/na/nature1.htm" },
+            { id: "finitemechanics", label: "Finite Mechanics", shortLabel: "Finite Mech.", textUrl: "https://www.marxists.org/reference/archive/hegel/works/na/nature1.htm#N203" },
+            { id: "celestial", label: "Celestial Mechanics", shortLabel: "Celestial Mech.", textUrl: "https://www.marxists.org/reference/archive/hegel/works/na/nature1.htm#N203" }
           ]
         },
         {
-          id: "physics",
-          label: "Physics / Physical Nature",
-          shortLabel: "Physics",
+          id: "physics", label: "Physics", shortLabel: "Physics",
           textUrl: "https://www.marxists.org/reference/archive/hegel/works/na/nature2.htm",
           children: [
-            { id: "particle", label: "Material Individuality", shortLabel: "Material Individuality", textUrl: "https://www.marxists.org/reference/archive/hegel/works/na/nature2.htm#N206" },
-            { id: "elements", label: "Elementary Physics", shortLabel: "Elementary Physics", textUrl: "https://www.marxists.org/reference/archive/hegel/works/na/nature2.htm#N225" },
+            { id: "particle", label: "Material Individuality", shortLabel: "Mat. Individuality", textUrl: "https://www.marxists.org/reference/archive/hegel/works/na/nature2.htm#N206" },
+            { id: "elements", label: "Elementary Physics", shortLabel: "Elem. Physics", textUrl: "https://www.marxists.org/reference/archive/hegel/works/na/nature2.htm#N225" },
             {
-              id: "corporeal",
-              label: "Corporeality",
-              shortLabel: "Corporeality",
+              id: "corporeal", label: "Corporeality", shortLabel: "Corporeality",
               textUrl: "https://www.marxists.org/reference/archive/hegel/works/na/nature2.htm#N234",
               children: [
-                { id: "shape", label: "Shape (Gestalt)", shortLabel: "Shape", textUrl: "https://www.marxists.org/reference/archive/hegel/works/na/nature2.htm#N235" },
+                { id: "shape", label: "Shape", shortLabel: "Shape", textUrl: "https://www.marxists.org/reference/archive/hegel/works/na/nature2.htm#N235" },
                 { id: "properties", label: "Properties of Bodies", shortLabel: "Properties", textUrl: "https://www.marxists.org/reference/archive/hegel/works/na/nature2.htm#N245" },
                 { id: "chemical", label: "The Chemical Process", shortLabel: "Chemistry", textUrl: "https://www.marxists.org/reference/archive/hegel/works/na/nature2.htm#N251" }
               ]
@@ -451,50 +479,40 @@ const TREE = {
           ]
         },
         {
-          id: "organic",
-          label: "Organic Nature",
-          shortLabel: "Organic Nature",
+          id: "organic", label: "Organic Nature", shortLabel: "Organic",
           textUrl: "https://www.marxists.org/reference/archive/hegel/works/na/nature3.htm",
           children: [
-            { id: "geology", label: "Geology (The Soil)", shortLabel: "Geology", textUrl: "https://www.marxists.org/reference/archive/hegel/works/na/nature3.htm" },
-            { id: "botany", label: "Botany (The Plants)", shortLabel: "Botany", textUrl: "https://www.marxists.org/reference/archive/hegel/works/na/nature3.htm" },
-            { id: "zoology", label: "Zoology (The Animals)", shortLabel: "Zoology", textUrl: "https://www.marxists.org/reference/archive/hegel/works/na/nature3.htm" }
+            { id: "geology", label: "Geology", shortLabel: "Geology", textUrl: "https://www.marxists.org/reference/archive/hegel/works/na/nature3.htm" },
+            { id: "botany", label: "Botany", shortLabel: "Botany", textUrl: "https://www.marxists.org/reference/archive/hegel/works/na/nature3.htm" },
+            { id: "zoology", label: "Zoology", shortLabel: "Zoology", textUrl: "https://www.marxists.org/reference/archive/hegel/works/na/nature3.htm" }
           ]
         }
       ]
     },
     {
-      id: "spirit",
-      label: "Philosophy of Spirit",
-      shortLabel: "Spirit",
+      id: "spirit", label: "Philosophy of Spirit", shortLabel: "Spirit",
       textUrl: "https://www.marxists.org/reference/archive/hegel/works/sp/suintrod.htm",
       children: [
         {
-          id: "subjective",
-          label: "Subjective Spirit",
-          shortLabel: "Subjective Spirit",
+          id: "subjective", label: "Subjective Spirit", shortLabel: "Subjective",
           textUrl: "https://www.marxists.org/reference/archive/hegel/works/sp/suintrod.htm#SU387",
           children: [
-            { id: "soul", label: "Anthropology (Soul)", shortLabel: "Soul", textUrl: "https://www.marxists.org/reference/archive/hegel/works/sp/suintrod.htm#SU387" },
-            { id: "consciousness", label: "Phenomenology of Mind (Consciousness)", shortLabel: "Consciousness", textUrl: "https://www.marxists.org/reference/archive/hegel/works/sp/suintrod.htm#SU387" },
+            { id: "soul", label: "Anthropology", shortLabel: "Soul", textUrl: "https://www.marxists.org/reference/archive/hegel/works/sp/suintrod.htm#SU387" },
+            { id: "consciousness", label: "Phenomenology", shortLabel: "Consciousness", textUrl: "https://www.marxists.org/reference/archive/hegel/works/sp/suintrod.htm#SU387" },
             { id: "psychology", label: "Psychology", shortLabel: "Psychology", textUrl: "https://www.marxists.org/reference/archive/hegel/works/sp/suintrod.htm#SU387" }
           ]
         },
         {
-          id: "objective",
-          label: "Objective Spirit",
-          shortLabel: "Objective Spirit",
+          id: "objective", label: "Objective Spirit", shortLabel: "Objective",
           textUrl: "https://www.marxists.org/reference/archive/hegel/works/pr/printrod.htm",
           children: [
-            { id: "law", label: "Abstract Right (Law)", shortLabel: "Abstract Right", textUrl: "https://www.marxists.org/reference/archive/hegel/works/pr/printrod.htm" },
+            { id: "law", label: "Abstract Right", shortLabel: "Abstract Right", textUrl: "https://www.marxists.org/reference/archive/hegel/works/pr/printrod.htm" },
             { id: "morality", label: "Morality", shortLabel: "Morality", textUrl: "https://www.marxists.org/reference/archive/hegel/works/pr/printrod.htm" },
             { id: "ethics", label: "Ethical Life", shortLabel: "Ethical Life", textUrl: "https://www.marxists.org/reference/archive/hegel/works/pr/printrod.htm" }
           ]
         },
         {
-          id: "absolute",
-          label: "Absolute Spirit",
-          shortLabel: "Absolute Spirit",
+          id: "absolute", label: "Absolute Spirit", shortLabel: "Absolute",
           textUrl: "https://www.marxists.org/reference/archive/hegel/works/sp/abspirit.htm",
           children: [
             { id: "art", label: "Art", shortLabel: "Art", textUrl: "https://www.marxists.org/reference/archive/hegel/works/sp/abspirit.htm" },
@@ -508,127 +526,277 @@ const TREE = {
 };
 
 /* ============================================================
-   2. URL translation: Marxists.org -> local hegel_works/
+   2. CONFIG
    ============================================================ */
 const LOCAL_DIR = "hegel_works/";
+const INITIAL_FLOOR = 1;   // 0 = root, 1 = logic/nature/spirit, etc.
+
+/* ============================================================
+   3. DOM
+   ============================================================ */
+const stage = document.getElementById('stage');
+const stageWrap = document.getElementById('stage-wrap');
+const breadcrumb = document.getElementById('floor-breadcrumb');
+const panel = document.getElementById('text-panel');
+const panelTitle = document.getElementById('panel-title');
+const iframe = document.getElementById('text-iframe');
+const fallback = document.getElementById('text-fallback');
+const srcLink = document.getElementById('src-link');
+const closeBtn = document.getElementById('close-panel');
+const floorUpBtn = document.getElementById('floor-up');
+const floorDownBtn = document.getElementById('floor-down');
+const floorIndicator = document.getElementById('floor-indicator');
+
+/* ============================================================
+   4. STATE
+   ============================================================ */
+let floors = [];       // array of { triads, width, height, el, svg }
+let activeFloorIdx = 0;
+let pendingAnchor = null;
+
+/* ============================================================
+   5. HELPERS
+   ============================================================ */
+const SVGNS = 'http://www.w3.org/2000/svg';
+
+function trianglePoints(cx, cy, size, orientation) {
+  const h = size * Math.sqrt(3) / 2;
+  if (orientation === 'down') {
+    return `${cx},${cy + h * 2/3} ${cx - size/2},${cy - h/3} ${cx + size/2},${cy - h/3}`;
+  } else {
+    return `${cx},${cy - h * 2/3} ${cx - size/2},${cy + h/3} ${cx + size/2},${cy + h/3}`;
+  }
+}
+
+function truncate(s, n) {
+  if (!s) return '';
+  return s.length > n ? s.slice(0, n - 1) + '…' : s;
+}
+
+function isLeaf(node) {
+  return !node.children || node.children.length === 0;
+}
 
 function toLocalPath(remoteUrl) {
   if (!remoteUrl) return null;
   const m = remoteUrl.match(/\/archive\/hegel\/(.+?)(#.*)?$/);
   if (!m) return null;
-  const path = m[1];
-  const anchor = m[2] || "";
-  return LOCAL_DIR + path.replace(/\//g, "_") + anchor;
+  return LOCAL_DIR + m[1].replace(/\//g, '_') + (m[2] || '');
 }
 
 /* ============================================================
-   3. Triad rendering
+   6. FLOOR COMPUTATION
    ============================================================ */
-let currentNode = TREE;
-let pathStack = [TREE];
-
-const svg = document.getElementById('triad-svg');
-const breadcrumb = document.getElementById('breadcrumb');
-const panel = document.getElementById('text-panel');
-const panelTitle = document.getElementById('panel-title');
-const iframe = document.getElementById('text-iframe');
-const fallback = document.getElementById('fallback');
-const srcLink = document.getElementById('src-link');
-const closeBtn = document.getElementById('close-panel');
-
-let pendingAnchor = null;
-
-const CX = 300, CY = 260;
-
-function trianglePoints(cx, cy, size, orientation = 'up') {
-  const h = size * Math.sqrt(3) / 2;
-  if (orientation === 'up') {
-    return `${cx},${cy - h * 2/3} ${cx - size/2},${cy + h/3} ${cx + size/2},${cy + h/3}`;
-  } else {
-    return `${cx},${cy + h * 2/3} ${cx - size/2},${cy - h/3} ${cx + size/2},${cy - h/3}`;
+function computeFloors(root) {
+  const byDepth = {};
+  function walk(node, depth) {
+    node.__depth = depth;
+    if (isLeaf(node)) return;
+    if (!byDepth[depth]) byDepth[depth] = [];
+    byDepth[depth].push(node);
+    node.children.forEach(c => walk(c, depth + 1));
   }
+  walk(root, 0);
+  const maxDepth = Math.max(...Object.keys(byDepth).map(Number));
+  const out = [];
+  for (let d = 0; d <= maxDepth; d++) {
+    if (byDepth[d] && byDepth[d].length) out.push(byDepth[d]);
+  }
+  return out;
 }
 
-function render(node) {
-  svg.innerHTML = '';
-  breadcrumb.innerHTML = pathStack
-    .map((n, i) => (i === pathStack.length - 1 ? `<span>${n.label}</span>` : n.label))
-    .join(' / ');
+/* ============================================================
+   7. SVG FLOOR BUILD
+   ============================================================ */
+const UNIT_W = 250;
+const UNIT_H = 250;
+const GAP_X = 40;
+const GAP_Y = 40;
+const MAX_PER_ROW = 3;
 
-  const children = node.children || [];
+function buildFloorSvg(triads) {
+  const n = triads.length;
+  const rows = Math.ceil(n / MAX_PER_ROW);
+  const perRowActual = Math.min(MAX_PER_ROW, n);
+  const width = perRowActual * UNIT_W + (perRowActual - 1) * GAP_X;
+  const height = rows * UNIT_H + (rows - 1) * GAP_Y;
 
-  if (children.length === 0) {
-    const pts = trianglePoints(CX, CY, 320, 'up');
-    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    g.setAttribute('class', 'tri central');
-    g.innerHTML = `<polygon points="${pts}" /><text x="${CX}" y="${CY + 10}">${node.label}</text>`;
-    g.addEventListener('click', () => openText(node));
-    svg.appendChild(g);
-    return;
-  }
+  const svg = document.createElementNS(SVGNS, 'svg');
+  svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+  svg.setAttribute('width', width);
+  svg.setAttribute('height', height);
+  svg.style.display = 'block';
 
-  const centralPts = trianglePoints(CX, CY + 30, 260, 'down');
-  const centralG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-  centralG.setAttribute('class', 'tri central');
-  centralG.innerHTML = `<polygon points="${centralPts}" /><text x="${CX}" y="${CY + 30}">${node.label}</text>`;
-  centralG.addEventListener('click', () => openText(node));
-  svg.appendChild(centralG);
+  triads.forEach((node, i) => {
+    const row = Math.floor(i / MAX_PER_ROW);
+    const col = i % MAX_PER_ROW;
+    const inRow = Math.min(MAX_PER_ROW, n - row * MAX_PER_ROW);
+    const rowWidth = inRow * UNIT_W + (inRow - 1) * GAP_X;
+    const startX = (width - rowWidth) / 2;
+    const cx = startX + col * (UNIT_W + GAP_X) + UNIT_W / 2;
+    const cy = row * (UNIT_H + GAP_Y) + UNIT_H / 2;
+    buildTriadUnit(svg, node, cx, cy);
+  });
 
+  return { svg, width, height };
+}
+
+function buildTriadUnit(svg, node, cx, cy) {
+  // Major (points down)
+  const majorG = document.createElementNS(SVGNS, 'g');
+  majorG.setAttribute('class', 'tri-major');
+  const majorPts = trianglePoints(cx, cy + 10, 130, 'down');
+  majorG.innerHTML =
+    `<polygon points="${majorPts}" />` +
+    `<text x="${cx}" y="${cy + 10}">${truncate(node.shortLabel || node.label, 16)}</text>`;
+  majorG.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (node.textUrl) openText(node);
+  });
+  svg.appendChild(majorG);
+
+  // Minors
+  const minors = node.children || [];
   const positions = [
-    { cx: CX, cy: CY - 140, orient: 'up' },
-    { cx: CX - 150, cy: CY + 100, orient: 'up' },
-    { cx: CX + 150, cy: CY + 100, orient: 'up' }
+    { x: cx, y: cy - 80 },
+    { x: cx - 70, y: cy + 60 },
+    { x: cx + 70, y: cy + 60 }
   ];
-
-  children.forEach((child, i) => {
+  minors.forEach((child, i) => {
     const pos = positions[i];
     if (!pos) return;
-    const pts = trianglePoints(pos.cx, pos.cy, 170, pos.orient);
-    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    g.setAttribute('class', 'tri');
-    g.innerHTML = `<polygon points="${pts}" /><text x="${pos.cx}" y="${pos.cy}">${child.shortLabel || child.label}</text>`;
-
-    g.addEventListener('click', () => {
-      if (child.children && child.children.length > 0) {
-        currentNode = child;
-        pathStack.push(child);
-        render(currentNode);
-      } else {
-        openText(child);
-      }
+    const pts = trianglePoints(pos.x, pos.y, 90, 'up');
+    const g = document.createElementNS(SVGNS, 'g');
+    g.setAttribute('class', 'tri-minor' + (isLeaf(child) ? '' : ' has-children'));
+    g.innerHTML =
+      `<polygon points="${pts}" />` +
+      `<text x="${pos.x}" y="${pos.y}">${truncate(child.shortLabel || child.label, 12)}</text>`;
+    g.addEventListener('click', (e) => {
+      e.stopPropagation();
+      onMinorClick(child, node);
     });
-
     svg.appendChild(g);
   });
 }
 
 /* ============================================================
-   4. Text panel
+   8. LAYOUT
+   ============================================================ */
+function layoutFloors() {
+  const rect = stage.getBoundingClientRect();
+  const vw = rect.width;
+  const vh = rect.height;
+  if (vw === 0 || vh === 0) return;
+
+  // Fit widest floor to 85% viewport
+  const widest = Math.max(...floors.map(f => f.width));
+  const baseScale = Math.min(1, (vw * 0.85) / widest);
+
+  const activeH = floors[activeFloorIdx].height * baseScale;
+  const activeCY = vh / 2;
+
+  const positions = new Array(floors.length);
+  positions[activeFloorIdx] = {
+    cy: activeCY, scale: baseScale, opacity: 1, blur: 0
+  };
+
+  // Above
+  let edgeY = activeCY - activeH / 2;
+  for (let i = activeFloorIdx - 1; i >= 0; i--) {
+    const dist = activeFloorIdx - i;
+    const scale = baseScale * Math.max(0.35, 1 - dist * 0.22);
+    const h = floors[i].height * scale;
+    const cy = edgeY - 40 - h / 2;
+    positions[i] = {
+      cy, scale,
+      opacity: Math.max(0.18, 0.65 - dist * 0.16),
+      blur: Math.min(4, dist * 1.5)
+    };
+    edgeY = cy - h / 2;
+  }
+
+  // Below
+  edgeY = activeCY + activeH / 2;
+  for (let i = activeFloorIdx + 1; i < floors.length; i++) {
+    const dist = i - activeFloorIdx;
+    const scale = baseScale * Math.max(0.35, 1 - dist * 0.22);
+    const h = floors[i].height * scale;
+    const cy = edgeY + 40 + h / 2;
+    positions[i] = {
+      cy, scale,
+      opacity: Math.max(0.18, 0.65 - dist * 0.16),
+      blur: Math.min(4, dist * 1.5)
+    };
+    edgeY = cy + h / 2;
+  }
+
+  // Apply
+  floors.forEach((floor, i) => {
+    const p = positions[i];
+    const x = (vw - floor.width) / 2;
+    const y = p.cy - floor.height / 2;
+    floor.el.style.transform = `translate(${x}px, ${y}px) scale(${p.scale})`;
+    floor.el.style.opacity = p.opacity;
+    floor.el.style.filter = p.blur > 0 ? `blur(${p.blur}px)` : 'none';
+    floor.el.style.pointerEvents = 'auto';
+    floor.el.classList.toggle('inactive', i !== activeFloorIdx);
+  });
+
+  // Indicator
+  floorIndicator.textContent = `FLOOR ${activeFloorIdx + 1} / ${floors.length}`;
+  floorUpBtn.disabled = activeFloorIdx === 0;
+  floorDownBtn.disabled = activeFloorIdx === floors.length - 1;
+
+  // Breadcrumb
+  const triadCount = floors[activeFloorIdx].length;
+  breadcrumb.innerHTML = `LAYER <span>${activeFloorIdx + 1}</span> · ${triadCount} TRIAD${triadCount === 1 ? '' : 'S'}`;
+}
+
+/* ============================================================
+   9. NAVIGATION
+   ============================================================ */
+function setActiveFloor(idx) {
+  if (idx < 0 || idx >= floors.length) return;
+  activeFloorIdx = idx;
+  layoutFloors();
+}
+
+function onMinorClick(child, parent) {
+  if (isLeaf(child)) {
+    openText(child);
+    return;
+  }
+  // Drill down to the floor that contains this child's triad
+  const target = child.__depth;
+  if (target >= 0 && target < floors.length) {
+    setActiveFloor(target);
+  }
+}
+
+/* ============================================================
+   10. TEXT PANEL
    ============================================================ */
 async function openText(node) {
   panelTitle.textContent = node.shortLabel || node.label;
   panel.classList.add('open');
-
   srcLink.href = node.textUrl || '#';
+
+  // Wait for the panel to expand so stage resizes trigger layout
+  requestAnimationFrame(() => layoutFloors());
 
   const localUrl = toLocalPath(node.textUrl);
   if (!localUrl) {
-    showFallback(node, "This node has no text URL.");
+    showFallback(node, 'This node has no text URL.');
     return;
   }
-
   const [path, hash] = localUrl.split('#');
   pendingAnchor = hash || null;
 
-  // Verify the file exists before pointing the iframe at it,
-  // so we can show a clean fallback instead of a 404 page.
   let ok = false;
   try {
     const res = await fetch(path, { method: 'HEAD', cache: 'no-cache' });
     ok = res.ok;
-  } catch {
-    ok = false;
-  }
+  } catch { ok = false; }
 
   if (!ok) {
     showFallback(node, `Local file not found: <code>${path}</code>`);
@@ -646,13 +814,11 @@ function showFallback(node, reason) {
   fallback.innerHTML = `
     <div class="warning">Local text unavailable</div>
     <p>${reason}</p>
-    <p>If you ran the download script, check that <code>hegel_works/</code> is
-    in the same directory as <code>index.html</code> and that the file name
-    matches the URL convention (slashes become underscores:
-    <code>works/na/nature2.htm</code> → <code>works_na_nature2.htm</code>).</p>
-    <p>You can read this passage on Marxists.org instead:
-    <br><a href="${node.textUrl}" target="_blank" rel="noopener">
-      Open “${node.label}” ↗</a></p>`;
+    <p>Check that <code>hegel_works/</code> sits beside <code>index.html</code>
+    and the file name matches the URL convention (slashes → underscores,
+    e.g. <code>works/na/nature2.htm</code> → <code>works_na_nature2.htm</code>).</p>
+    <p>You can read this passage on Marxists.org:
+    <br><a href="${node.textUrl}" target="_blank" rel="noopener">Open "${node.label}" ↗</a></p>`;
 }
 
 function hideFallback() {
@@ -660,86 +826,93 @@ function hideFallback() {
   iframe.classList.remove('hidden');
 }
 
-/* Inject a dark theme into same-origin iframes so the text matches the HUD */
 iframe.addEventListener('load', () => {
   const src = iframe.src || '';
   if (!src || src === 'about:blank') return;
-
   try {
     const doc = iframe.contentDocument;
     if (!doc || !doc.head || !doc.body) return;
-
     const style = doc.createElement('style');
     style.textContent = `
-      html, body {
-        background: #0b141c !important;
-        color: #b8d8e8 !important;
-      }
+      html, body { background: #0b141c !important; color: #b8d8e8 !important; }
       body {
         font-family: 'JetBrains Mono', ui-monospace, monospace !important;
-        font-size: 13px !important;
-        line-height: 1.75 !important;
-        padding: 22px 28px !important;
-        margin: 0 !important;
+        font-size: 13px !important; line-height: 1.75 !important;
+        padding: 22px 28px !important; margin: 0 !important;
       }
-      a {
-        color: #00e5ff !important;
-        text-decoration: none !important;
-        border-bottom: 1px dotted #007a8a !important;
-      }
+      a { color: #00e5ff !important; text-decoration: none !important;
+          border-bottom: 1px dotted #007a8a !important; }
       a:hover { color: #ffb300 !important; }
-      h1, h2, h3, h4, h5 {
-        color: #ffb300 !important;
-        letter-spacing: 0.05em !important;
-        font-weight: 600 !important;
-      }
+      h1, h2, h3, h4, h5 { color: #ffb300 !important; letter-spacing: 0.05em !important; }
       p { margin: 0.8em 0 !important; }
       center { text-align: left !important; }
       hr { border: none !important; border-top: 1px solid #00e5ff33 !important; }
       img { max-width: 100% !important; height: auto !important; }
-      table { border-collapse: collapse; }
-      td, th { padding: 0.3em 0.6em; border: 1px solid #00e5ff22; }
     `;
     doc.head.appendChild(style);
-
-    // Manual anchor scroll (anchor-in-src is unreliable for iframes)
     if (pendingAnchor) {
-      const target =
-        doc.getElementById(pendingAnchor) ||
-        doc.querySelector(`a[name="${pendingAnchor}"]`);
-      if (target) {
-        target.scrollIntoView({ block: 'start' });
-      }
+      const t = doc.getElementById(pendingAnchor) ||
+                doc.querySelector(`a[name="${pendingAnchor}"]`);
+      if (t) t.scrollIntoView({ block: 'start' });
       pendingAnchor = null;
     }
-  } catch {
-    // Cross-origin or otherwise unreadable — leave default styling.
-  }
+  } catch {}
 });
 
 closeBtn.addEventListener('click', () => {
   panel.classList.remove('open');
   iframe.src = 'about:blank';
   hideFallback();
+  requestAnimationFrame(() => layoutFloors());
 });
 
 /* ============================================================
-   5. Download JSON
+   11. EVENTS
    ============================================================ */
-document.getElementById('download-btn').addEventListener('click', () => {
-  const blob = new Blob([JSON.stringify(TREE, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'triad_tree.json';
-  a.click();
-  URL.revokeObjectURL(url);
+floorUpBtn.addEventListener('click', () => setActiveFloor(activeFloorIdx - 1));
+floorDownBtn.addEventListener('click', () => setActiveFloor(activeFloorIdx + 1));
+
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.key === 'ArrowUp') { e.preventDefault(); setActiveFloor(activeFloorIdx - 1); }
+  else if (e.key === 'ArrowDown') { e.preventDefault(); setActiveFloor(activeFloorIdx + 1); }
+  else if (e.key === 'Escape') closeBtn.click();
 });
 
+// Click on an inactive floor -> make it active
+stage.addEventListener('click', (e) => {
+  const floorEl = e.target.closest('.floor');
+  if (!floorEl) return;
+  const idx = parseInt(floorEl.dataset.floorIdx, 10);
+  if (!isNaN(idx) && idx !== activeFloorIdx) {
+    setActiveFloor(idx);
+  }
+});
+
+// Resize handling
+new ResizeObserver(() => layoutFloors()).observe(stageWrap);
+
 /* ============================================================
-   6. Boot
+   12. BOOT
    ============================================================ */
-render(TREE);
+function buildAll() {
+  floors = computeFloors(TREE).map((triads, i) => {
+    const { svg, width, height } = buildFloorSvg(triads);
+    const el = document.createElement('div');
+    el.className = 'floor';
+    el.dataset.floorIdx = i;
+    el.style.width = width + 'px';
+    el.style.height = height + 'px';
+    el.appendChild(svg);
+    stage.appendChild(el);
+    return { triads, width, height, el, svg };
+  });
+
+  activeFloorIdx = Math.min(INITIAL_FLOOR, floors.length - 1);
+  layoutFloors();
+}
+
+buildAll();
 </script>
 </body>
 </html>
