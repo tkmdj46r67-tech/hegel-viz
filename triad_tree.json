@@ -1,0 +1,231 @@
+{
+  "id": "root",
+  "label": "System of Science",
+  "shortLabel": "System",
+  "textUrl": "https://www.marxists.org/reference/archive/hegel/works/sl/slintro.htm",
+  "children": [
+    {
+      "id": "logic",
+      "label": "Logic",
+      "shortLabel": "Logic",
+      "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlbegin.htm",
+      "children": [
+        {
+          "id": "being",
+          "label": "Being",
+          "shortLabel": "Being",
+          "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlbegin.htm#0123",
+          "children": [
+            {
+              "id": "quality",
+              "label": "Quality",
+              "shortLabel": "Quality",
+              "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlbeing.htm#HL1_81",
+              "children": [
+                { "id": "purebeing", "label": "Indeterminate Being (Being, Nothing, Becoming)", "shortLabel": "Pure Being", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlbeing.htm#HL1_81" },
+                { "id": "dasein", "label": "Determinate Being (Dasein)", "shortLabel": "Dasein", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlbeing.htm#HL1_81" },
+                { "id": "beingforself", "label": "Being-for-Self", "shortLabel": "Being-for-Self", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlbeing.htm#HL1_81" }
+              ]
+            },
+            {
+              "id": "magnitude",
+              "label": "Magnitude (Quantity)",
+              "shortLabel": "Magnitude",
+              "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlbeing.htm#HL1_185",
+              "children": [
+                { "id": "quantity", "label": "Quantity", "shortLabel": "Quantity", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlbeing.htm#HL1_185" },
+                { "id": "quantum", "label": "Quantum", "shortLabel": "Quantum", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlbeing.htm#HL1_185" },
+                { "id": "ratio", "label": "Quantitative Relation", "shortLabel": "Ratio", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlbeing.htm#HL1_185" }
+              ]
+            },
+            {
+              "id": "measure",
+              "label": "Measure",
+              "shortLabel": "Measure",
+              "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlbeing.htm#HL1_327",
+              "children": [
+                { "id": "specificmeasure", "label": "Specific Quantity", "shortLabel": "Specific Measure", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlbeing.htm#HL1_327" },
+                { "id": "realmeasure", "label": "Real Measure", "shortLabel": "Real Measure", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlbeing.htm#HL1_327" },
+                { "id": "becomingessence", "label": "Becoming of Essence", "shortLabel": "Becoming Essence", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlbeing.htm#HL1_327" }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "essence",
+          "label": "Essence",
+          "shortLabel": "Essence",
+          "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlessenc.htm",
+          "children": [
+            {
+              "id": "reflection",
+              "label": "Reflection",
+              "shortLabel": "Reflection",
+              "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlessenc.htm#HL2_393",
+              "children": [
+                { "id": "schein", "label": "Illusory Being", "shortLabel": "Illusory Being", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlessenc.htm#HL2_393" },
+                { "id": "determinations", "label": "Determinations of Reflection", "shortLabel": "Determinations", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlessenc.htm#HL2_393" },
+                { "id": "ground", "label": "Ground", "shortLabel": "Ground", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlessenc.htm#HL2_393" }
+              ]
+            },
+            {
+              "id": "appearance",
+              "label": "Appearance",
+              "shortLabel": "Appearance",
+              "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlessenc.htm#HL2_479",
+              "children": [
+                { "id": "existence", "label": "Existence", "shortLabel": "Existence", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlessenc.htm#HL2_479" },
+                { "id": "appearanceassuch", "label": "Appearance as Such", "shortLabel": "Appearance as Such", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlessenc.htm#HL2_479" },
+                { "id": "essentialrelation", "label": "Essential Relation", "shortLabel": "Essential Relation", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlessenc.htm#HL2_479" }
+              ]
+            },
+            {
+              "id": "actuality",
+              "label": "Actuality",
+              "shortLabel": "Actuality",
+              "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlessenc.htm#HL2_529",
+              "children": [
+                { "id": "theabsolute", "label": "The Absolute", "shortLabel": "The Absolute", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlessenc.htm#HL2_529" },
+                { "id": "actualityassuch", "label": "Actuality as Such", "shortLabel": "Actuality as Such", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlessenc.htm#HL2_529" },
+                { "id": "absoluterelation", "label": "The Absolute Relation", "shortLabel": "Absolute Relation", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlessenc.htm#HL2_529" }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "notion",
+          "label": "Notion",
+          "shortLabel": "Notion",
+          "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlidea.htm",
+          "children": [
+            {
+              "id": "subjectivity",
+              "label": "Subjectivity",
+              "shortLabel": "Subjectivity",
+              "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlidea.htm",
+              "children": [
+                { "id": "abstractnotion", "label": "Abstract Notion", "shortLabel": "Abstract Notion", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlidea.htm" },
+                { "id": "judgment", "label": "Judgment", "shortLabel": "Judgment", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlidea.htm" },
+                { "id": "syllogism", "label": "Syllogism", "shortLabel": "Syllogism", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlidea.htm" }
+              ]
+            },
+            {
+              "id": "objectivity",
+              "label": "Objectivity",
+              "shortLabel": "Objectivity",
+              "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlidea.htm",
+              "children": [
+                { "id": "mechanism", "label": "Mechanism", "shortLabel": "Mechanism", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlidea.htm" },
+                { "id": "chemism", "label": "Chemism", "shortLabel": "Chemism", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlidea.htm" },
+                { "id": "teleology", "label": "Teleology", "shortLabel": "Teleology", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlidea.htm" }
+              ]
+            },
+            {
+              "id": "idea",
+              "label": "The Idea",
+              "shortLabel": "The Idea",
+              "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlidea.htm",
+              "children": [
+                { "id": "life", "label": "Life", "shortLabel": "Life", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlidea.htm" },
+                { "id": "cognition", "label": "Cognition", "shortLabel": "Cognition", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlidea.htm" },
+                { "id": "method", "label": "The Absolute Method", "shortLabel": "Method", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/hl/hlidea.htm" }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nature",
+      "label": "Philosophy of Nature",
+      "shortLabel": "Nature",
+      "textUrl": "https://www.marxists.org/reference/archive/hegel/works/na/nature.htm",
+      "children": [
+        {
+          "id": "mathematics",
+          "label": "Mathematics / Mechanical Nature",
+          "shortLabel": "Mathematics",
+          "textUrl": "https://www.marxists.org/reference/archive/hegel/works/na/nature1.htm",
+          "children": [
+            { "id": "abstractgenerality", "label": "Abstract Generality (Space, Time, Position)", "shortLabel": "Abstract Generality", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/na/nature1.htm" },
+            { "id": "finitemechanics", "label": "Finite Mechanics", "shortLabel": "Finite Mechanics", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/na/nature1.htm#N203" },
+            { "id": "celestial", "label": "Celestial Mechanics", "shortLabel": "Celestial Mechanics", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/na/nature1.htm#N203" }
+          ]
+        },
+        {
+          "id": "physics",
+          "label": "Physics / Physical Nature",
+          "shortLabel": "Physics",
+          "textUrl": "https://www.marxists.org/reference/archive/hegel/works/na/nature2.htm",
+          "children": [
+            { "id": "particle", "label": "Material Individuality", "shortLabel": "Material Individuality", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/na/nature2.htm#N206" },
+            { "id": "elements", "label": "Elementary Physics", "shortLabel": "Elementary Physics", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/na/nature2.htm#N225" },
+            {
+              "id": "corporeal",
+              "label": "Corporeality",
+              "shortLabel": "Corporeality",
+              "textUrl": "https://www.marxists.org/reference/archive/hegel/works/na/nature2.htm#N234",
+              "children": [
+                { "id": "shape", "label": "Shape (Gestalt)", "shortLabel": "Shape", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/na/nature2.htm#N235" },
+                { "id": "properties", "label": "Properties of Bodies", "shortLabel": "Properties", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/na/nature2.htm#N245" },
+                { "id": "chemical", "label": "The Chemical Process", "shortLabel": "Chemistry", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/na/nature2.htm#N251" }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "organic",
+          "label": "Organic Nature",
+          "shortLabel": "Organic Nature",
+          "textUrl": "https://www.marxists.org/reference/archive/hegel/works/na/nature3.htm",
+          "children": [
+            { "id": "geology", "label": "Geology (The Soil)", "shortLabel": "Geology", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/na/nature3.htm" },
+            { "id": "botany", "label": "Botany (The Plants)", "shortLabel": "Botany", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/na/nature3.htm" },
+            { "id": "zoology", "label": "Zoology (The Animals)", "shortLabel": "Zoology", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/na/nature3.htm" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "spirit",
+      "label": "Philosophy of Spirit",
+      "shortLabel": "Spirit",
+      "textUrl": "https://www.marxists.org/reference/archive/hegel/works/sp/suintrod.htm",
+      "children": [
+        {
+          "id": "subjective",
+          "label": "Subjective Spirit",
+          "shortLabel": "Subjective Spirit",
+          "textUrl": "https://www.marxists.org/reference/archive/hegel/works/sp/suintrod.htm#SU387",
+          "children": [
+            { "id": "soul", "label": "Anthropology (Soul)", "shortLabel": "Soul", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/sp/suintrod.htm#SU387" },
+            { "id": "consciousness", "label": "Phenomenology of Mind (Consciousness)", "shortLabel": "Consciousness", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/sp/suintrod.htm#SU387" },
+            { "id": "psychology", "label": "Psychology", "shortLabel": "Psychology", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/sp/suintrod.htm#SU387" }
+          ]
+        },
+        {
+          "id": "objective",
+          "label": "Objective Spirit",
+          "shortLabel": "Objective Spirit",
+          "textUrl": "https://www.marxists.org/reference/archive/hegel/works/pr/printrod.htm",
+          "children": [
+            { "id": "law", "label": "Abstract Right (Law)", "shortLabel": "Abstract Right", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/pr/printrod.htm" },
+            { "id": "morality", "label": "Morality", "shortLabel": "Morality", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/pr/printrod.htm" },
+            { "id": "ethics", "label": "Ethical Life", "shortLabel": "Ethical Life", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/pr/printrod.htm" }
+          ]
+        },
+        {
+          "id": "absolute",
+          "label": "Absolute Spirit",
+          "shortLabel": "Absolute Spirit",
+          "textUrl": "https://www.marxists.org/reference/archive/hegel/works/sp/abspirit.htm",
+          "children": [
+            { "id": "art", "label": "Art", "shortLabel": "Art", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/sp/abspirit.htm" },
+            { "id": "religion", "label": "Religion", "shortLabel": "Religion", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/sp/abspirit.htm" },
+            { "id": "philosophy", "label": "Philosophy", "shortLabel": "Philosophy", "textUrl": "https://www.marxists.org/reference/archive/hegel/works/sp/abspirit.htm" }
+          ]
+        }
+      ]
+    }
+  ]
+}
