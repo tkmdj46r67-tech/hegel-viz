@@ -305,12 +305,16 @@ let viewShift = 0, viewShiftTarget = 0;
 let FOCUS = null;
 let HOVER = null;
 let hoverPath = new Set();
+let labelSet = new Set();
 
 let needsDraw = true;
 let dragging = false, moved = false, dragStart = null;
 let panelNode = null;
 
 const EASE = 0.06;
+
+/* ---- fisheye strength: >1 magnifies center, compresses rim ---- */
+const FISHEYE = 1.45;
 
 let preferredZoom = 1;
 let firstNodeClick = true;
@@ -435,6 +439,17 @@ function mobius(z, a) {
 }
 
 /* =========================================================
+   FISHEYE WARP
+   Scales hyperbolic radius by FISHEYE, keeping |r| < 1.
+   Large FISHEYE → center magnified, rim compressed.
+   ========================================================= */
+function warpRadius(r) {
+  if (r < 1e-6) return 0;
+  if (r > 0.999999) r = 0.999999;
+  return Math.tanh(FISHEYE * Math.atanh(r));
+}
+
+/* =========================================================
    LAYOUT
    ========================================================= */
 function prepare(data) {
@@ -546,6 +561,25 @@ function strokeGeo(p, q, cx0, cy0, s) {
 }
 
 /* =========================================================
+   LABEL VISIBILITY SET
+   Focused node + parent + all children + all siblings.
+   Everything else is hidden.
+   ========================================================= */
+function buildLabelSet() {
+  labelSet = new Set();
+  if (!FOCUS) return;
+  labelSet.add(FOCUS._id);
+  if (FOCUS._parent) {
+    labelSet.add(FOCUS._parent._id);
+    const sibs = FOCUS._parent._children;
+    for (let i = 0; i < sibs.length; i++) labelSet.add(sibs[i]._id);
+  }
+  for (let i = 0; i < FOCUS._children.length; i++) {
+    labelSet.add(FOCUS._children[i]._id);
+  }
+}
+
+/* =========================================================
    DRAW
    ========================================================= */
 function draw() {
@@ -568,17 +602,27 @@ function draw() {
   ctx.lineWidth = 1;
   ctx.stroke();
 
+  /* ---- transform + fisheye ---- */
   for (let i = 0; i < NODES.length; i++) {
     const n = NODES[i];
     const z = mobius(n._z, A);
-    let r2 = z.re * z.re + z.im * z.im;
+    const r = Math.hypot(z.re, z.im);
+    let zr = 0, zi = 0;
+    if (r > 1e-9) {
+      const rw = warpRadius(r);
+      const k = rw / r;
+      zr = z.re * k;
+      zi = z.im * k;
+    }
+    let r2 = zr * zr + zi * zi;
     if (r2 > 0.9999995) r2 = 0.9999995;
-    n._w = z;
+    n._w = { re: zr, im: zi };
     n._m = 1 - r2;
-    n._sx = cx0 + scale * z.re;
-    n._sy = cy0 + scale * z.im;
+    n._sx = cx0 + scale * zr;
+    n._sy = cy0 + scale * zi;
   }
 
+  /* ---- edges ---- */
   ctx.lineCap = "round";
   for (let i = 0; i < NODES.length; i++) {
     const n = NODES[i];
@@ -588,23 +632,28 @@ function draw() {
     if (m < 0.012) continue;
 
     const hot = hoverPath.has(n) && hoverPath.has(p);
+    const inLabel = labelSet.has(n._id) || labelSet.has(p._id);
+
     if (hot) {
       ctx.strokeStyle = "rgba(255, 214, 102, " + Math.min(0.95, 0.35 + m * 0.8) + ")";
       ctx.lineWidth = Math.max(0.8, Math.min(2.8, 0.9 + 2.6 * m));
     } else {
-      const al = Math.min(0.55, 0.05 + m * 0.5);
+      const baseA = inLabel ? 0.42 : 0.12;
+      const al = Math.min(0.65, baseA + m * 0.4);
       ctx.strokeStyle = "rgba(126, 158, 196, " + al + ")";
-      ctx.lineWidth = Math.max(0.4, Math.min(2.0, 0.35 + 2.1 * m));
+      ctx.lineWidth = Math.max(0.4, Math.min(2.0, (inLabel ? 0.7 : 0.3) + 2.0 * m));
     }
     strokeGeo(p._w, n._w, cx0, cy0, scale);
   }
 
+  /* ---- nodes ---- */
   for (let i = 0; i < NODES.length; i++) {
     const n = NODES[i];
     const m = n._m;
-    if (m < 0.006) continue;
+    if (m < 0.004) continue;
 
-    const rr = Math.max(0.6, Math.min(11, 1.1 + 7.5 * m));
+    let rr = Math.max(0.6, Math.min(11, 1.1 + 7.5 * m));
+    if (labelSet.has(n._id)) rr = Math.max(2.8, rr);
     const hot = hoverPath.has(n);
 
     ctx.beginPath();
@@ -615,7 +664,8 @@ function draw() {
       ctx.globalAlpha = 1;
     } else {
       ctx.fillStyle = n._color || "#9ab";
-      ctx.globalAlpha = Math.min(1, 0.22 + m * 1.15);
+      const minA = labelSet.has(n._id) ? 0.55 : 0.18;
+      ctx.globalAlpha = Math.min(1, minA + m * 1.0);
     }
     ctx.fill();
 
@@ -628,6 +678,7 @@ function draw() {
     ctx.globalAlpha = 1;
   }
 
+  /* ---- focus ring ---- */
   if (FOCUS) {
     ctx.beginPath();
     ctx.arc(cx0, cy0, 9, 0, Math.PI * 2);
@@ -636,30 +687,44 @@ function draw() {
     ctx.stroke();
   }
 
-  const cand = [];
-  for (let i = 0; i < NODES.length; i++) {
-    const n = NODES[i];
-    if (n._m > 0.16) cand.push(n);
+  /* ---- labels: only labelSet + hover path ---- */
+  const vis = [];
+  labelSet.forEach(function (id) { vis.push(NODES[id]); });
+  vis.sort(function (a, b) { return b._m - a._m; });
+  for (let i = 0; i < vis.length; i++) {
+    const n = vis[i];
+    if (hoverPath.has(n)) continue;
+    drawLabel(n, cx0, "focus");
   }
-  cand.sort((a, b) => b._m - a._m);
-
-  const LIMIT = 80;
-  for (let i = 0; i < cand.length && i < LIMIT; i++) drawLabel(cand[i], cx0, false);
 
   if (HOVER) {
     let x = HOVER;
     while (x) {
-      if (x._m > 0.02) drawLabel(x, cx0, true);
+      if (x._m > 0.02) drawLabel(x, cx0, "hover");
       x = x._parent;
     }
   }
 }
 
-function drawLabel(n, cx0, force) {
+function drawLabel(n, cx0, mode) {
   const m = n._m;
-  const fs = 7.5 + 6.5 * m;
-  if (!force && fs < 8.2) return;
-  if (force && fs < 6) return;
+  let fs, color;
+
+  if (mode === "hover") {
+    fs = 7.5 + 6.5 * m;
+    if (fs < 6) return;
+    const a = Math.min(1, 0.18 + m * 1.25);
+    color = "rgba(255, 226, 150, " + a + ")";
+  } else if (mode === "focus") {
+    fs = Math.max(10, 7.5 + 6.5 * m);
+    const a = Math.min(1, 0.65 + m * 1.25);
+    color = "rgba(234, 242, 250, " + a + ")";
+  } else {
+    fs = 7.5 + 6.5 * m;
+    if (fs < 8.2) return;
+    const a = Math.min(1, 0.18 + m * 1.25);
+    color = "rgba(226, 236, 248, " + a + ")";
+  }
 
   const size = Math.max(8, fs);
   ctx.font = "500 " + size.toFixed(1) + "px ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
@@ -668,7 +733,8 @@ function drawLabel(n, cx0, force) {
   const left = n._sx < cx0;
   ctx.textAlign = left ? "right" : "left";
 
-  const rr = Math.max(0.6, Math.min(11, 1.1 + 7.5 * m));
+  let rr = Math.max(0.6, Math.min(11, 1.1 + 7.5 * m));
+  if (labelSet.has(n._id)) rr = Math.max(2.8, rr);
   const tx = n._sx + (left ? -(rr + 5) : (rr + 5));
 
   const maxW = 210;
@@ -678,8 +744,7 @@ function drawLabel(n, cx0, force) {
     s = s.replace(/[\s,;:.\-]+$/, "") + "…";
   }
 
-  const a = Math.min(1, 0.18 + m * 1.25);
-  ctx.fillStyle = force ? "rgba(255, 226, 150, " + a + ")" : "rgba(226, 236, 248, " + a + ")";
+  ctx.fillStyle = color;
   ctx.fillText(s, tx, n._sy);
 }
 
@@ -880,7 +945,7 @@ function renderMiniTree(node) {
 
   const ancH = 22, ancGap = 15;
   const selfH = 28, selfGap = 22;
-  const kidH = 26, kidGap = 3;
+  const kidH = 26, kidGap = 6;
 
   let y = 0;
   const ancRows = [];
@@ -905,7 +970,7 @@ function renderMiniTree(node) {
 
   const centerX = W0 / 2;
 
-  /* ---- ancestor spine ---- */
+  /* ancestor spine */
   let prevBottom = null;
   for (const r of ancRows) {
     if (prevBottom !== null) {
@@ -917,7 +982,7 @@ function renderMiniTree(node) {
     parts.push('<line x1="' + centerX + '" y1="' + prevBottom + '" x2="' + centerX + '" y2="' + selfRow.y + '" stroke="rgba(255,255,255,0.16)" stroke-width="1"/>');
   }
 
-  /* ---- self → children (vertical stack, left spine) ---- */
+  /* self → children (vertical stack, left spine) */
   if (kidRows.length) {
     const selfBottom = selfRow.y + selfRow.h;
     const spineX = 14;
@@ -927,24 +992,21 @@ function renderMiniTree(node) {
     const lastKid = kidRows[kidRows.length - 1];
     const lastCenter = lastKid.y + lastKid.h / 2;
 
-    /* from self bottom → down → left → down the spine */
     parts.push('<line x1="' + centerX + '" y1="' + selfBottom + '" x2="' + centerX + '" y2="' + elbowY + '" stroke="rgba(255,255,255,0.16)" stroke-width="1"/>');
     parts.push('<line x1="' + centerX + '" y1="' + elbowY + '" x2="' + spineX + '" y2="' + elbowY + '" stroke="rgba(255,255,255,0.16)" stroke-width="1"/>');
     parts.push('<line x1="' + spineX + '" y1="' + elbowY + '" x2="' + spineX + '" y2="' + lastCenter + '" stroke="rgba(255,255,255,0.16)" stroke-width="1"/>');
 
-    /* horizontal connectors into each child */
     for (const kr of kidRows) {
       const cy = kr.y + kr.h / 2;
       parts.push('<line x1="' + spineX + '" y1="' + cy + '" x2="' + pillX + '" y2="' + cy + '" stroke="rgba(255,255,255,0.16)" stroke-width="1"/>');
     }
 
-    /* kid pills, full width */
     for (const kr of kidRows) {
       parts.push(pillSVG(pillX, kr.y, pillW, kr.h, kr.node, {}));
     }
   }
 
-  /* ---- ancestor + self pills ---- */
+  /* ancestor + self pills */
   const ancW = Math.min(W0 - 60, 250);
   const ancX = centerX - ancW / 2;
   const selfW = Math.min(W0 - 8, 270);
@@ -1017,7 +1079,7 @@ function hitTest(mx, my) {
     if (n._m < 0.02) continue;
     const dx = n._sx - mx, dy = n._sy - my;
     const d2 = dx * dx + dy * dy;
-    if (d2 > 196) continue;
+    if (d2 > 225) continue;
     const score = d2 * (1.4 - Math.min(1, n._m));
     if (score < bestScore) { bestScore = score; best = n; }
   }
@@ -1041,6 +1103,7 @@ function focusOn(n) {
     ZOOMT = preferredZoom;
   }
 
+  buildLabelSet();
   needsDraw = true;
 }
 
@@ -1281,6 +1344,7 @@ async function boot() {
   preferredZoom = 1;
   PANX = PANY = PANTX = PANTY = 0;
 
+  buildLabelSet();
   updateViewShift();
 
   needsDraw = true;
