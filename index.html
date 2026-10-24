@@ -7,7 +7,7 @@
 <style>
   :root {
     color-scheme: dark;
-    --pw: clamp(320px, 34vw, 420px);
+    --pw: clamp(320px, 34vw, 430px);
   }
   * { box-sizing: border-box; }
   html, body {
@@ -35,32 +35,15 @@
   /* ---------- top bar ---------- */
   #top {
     position: absolute; top: 12px; left: 12px; right: 12px;
-    display: flex; gap: 10px; align-items: flex-start; flex-wrap: wrap;
+    display: flex; gap: 10px; align-items: flex-start;
+    justify-content: space-between;
     transition: right .35s cubic-bezier(.22,.9,.3,1);
   }
   body.panel-open #top { right: calc(var(--pw) + 24px); }
 
-  #crumbs {
-    pointer-events: auto;
-    flex: 1 1 240px; min-width: 0;
-    display: flex; align-items: center; gap: 1px;
-    padding: 7px 10px; font-size: 13px;
-    overflow-x: auto; white-space: nowrap;
-    scrollbar-width: thin;
-  }
-  #crumbs::-webkit-scrollbar { height: 4px; }
-  #crumbs::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 2px; }
-  #crumbs button {
-    background: none; border: 0; color: #93a8c0; cursor: pointer;
-    padding: 3px 6px; border-radius: 6px; font: inherit; white-space: nowrap;
-  }
-  #crumbs button:hover { background: rgba(255,255,255,0.09); color: #fff; }
-  #crumbs .sep { color: #3d4c60; padding: 0 1px; }
-  #crumbs .cur { color: #fff; font-weight: 600; }
-
-  #searchWrap { position: relative; pointer-events: auto; flex: 0 0 auto; }
+  #searchWrap { position: relative; pointer-events: auto; flex: 0 1 auto; min-width: 0; }
   #search {
-    width: 236px; padding: 9px 12px; border-radius: 12px; outline: none;
+    width: 236px; max-width: 100%; padding: 9px 12px; border-radius: 12px; outline: none;
     border: 1px solid rgba(255,255,255,0.1);
     background: rgba(14,18,26,0.82);
     -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
@@ -137,18 +120,18 @@
 
   .p-head {
     display: flex; align-items: flex-start; gap: 10px;
-    padding: 18px 18px 14px 20px;
+    padding: 16px 16px 13px 18px;
     border-bottom: 1px solid rgba(255,255,255,0.07);
     flex: 0 0 auto;
   }
   .p-titles { min-width: 0; flex: 1 1 auto; }
   .p-kicker {
     font-size: 10.5px; letter-spacing: .09em; text-transform: uppercase;
-    color: #6d84a0; font-weight: 600; margin-bottom: 5px;
+    color: #6d84a0; font-weight: 600; margin-bottom: 4px;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .p-head h2 {
-    margin: 0; font-size: 18px; line-height: 1.3; font-weight: 650;
+    margin: 0; font-size: 17.5px; line-height: 1.3; font-weight: 650;
     color: #f2f6fb; letter-spacing: -0.01em; word-break: break-word;
   }
   .p-close {
@@ -162,17 +145,17 @@
   .p-close:hover { background: rgba(255,255,255,0.11); color: #fff; }
 
   .p-body {
-    flex: 1 1 auto; overflow-y: auto; padding: 18px 20px 22px;
+    flex: 1 1 auto; overflow-y: auto; padding: 16px 18px 20px;
     scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.14) transparent;
   }
   .p-body::-webkit-scrollbar { width: 8px; }
   .p-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,.13); border-radius: 4px; }
 
-  .p-sec { margin-bottom: 22px; }
+  .p-sec { margin-bottom: 20px; }
   .p-sec:last-child { margin-bottom: 0; }
   .p-label {
     font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase;
-    color: #5f7288; font-weight: 600; margin-bottom: 10px;
+    color: #5f7288; font-weight: 600; margin-bottom: 9px;
   }
 
   .mini { width: 100%; }
@@ -180,14 +163,11 @@
 
   .para { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
   .para .pnum {
-    font-size: 27px; font-weight: 650; color: #ffe9a8; letter-spacing: -0.02em;
+    font-size: 26px; font-weight: 650; color: #ffe9a8; letter-spacing: -0.02em;
     font-variant-numeric: tabular-nums; line-height: 1.1;
   }
-  .para .pnote {
-    font-size: 11.5px; color: #6d84a0; line-height: 1.5;
-  }
   .sect {
-    margin-top: 8px; font-size: 12.5px; color: #b9c9db; line-height: 1.55;
+    margin-top: 7px; font-size: 12.5px; color: #b9c9db; line-height: 1.55;
   }
   .inherit {
     margin-top: 7px; font-size: 11.5px; color: #6d84a0; line-height: 1.55;
@@ -199,7 +179,7 @@
   .p-path .pcur { color: #e6edf5; font-weight: 600; }
 
   .p-foot {
-    flex: 0 0 auto; padding: 10px 20px 14px;
+    flex: 0 0 auto; padding: 10px 18px 13px;
     font-size: 10.5px; color: #4e6076; line-height: 1.55;
     border-top: 1px solid rgba(255,255,255,0.06);
   }
@@ -210,11 +190,10 @@
   }
   #err code { background: rgba(255,255,255,.08); padding: 2px 6px; border-radius: 5px; color: #cfe0f0; }
 
-  /* ---------- responsive ---------- */
   @media (max-width: 859px) {
     #panel {
       top: auto; right: 8px; left: 8px; bottom: 8px;
-      width: auto; height: min(60vh, 540px);
+      width: auto; height: min(62vh, 560px);
       transform: translateY(calc(100% + 24px));
       border-radius: 16px;
     }
@@ -222,6 +201,7 @@
     body.panel-open #legend { right: 12px; opacity: 0; pointer-events: none; }
     body.panel-open #hint { opacity: 0; pointer-events: none; }
     #results { width: min(360px, calc(100vw - 32px)); }
+    #search { width: 190px; }
   }
 </style>
 </head>
@@ -231,7 +211,6 @@
 
 <div id="ui">
   <div id="top">
-    <div id="crumbs" class="panel"></div>
     <div id="searchWrap">
       <input id="search" class="panel" placeholder="Search the Encyclopedia…" autocomplete="off" spellcheck="false" />
       <div id="results" class="panel"></div>
@@ -244,8 +223,8 @@
   </div>
 
   <div id="hint" class="panel">
-    <b>Click</b> a node to focus &amp; open details &nbsp;·&nbsp; <b>click background</b> / <b>Esc</b> to close or go up<br/>
-    <b>Scroll</b> to zoom &nbsp;·&nbsp; <b>Drag</b> to pan when zoomed
+    <b>Click</b> a node to zoom in &amp; open details &nbsp;·&nbsp; <b>click background</b> / <b>Esc</b> to close<br/>
+    <b>Scroll</b> to zoom &nbsp;·&nbsp; <b>Drag</b> to pan
   </div>
 
   <div id="legend" class="panel">
@@ -304,6 +283,7 @@ function resize() {
   canvas.style.width = W + "px";
   canvas.style.height = H + "px";
   updateViewShift();
+  if (panelNode) renderMiniTree(panelNode);
   needsDraw = true;
 }
 
@@ -314,24 +294,30 @@ let NODES = [];
 let ROOT = null;
 let MAXD = 1;
 
-let A  = { re: 0, im: 0 };
-let AT = { re: 0, im: 0 };
+let A  = { re: 0, im: 0 };        // current Möbius parameter
+let AT = { re: 0, im: 0 };        // target
+
+let ZOOM  = 1;                    // current zoom
+let ZOOMT = 1;                    // target zoom
+
+let PANX = 0, PANY = 0;           // current pan
+let PANTX = 0, PANTY = 0;         // target pan
+
+let viewShift = 0, viewShiftTarget = 0;
+
 let FOCUS = null;
 let HOVER = null;
 let hoverPath = new Set();
-
-let ZOOM = 1, PANX = 0, PANY = 0;
-let viewShift = 0, viewShiftTarget = 0;
 
 let needsDraw = true;
 let dragging = false, moved = false, dragStart = null;
 let panelNode = null;
 
+const EASE = 0.14;
 const PALETTE = ["#5b9bf5", "#4ec98a", "#c084fc"];
 
 /* =========================================================
    PARAGRAPH MAP  (1830 Encyclopaedia, Werke 8–10)
-   Keyed by the `id_` field of the source data.
    ========================================================= */
 const PARAS = {
   /* ---------- Part One: Logic ---------- */
@@ -700,6 +686,33 @@ function drawLabel(n, cx0, force) {
 }
 
 /* =========================================================
+   TARGET-ZOOM  (frame parent + children)
+   ========================================================= */
+function computeTargetZoom(node) {
+  if (!node || node === ROOT) return 1;
+
+  const a = node._z;
+  let maxR = 0;
+
+  if (node._parent) {
+    const w = mobius(node._parent._z, a);
+    const r = Math.hypot(w.re, w.im);
+    if (r > maxR) maxR = r;
+  }
+  for (let i = 0; i < node._children.length; i++) {
+    const w = mobius(node._children[i]._z, a);
+    const r = Math.hypot(w.re, w.im);
+    if (r > maxR) maxR = r;
+  }
+
+  if (maxR < 0.005) return 1;
+
+  const R_view = Math.min(0.85, maxR * 1.3);
+  const zoom = 0.729 / R_view;
+  return Math.max(1, Math.min(10, zoom));
+}
+
+/* =========================================================
    MAIN LOOP
    ========================================================= */
 function loop() {
@@ -708,12 +721,33 @@ function loop() {
   const dx = AT.re - A.re;
   const dy = AT.im - A.im;
   if (Math.abs(dx) > 1e-6 || Math.abs(dy) > 1e-6) {
-    A.re += dx * 0.14;
-    A.im += dy * 0.14;
+    A.re += dx * EASE;
+    A.im += dy * EASE;
     dirty = true;
   } else if (A.re !== AT.re || A.im !== AT.im) {
     A.re = AT.re;
     A.im = AT.im;
+    dirty = true;
+  }
+
+  const dz = ZOOMT - ZOOM;
+  if (Math.abs(dz) > 0.001) {
+    ZOOM += dz * EASE;
+    dirty = true;
+  } else if (ZOOM !== ZOOMT) {
+    ZOOM = ZOOMT;
+    dirty = true;
+  }
+
+  const dpx = PANTX - PANX;
+  const dpy = PANTY - PANY;
+  if (Math.abs(dpx) > 0.2 || Math.abs(dpy) > 0.2) {
+    PANX += dpx * EASE;
+    PANY += dpy * EASE;
+    dirty = true;
+  } else if (PANX !== PANTX || PANY !== PANTY) {
+    PANX = PANTX;
+    PANY = PANTY;
     dirty = true;
   }
 
@@ -744,9 +778,7 @@ function esc(s) {
 }
 
 function paraFor(node) {
-  if (node === ROOT) {
-    return { p: "1–577", note: "The Encyclopaedia as a whole" };
-  }
+  if (node === ROOT) return { p: "1–577", note: "The Encyclopaedia as a whole" };
   let n = node;
   while (n) {
     if (n.id_ && PARAS[n.id_]) {
@@ -816,35 +848,38 @@ function pillSVG(x, y, w, h, node, opts) {
   opts = opts || {};
   const idx = node._id;
   const color = node._color || "#9ab";
-  const r = 7;
   const active = !!opts.active;
   const dim = !!opts.dim;
-  const small = !!opts.small;
+  const compact = !!opts.compact;
 
   const fill = active
     ? "rgba(255,214,102,0.10)"
     : dim
-      ? "rgba(255,255,255,0.03)"
+      ? "rgba(255,255,255,0.025)"
       : "rgba(255,255,255,0.05)";
   const stroke = active
     ? "rgba(255,214,102,0.72)"
-    : "rgba(255,255,255,0.12)";
-  const op = dim ? 0.6 : 1;
+    : dim
+      ? "rgba(255,255,255,0.08)"
+      : "rgba(255,255,255,0.12)";
+  const op = dim ? 0.72 : 1;
 
-  const fontPx = small ? 10.5 : 11.5;
+  const fontPx = compact ? 10 : 11.5;
   const font = "500 " + fontPx + "px ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
 
-  const dotX = x + 11;
-  const textX = x + 21;
-  const maxText = Math.max(20, w - 28);
+  const dotX = x + (compact ? 9 : 11);
+  const dotR = compact ? 2.4 : 3.2;
+  const textX = x + (compact ? 17 : 21);
+  const maxText = Math.max(20, w - (textX - x) - 8);
   const label = fitText(node.name, maxText, font);
 
   return (
     '<g data-nid="' + idx + '" opacity="' + op + '" style="cursor:pointer">' +
-      '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="' + r +
-        '" fill="' + fill + '" stroke="' + stroke + '" stroke-width="1"/>' +
-      '<circle cx="' + dotX + '" cy="' + (y + h / 2) + '" r="3.2" fill="' + color + '"/>' +
-      '<text x="' + textX + '" y="' + (y + h / 2 + 0.5) + '" font-family="ui-sans-serif, system-ui, -apple-system, \'Segoe UI\', Roboto, sans-serif"' +
+      '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="6"' +
+        ' fill="' + fill + '" stroke="' + stroke + '" stroke-width="1"/>' +
+      '<circle cx="' + dotX + '" cy="' + (y + h / 2) + '" r="' + dotR + '" fill="' + color + '"/>' +
+      '<text x="' + textX + '" y="' + (y + h / 2 + 0.5) + '"' +
+        ' font-family="ui-sans-serif, system-ui, -apple-system, \'Segoe UI\', Roboto, sans-serif"' +
         ' font-size="' + fontPx + '" font-weight="500"' +
         ' fill="' + (active ? "#ffe9a8" : "#dbe7f2") + '" dominant-baseline="middle">' +
         esc(label) +
@@ -856,71 +891,92 @@ function pillSVG(x, y, w, h, node, opts) {
 function renderMiniTree(node) {
   const wrap = document.getElementById("miniTree");
   const W0 = Math.max(240, wrap.clientWidth || 340);
-  const rowH = 27;
-  const gapY = 24;
-  const parent = node._parent;
+
+  /* full ancestor chain root → node */
+  const chain = [];
+  let n = node;
+  while (n) { chain.unshift(n); n = n._parent; }
+
   const kids = node._children || [];
+
+  /* row metrics */
+  const ancH = 22, ancGap = 15;
+  const selfH = 28, selfGap = 20;
+  const kidH = 26;
 
   let y = 0;
   const rows = [];
 
-  if (parent) {
-    rows.push({ kind: "parent", node: parent, y: y });
-    y += rowH + gapY;
+  for (let i = 0; i < chain.length - 1; i++) {
+    rows.push({ kind: "anc", node: chain[i], y: y, h: ancH });
+    y += ancH + ancGap;
   }
-  const selfRow = { kind: "self", node: node, y: y };
+  const selfRow = { kind: "self", node: node, y: y, h: selfH };
   rows.push(selfRow);
-  y += rowH + gapY;
+  y += selfH + (kids.length ? selfGap : 0);
 
+  let kidRow = null;
   if (kids.length) {
-    rows.push({ kind: "kids", nodes: kids, y: y });
-    y += rowH;
+    kidRow = { kind: "kids", nodes: kids, y: y, h: kidH };
+    rows.push(kidRow);
+    y += kidH;
   }
 
-  const H0 = Math.max(44, y + 8);
+  const H0 = Math.max(44, y + 6);
   const parts = [];
   parts.push('<svg width="' + W0 + '" height="' + H0 + '" viewBox="0 0 ' + W0 + ' ' + H0 + '" xmlns="http://www.w3.org/2000/svg">');
 
-  const selfW = Math.min(W0 - 8, 230);
-  const selfX = (W0 - selfW) / 2;
-
-  /* connectors */
-  if (parent) {
-    const px = W0 / 2;
-    const y0 = rows[0].y + rowH;
-    const y1 = selfRow.y;
-    parts.push('<line x1="' + px + '" y1="' + y0 + '" x2="' + px + '" y2="' + y1 + '" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>');
+  /* vertical spine connectors between ancestor / self rows */
+  let prevBottom = null;
+  for (let i = 0; i < rows.length; i++) {
+    const r = rows[i];
+    if (r.kind === "kids") continue;
+    if (prevBottom !== null) {
+      parts.push('<line x1="' + (W0 / 2) + '" y1="' + prevBottom + '" x2="' + (W0 / 2) + '" y2="' + r.y + '"' +
+        ' stroke="rgba(255,255,255,0.16)" stroke-width="1"/>');
+    }
+    prevBottom = r.y + r.h;
   }
 
-  if (kids.length) {
-    const selfBottom = selfRow.y + rowH;
-    const busY = selfBottom + gapY / 2;
-    const kidRow = rows[rows.length - 1];
-    const n = kids.length;
+  /* self → children connectors */
+  if (kidRow) {
+    const selfBottom = selfRow.y + selfRow.h;
+    const busY = selfBottom + selfGap / 2;
+    const nk = kids.length;
     const centers = [];
-    for (let i = 0; i < n; i++) centers.push(W0 * (i + 1) / (n + 1));
+    for (let i = 0; i < nk; i++) centers.push(W0 * (i + 1) / (nk + 1));
 
-    parts.push('<line x1="' + (W0 / 2) + '" y1="' + selfBottom + '" x2="' + (W0 / 2) + '" y2="' + busY + '" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>');
-    parts.push('<line x1="' + centers[0] + '" y1="' + busY + '" x2="' + centers[n - 1] + '" y2="' + busY + '" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>');
-    for (let i = 0; i < n; i++) {
-      parts.push('<line x1="' + centers[i] + '" y1="' + busY + '" x2="' + centers[i] + '" y2="' + kidRow.y + '" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>');
+    parts.push('<line x1="' + (W0 / 2) + '" y1="' + selfBottom + '" x2="' + (W0 / 2) + '" y2="' + busY + '"' +
+      ' stroke="rgba(255,255,255,0.16)" stroke-width="1"/>');
+    if (nk > 1) {
+      parts.push('<line x1="' + centers[0] + '" y1="' + busY + '" x2="' + centers[nk - 1] + '" y2="' + busY + '"' +
+        ' stroke="rgba(255,255,255,0.16)" stroke-width="1"/>');
+    }
+    for (let i = 0; i < nk; i++) {
+      parts.push('<line x1="' + centers[i] + '" y1="' + busY + '" x2="' + centers[i] + '" y2="' + kidRow.y + '"' +
+        ' stroke="rgba(255,255,255,0.16)" stroke-width="1"/>');
     }
   }
 
   /* pills */
+  const ancW = Math.min(W0 - 60, 250);
+  const ancX = (W0 - ancW) / 2;
+  const selfW = Math.min(W0 - 8, 270);
+  const selfX = (W0 - selfW) / 2;
+
   for (let i = 0; i < rows.length; i++) {
     const r = rows[i];
-    if (r.kind === "parent") {
-      parts.push(pillSVG(selfX, r.y, selfW, rowH, r.node, { dim: true }));
+    if (r.kind === "anc") {
+      parts.push(pillSVG(ancX, r.y, ancW, r.h, r.node, { dim: true, compact: true }));
     } else if (r.kind === "self") {
-      parts.push(pillSVG(selfX, r.y, selfW, rowH, r.node, { active: true }));
+      parts.push(pillSVG(selfX, r.y, selfW, r.h, r.node, { active: true }));
     } else {
-      const n = r.nodes.length;
-      const cw = W0 / n;
-      for (let j = 0; j < n; j++) {
-        const pw = Math.max(48, cw - 10);
+      const nk = r.nodes.length;
+      const cw = W0 / nk;
+      for (let j = 0; j < nk; j++) {
+        const pw = Math.max(40, cw - 8);
         const px = cw * j + (cw - pw) / 2;
-        parts.push(pillSVG(px, r.y, pw, rowH, r.nodes[j], { small: n > 2 }));
+        parts.push(pillSVG(px, r.y, pw, r.h, r.nodes[j], { compact: nk > 2 }));
       }
     }
   }
@@ -930,8 +986,8 @@ function renderMiniTree(node) {
 
   wrap.querySelectorAll("[data-nid]").forEach(function (el) {
     el.addEventListener("click", function () {
-      const n = NODES[+el.getAttribute("data-nid")];
-      if (n) { focusOn(n); openPanel(n); }
+      const nn = NODES[+el.getAttribute("data-nid")];
+      if (nn) { focusOn(nn); openPanel(nn); }
     });
   });
 }
@@ -943,7 +999,6 @@ function renderPanel(node) {
 
   renderMiniTree(node);
 
-  /* paragraph */
   const info = paraFor(node);
   const pPara = document.getElementById("pPara");
   const pSect = document.getElementById("pSect");
@@ -951,8 +1006,7 @@ function renderPanel(node) {
 
   if (info) {
     pPara.innerHTML = '<span class="pnum">' + esc(fmtParagraph(info.p)) + "</span>";
-    const sec = sectionFor(node);
-    pSect.textContent = sec;
+    pSect.textContent = sectionFor(node);
 
     if (info.exact === false && info.holder) {
       pInherit.style.display = "block";
@@ -971,12 +1025,10 @@ function renderPanel(node) {
     pInherit.style.display = "none";
   }
 
-  /* path */
   const chain = [];
   let n = node;
   while (n) { chain.unshift(n); n = n._parent; }
-  const pPath = document.getElementById("pPath");
-  pPath.innerHTML = chain.map(function (x, i) {
+  document.getElementById("pPath").innerHTML = chain.map(function (x, i) {
     const cls = i === chain.length - 1 ? "pcur" : "";
     return '<span class="' + cls + '">' + esc(x.name) + "</span>";
   }).join('<span class="psep">›</span>');
@@ -1001,13 +1053,11 @@ function hitTest(mx, my) {
 
 function focusOn(n) {
   if (!n) return;
-  if (n === FOCUS) return;
   FOCUS = n;
   AT = { re: n._z.re, im: n._z.im };
-  ZOOM = 1;
-  PANX = 0;
-  PANY = 0;
-  buildCrumbs();
+  ZOOMT = computeTargetZoom(n);
+  PANTX = 0;
+  PANTY = 0;
   needsDraw = true;
 }
 
@@ -1054,6 +1104,8 @@ canvas.addEventListener("pointermove", function (e) {
     if (moved) {
       PANX = dragStart.px + dx;
       PANY = dragStart.py + dy;
+      PANTX = PANX;
+      PANTY = PANY;
       clampPan();
       needsDraw = true;
     }
@@ -1099,20 +1151,23 @@ canvas.addEventListener("wheel", function (e) {
   e.preventDefault();
   const pos = localPos(e);
 
-  const oldZoom = ZOOM;
-  ZOOM = Math.min(16, Math.max(1, ZOOM * Math.exp(-e.deltaY * 0.0016)));
-  if (ZOOM === oldZoom) return;
+  const factor = Math.exp(-e.deltaY * 0.0016);
+  const newZoom = Math.min(10, Math.max(1, ZOOM * factor));
+  if (newZoom === ZOOM) return;
 
   const cx = W / 2 + viewShift;
   const cy = H / 2;
   const base = Math.min(W, H) * 0.48;
-  const sOld = base * oldZoom;
-  const sNew = base * ZOOM;
 
-  const wx = (pos.x - cx - PANX) / sOld;
-  const wy = (pos.y - cy - PANY) / sOld;
-  PANX = pos.x - cx - sNew * wx;
-  PANY = pos.y - cy - sNew * wy;
+  const wx = (pos.x - cx - PANX) / (base * ZOOM);
+  const wy = (pos.y - cy - PANY) / (base * ZOOM);
+
+  ZOOM = newZoom;
+  ZOOMT = newZoom;
+  PANX = pos.x - cx - base * ZOOM * wx;
+  PANY = pos.y - cy - base * ZOOM * wy;
+  PANTX = PANX;
+  PANTY = PANY;
 
   clampPan();
   needsDraw = true;
@@ -1122,7 +1177,7 @@ function clampPan() {
   const maxPan = Math.max(W, H) * (ZOOM - 1) * 0.55;
   PANX = Math.max(-maxPan, Math.min(maxPan, PANX));
   PANY = Math.max(-maxPan, Math.min(maxPan, PANY));
-  if (ZOOM <= 1.001) { PANX = 0; PANY = 0; }
+  if (ZOOM <= 1.001) { PANX = 0; PANY = 0; PANTX = 0; PANTY = 0; }
 }
 
 window.addEventListener("keydown", function (e) {
@@ -1136,40 +1191,6 @@ window.addEventListener("keydown", function (e) {
     }
   }
 });
-
-/* =========================================================
-   BREADCRUMBS
-   ========================================================= */
-function buildCrumbs() {
-  const el = document.getElementById("crumbs");
-  el.innerHTML = "";
-  const chain = [];
-  let n = FOCUS;
-  while (n) { chain.unshift(n); n = n._parent; }
-
-  chain.forEach(function (node, i) {
-    if (i) {
-      const s = document.createElement("span");
-      s.className = "sep";
-      s.textContent = "›";
-      el.appendChild(s);
-    }
-    const b = document.createElement("button");
-    b.textContent = node.name;
-    if (node === FOCUS) {
-      b.className = "cur";
-      b.disabled = true;
-    } else {
-      b.onclick = function () {
-        focusOn(node);
-        if (panelNode) openPanel(node);
-      };
-    }
-    el.appendChild(b);
-  });
-
-  el.scrollLeft = el.scrollWidth;
-}
 
 /* =========================================================
    SEARCH
@@ -1271,8 +1292,10 @@ async function boot() {
   FOCUS = data;
   A = { re: data._z.re, im: data._z.im };
   AT = { re: data._z.re, im: data._z.im };
+  ZOOM = 1;
+  ZOOMT = 1;
+  PANX = PANY = PANTX = PANTY = 0;
 
-  buildCrumbs();
   updateViewShift();
 
   needsDraw = true;
