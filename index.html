@@ -12,17 +12,17 @@
     color-scheme: dark;
     --pw: clamp(320px, 34vw, 430px);
 
-    /* Defaults = Encyclopedia / Managua palette */
-    --bg: #5E2841;
-    --text: #E5D5BC;
-    --text-dim: #C5AB80;
-    --text-mute: #DA9655;
-    --accent: #74C3E9;
-    --accent-soft: #A8D6EE;
-    --tint-rgb: 116, 195, 233;
-    --shade-rgb: 50, 15, 40;
-    --panel-bg: rgba(94, 40, 65, 0.85);
-    --panel-border: rgba(116, 195, 233, 0.10);
+    /* Defaults = Encyclopedia / new warm-cream-to-navy palette */
+    --bg: #092642;
+    --text: #EED8B2;
+    --text-dim: #E7C197;
+    --text-mute: #C66760;
+    --accent: #EED8B2;
+    --accent-soft: #E7C197;
+    --tint-rgb: 231, 193, 151;
+    --shade-rgb: 9, 38, 66;
+    --panel-bg: rgba(46, 78, 115, 0.72);
+    --panel-border: rgba(231, 193, 151, 0.12);
 
     --font: "Spline Sans", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
@@ -437,44 +437,44 @@ let firstNodeClick = true;
 let ACTIVE = null;
 let ACTIVE_PARAS = {};
 let PARA_TEXTS = {};
-let PAL = null;   // current palette object
+let PAL = null;
 
 /* =========================================================
    PALETTES
-   Encyclopedia → managua: blue / beige / orange
-   Logic        → navia:   green / cream
+   Encyclopedia → warm cream / tan / terracotta / mauve / navy
+   Logic        → navia green / cream
    ========================================================= */
 const PALETTES = {
   encyclopedia: {
     css: {
-      '--bg': '#5E2841',
-      '--text': '#E5D5BC',
-      '--text-dim': '#C5AB80',
-      '--text-mute': '#DA9655',
-      '--accent': '#74C3E9',
-      '--accent-soft': '#A8D6EE',
-      '--tint-rgb': '116, 195, 233',
-      '--shade-rgb': '50, 15, 40',
-      '--panel-bg': 'rgba(94, 40, 65, 0.85)',
-      '--panel-border': 'rgba(116, 195, 233, 0.10)'
+      '--bg': '#092642',
+      '--text': '#EED8B2',
+      '--text-dim': '#E7C197',
+      '--text-mute': '#C66760',
+      '--accent': '#EED8B2',
+      '--accent-soft': '#E7C197',
+      '--tint-rgb': '231, 193, 151',
+      '--shade-rgb': '9, 38, 66',
+      '--panel-bg': 'rgba(46, 78, 115, 0.72)',
+      '--panel-border': 'rgba(231, 193, 151, 0.12)'
     },
-    radialInner: 'rgba(76, 59, 111, 0.55)',
-    radialOuter: 'rgba(50, 15, 40, 0)',
-    diskStroke: 'rgba(116, 195, 233, 0.12)',
-    edgeRGB: '197, 171, 128',
-    edgeHoverRGB: '116, 195, 233',
-    nodeHover: '#74C3E9',
-    nodeHoverStroke: 'rgba(116, 195, 233, 0.55)',
-    focusRing: 'rgba(116, 195, 233, 0.35)',
-    labelFocusRGB: '197, 171, 128',
-    labelHoverRGB: '116, 195, 233',
-    fallback: '#DA9655',
-    branches: ['#74C3E9', '#DA9655', '#C5AB80'],
-    svgLine: 'rgba(197, 171, 128, 0.20)',
-    svgPillFillRGB: '197, 171, 128',
-    svgPillActiveRGB: '116, 195, 233',
-    svgPillTextActive: '#74C3E9',
-    svgPillTextNormal: '#C5AB80'
+    radialInner: 'rgba(46, 78, 115, 0.55)',
+    radialOuter: 'rgba(9, 38, 66, 0)',
+    diskStroke: 'rgba(231, 193, 151, 0.14)',
+    edgeRGB: '231, 193, 151',
+    edgeHoverRGB: '238, 216, 178',
+    nodeHover: '#EED8B2',
+    nodeHoverStroke: 'rgba(238, 216, 178, 0.55)',
+    focusRing: 'rgba(231, 193, 151, 0.35)',
+    labelFocusRGB: '231, 193, 151',
+    labelHoverRGB: '238, 216, 178',
+    fallback: '#C66760',
+    branches: ['#C66760', '#786072', '#EED8B2'],
+    svgLine: 'rgba(231, 193, 151, 0.20)',
+    svgPillFillRGB: '231, 193, 151',
+    svgPillActiveRGB: '238, 216, 178',
+    svgPillTextActive: '#EED8B2',
+    svgPillTextNormal: '#E7C197'
   },
   logic: {
     css: {
@@ -533,9 +533,9 @@ const DATASETS = {
     allowRangesForText: false,
     textKeyBy: "p",
     legend: [
-      { label: "Logic",  color: "#74C3E9" },
-      { label: "Nature", color: "#DA9655" },
-      { label: "Spirit", color: "#C5AB80" }
+      { label: "Logic",  color: "#C66760" },
+      { label: "Nature", color: "#786072" },
+      { label: "Spirit", color: "#EED8B2" }
     ],
     foot: "Paragraph numbers follow the 1830 edition of the <i>Encyclopaedia of Philosophical Sciences</i> (Werke, vols. 8–10).",
     loaded: false,
@@ -1663,7 +1663,7 @@ async function loadDataset(key) {
     box.innerHTML =
       "<div><b>Could not load <code>" + esc(ds.treeFile) + "</code></b><br/><br/>" +
       "Make sure the file sits next to <code>index.html</code> and that you are serving the folder.<br/><br/>" +
-      '<span style="color:' + (PAL ? PAL.fallback : '#DA9655') + ';font-size:12px">' + esc(err.message) + "</span></div>";
+      '<span style="color:' + (PAL ? PAL.fallback : '#C66760') + ';font-size:12px">' + esc(err.message) + "</span></div>";
     throw err;
   }
 }
@@ -1708,7 +1708,6 @@ async function boot() {
   resize();
   window.addEventListener("resize", resize);
 
-  /* Apply default palette immediately so the empty UI looks right */
   applyPalette("encyclopedia");
 
   try {
