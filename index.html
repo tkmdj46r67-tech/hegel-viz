@@ -310,10 +310,8 @@ let needsDraw = true;
 let dragging = false, moved = false, dragStart = null;
 let panelNode = null;
 
-/* ---- easing ---- */
-const EASE = 0.06;              // lower = slower
+const EASE = 0.06;
 
-/* ---- resting zoom, persisted across clicks ---- */
 let preferredZoom = 1;
 let firstNodeClick = true;
 
@@ -881,82 +879,81 @@ function renderMiniTree(node) {
   const kids = node._children || [];
 
   const ancH = 22, ancGap = 15;
-  const selfH = 28, selfGap = 20;
-  const kidH = 26;
+  const selfH = 28, selfGap = 22;
+  const kidH = 26, kidGap = 6;
 
   let y = 0;
-  const rows = [];
-
+  const ancRows = [];
   for (let i = 0; i < chain.length - 1; i++) {
-    rows.push({ kind: "anc", node: chain[i], y: y, h: ancH });
+    ancRows.push({ node: chain[i], y: y, h: ancH });
     y += ancH + ancGap;
   }
-  const selfRow = { kind: "self", node: node, y: y, h: selfH };
-  rows.push(selfRow);
+  const selfRow = { node: node, y: y, h: selfH };
   y += selfH + (kids.length ? selfGap : 0);
 
-  let kidRow = null;
+  const kidRows = [];
   if (kids.length) {
-    kidRow = { kind: "kids", nodes: kids, y: y, h: kidH };
-    rows.push(kidRow);
-    y += kidH;
+    for (let i = 0; i < kids.length; i++) {
+      kidRows.push({ node: kids[i], y: y, h: kidH });
+      y += kidH + (i < kids.length - 1 ? kidGap : 0);
+    }
   }
 
   const H0 = Math.max(44, y + 6);
   const parts = [];
   parts.push('<svg width="' + W0 + '" height="' + H0 + '" viewBox="0 0 ' + W0 + ' ' + H0 + '" xmlns="http://www.w3.org/2000/svg">');
 
+  const centerX = W0 / 2;
+
+  /* ---- ancestor spine ---- */
   let prevBottom = null;
-  for (let i = 0; i < rows.length; i++) {
-    const r = rows[i];
-    if (r.kind === "kids") continue;
+  for (const r of ancRows) {
     if (prevBottom !== null) {
-      parts.push('<line x1="' + (W0 / 2) + '" y1="' + prevBottom + '" x2="' + (W0 / 2) + '" y2="' + r.y + '"' +
-        ' stroke="rgba(255,255,255,0.16)" stroke-width="1"/>');
+      parts.push('<line x1="' + centerX + '" y1="' + prevBottom + '" x2="' + centerX + '" y2="' + r.y + '" stroke="rgba(255,255,255,0.16)" stroke-width="1"/>');
     }
     prevBottom = r.y + r.h;
   }
+  if (prevBottom !== null) {
+    parts.push('<line x1="' + centerX + '" y1="' + prevBottom + '" x2="' + centerX + '" y2="' + selfRow.y + '" stroke="rgba(255,255,255,0.16)" stroke-width="1"/>');
+  }
 
-  if (kidRow) {
+  /* ---- self → children (vertical stack, left spine) ---- */
+  if (kidRows.length) {
     const selfBottom = selfRow.y + selfRow.h;
-    const busY = selfBottom + selfGap / 2;
-    const nk = kids.length;
-    const centers = [];
-    for (let i = 0; i < nk; i++) centers.push(W0 * (i + 1) / (nk + 1));
+    const spineX = 14;
+    const pillX = 28;
+    const pillW = W0 - pillX - 8;
+    const elbowY = selfBottom + 11;
+    const lastKid = kidRows[kidRows.length - 1];
+    const lastCenter = lastKid.y + lastKid.h / 2;
 
-    parts.push('<line x1="' + (W0 / 2) + '" y1="' + selfBottom + '" x2="' + (W0 / 2) + '" y2="' + busY + '"' +
-      ' stroke="rgba(255,255,255,0.16)" stroke-width="1"/>');
-    if (nk > 1) {
-      parts.push('<line x1="' + centers[0] + '" y1="' + busY + '" x2="' + centers[nk - 1] + '" y2="' + busY + '"' +
-        ' stroke="rgba(255,255,255,0.16)" stroke-width="1"/>');
+    /* from self bottom → down → left → down the spine */
+    parts.push('<line x1="' + centerX + '" y1="' + selfBottom + '" x2="' + centerX + '" y2="' + elbowY + '" stroke="rgba(255,255,255,0.16)" stroke-width="1"/>');
+    parts.push('<line x1="' + centerX + '" y1="' + elbowY + '" x2="' + spineX + '" y2="' + elbowY + '" stroke="rgba(255,255,255,0.16)" stroke-width="1"/>');
+    parts.push('<line x1="' + spineX + '" y1="' + elbowY + '" x2="' + spineX + '" y2="' + lastCenter + '" stroke="rgba(255,255,255,0.16)" stroke-width="1"/>');
+
+    /* horizontal connectors into each child */
+    for (const kr of kidRows) {
+      const cy = kr.y + kr.h / 2;
+      parts.push('<line x1="' + spineX + '" y1="' + cy + '" x2="' + pillX + '" y2="' + cy + '" stroke="rgba(255,255,255,0.16)" stroke-width="1"/>');
     }
-    for (let i = 0; i < nk; i++) {
-      parts.push('<line x1="' + centers[i] + '" y1="' + busY + '" x2="' + centers[i] + '" y2="' + kidRow.y + '"' +
-        ' stroke="rgba(255,255,255,0.16)" stroke-width="1"/>');
+
+    /* kid pills, full width */
+    for (const kr of kidRows) {
+      parts.push(pillSVG(pillX, kr.y, pillW, kr.h, kr.node, {}));
     }
   }
 
+  /* ---- ancestor + self pills ---- */
   const ancW = Math.min(W0 - 60, 250);
-  const ancX = (W0 - ancW) / 2;
+  const ancX = centerX - ancW / 2;
   const selfW = Math.min(W0 - 8, 270);
-  const selfX = (W0 - selfW) / 2;
+  const selfX = centerX - selfW / 2;
 
-  for (let i = 0; i < rows.length; i++) {
-    const r = rows[i];
-    if (r.kind === "anc") {
-      parts.push(pillSVG(ancX, r.y, ancW, r.h, r.node, { dim: true, compact: true }));
-    } else if (r.kind === "self") {
-      parts.push(pillSVG(selfX, r.y, selfW, r.h, r.node, { active: true }));
-    } else {
-      const nk = r.nodes.length;
-      const cw = W0 / nk;
-      for (let j = 0; j < nk; j++) {
-        const pw = Math.max(40, cw - 8);
-        const px = cw * j + (cw - pw) / 2;
-        parts.push(pillSVG(px, r.y, pw, r.h, r.nodes[j], { compact: nk > 2 }));
-      }
-    }
+  for (const r of ancRows) {
+    parts.push(pillSVG(ancX, r.y, ancW, r.h, r.node, { dim: true, compact: true }));
   }
+  parts.push(pillSVG(selfX, selfRow.y, selfW, selfH, node, { active: true }));
 
   parts.push('</svg>');
   wrap.innerHTML = parts.join("");
@@ -1035,15 +1032,12 @@ function focusOn(n) {
   PANTY = 0;
 
   if (n === ROOT) {
-    /* root: preserve the current resting zoom (never zoom out) */
     ZOOMT = preferredZoom;
   } else if (firstNodeClick) {
-    /* very first click on a node: zoom in to a useful, depth-aware level */
     ZOOMT = Math.max(preferredZoom, targetZoomFor(n));
     preferredZoom = ZOOMT;
     firstNodeClick = false;
   } else {
-    /* subsequent clicks preserve the resting zoom — no zoom out */
     ZOOMT = preferredZoom;
   }
 
@@ -1153,7 +1147,7 @@ canvas.addEventListener("wheel", function (e) {
 
   ZOOM = newZoom;
   ZOOMT = newZoom;
-  preferredZoom = newZoom;       // wheel becomes the new resting level
+  preferredZoom = newZoom;
   PANX = pos.x - cx - base * ZOOM * wx;
   PANY = pos.y - cy - base * ZOOM * wy;
   PANTX = PANX;
