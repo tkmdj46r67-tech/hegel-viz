@@ -4,17 +4,49 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
 <title>Hegel's Encyclopedia — Hyperbolic Browser</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
     color-scheme: dark;
     --pw: clamp(320px, 34vw, 430px);
+
+    /* mako palette (seaborn/viridisLite family) */
+    --mako-0:  #0B0405;
+    --mako-1:  #1B0F14;
+    --mako-2:  #2B1920;
+    --mako-3:  #3D232B;
+    --mako-4:  #502E37;
+    --mako-5:  #623A43;
+    --mako-6:  #74474F;
+    --mako-7:  #86555C;
+    --mako-8:  #986469;
+    --mako-9:  #A97477;
+    --mako-10: #B98687;
+    --mako-11: #C89999;
+    --mako-12: #D5AEAE;
+    --mako-13: #E0C5C2;
+    --mako-14: #EBDCD4;
+    --mako-15: #F7F3ED;
+
+    --font: "Spline Sans", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+    --bg: var(--mako-0);
+    --panel-bg: rgba(27, 15, 20, 0.85);
+    --panel-border: rgba(235, 220, 212, 0.09);
+    --text: var(--mako-15);
+    --text-dim: var(--mako-10);
+    --text-mute: var(--mako-8);
+    --accent: var(--mako-14);
+    --accent-soft: var(--mako-13);
   }
   * { box-sizing: border-box; }
   html, body {
     margin: 0; padding: 0; height: 100%; width: 100%;
     overflow: hidden; overscroll-behavior: none;
-    background: #080a0f;
-    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    font-family: var(--font);
     -webkit-font-smoothing: antialiased;
     -webkit-tap-highlight-color: transparent;
   }
@@ -24,12 +56,12 @@
   #ui { position: fixed; inset: 0; pointer-events: none; z-index: 10; }
 
   .panel {
-    background: rgba(14, 18, 26, 0.82);
+    background: var(--panel-bg);
     -webkit-backdrop-filter: blur(14px);
     backdrop-filter: blur(14px);
-    border: 1px solid rgba(255,255,255,0.08);
+    border: 1px solid var(--panel-border);
     border-radius: 12px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
   }
 
   #top {
@@ -43,70 +75,72 @@
   #searchWrap { position: relative; pointer-events: auto; flex: 0 1 auto; min-width: 0; }
   #search {
     width: 236px; max-width: 100%; padding: 9px 12px; border-radius: 12px; outline: none;
-    border: 1px solid rgba(255,255,255,0.1);
-    background: rgba(14,18,26,0.82);
+    border: 1px solid var(--panel-border);
+    background: var(--panel-bg);
     -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
-    color: #e6edf5; font-size: 13px; font-family: inherit;
+    color: var(--text); font-size: 13px; font-family: inherit;
   }
-  #search:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,.15); }
+  #search::placeholder { color: var(--text-mute); }
+  #search:focus { border-color: var(--mako-12); box-shadow: 0 0 0 3px rgba(213, 174, 174, 0.15); }
   #results {
     position: absolute; top: calc(100% + 6px); left: 0; width: 360px;
     max-height: 340px; overflow-y: auto; display: none; padding: 4px;
   }
-  #results .r { padding: 7px 10px; font-size: 12.5px; color: #d4e0ec; cursor: pointer; border-radius: 8px; }
-  #results .r:hover { background: rgba(255,255,255,0.08); }
-  #results .r .p { color: #5f7288; font-size: 10.5px; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  #results .empty { padding: 10px; color: #5f7288; font-size: 12px; }
+  #results .r { padding: 7px 10px; font-size: 12.5px; color: var(--mako-13); cursor: pointer; border-radius: 8px; }
+  #results .r:hover { background: rgba(235, 220, 212, 0.08); }
+  #results .r .p { color: var(--text-mute); font-size: 10.5px; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #results .empty { padding: 10px; color: var(--text-mute); font-size: 12px; }
 
   .iconbtn {
     pointer-events: auto; flex: 0 0 auto;
     width: 38px; height: 38px;
     display: grid; place-items: center;
     border-radius: 12px;
-    border: 1px solid rgba(255,255,255,0.1);
-    background: rgba(14,18,26,0.82);
+    border: 1px solid var(--panel-border);
+    background: var(--panel-bg);
     -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
-    color: #a8bccf; cursor: pointer; transition: background .15s, color .15s;
+    color: var(--text-dim); cursor: pointer; transition: background .15s, color .15s;
   }
-  .iconbtn:hover { background: rgba(255,255,255,0.09); color: #fff; }
+  .iconbtn:hover { background: rgba(235, 220, 212, 0.09); color: var(--accent); }
   .iconbtn svg { width: 17px; height: 17px; display: block; }
 
   #hint {
     position: absolute; bottom: 12px; left: 12px;
-    padding: 9px 14px; font-size: 11.5px; color: #7d8ea3; line-height: 1.65;
+    padding: 9px 14px; font-size: 11.5px; color: var(--text-mute); line-height: 1.65;
     transition: opacity .25s;
   }
-  #hint b { color: #a8bccf; font-weight: 600; }
+  #hint b { color: var(--text-dim); font-weight: 600; }
 
   #legend {
     position: absolute; bottom: 12px; right: 12px;
     padding: 9px 14px; font-size: 12px; display: flex; gap: 16px; align-items: center;
     transition: right .35s cubic-bezier(.22,.9,.3,1), opacity .25s;
+    color: var(--text-dim);
   }
   body.panel-open #legend { right: calc(var(--pw) + 24px); }
   .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; margin-right: 7px; vertical-align: middle; }
 
   #tip {
-    position: absolute; padding: 7px 11px; font-size: 12px; color: #e6edf5;
+    position: absolute; padding: 7px 11px; font-size: 12px; color: var(--text);
     max-width: 340px; display: none; pointer-events: none;
-    background: rgba(8,12,18,0.96);
-    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(11, 4, 5, 0.96);
+    border: 1px solid rgba(235, 220, 212, 0.12);
     border-radius: 9px; line-height: 1.5;
-    box-shadow: 0 10px 30px rgba(0,0,0,.5);
+    box-shadow: 0 10px 30px rgba(0,0,0,.6);
     z-index: 5;
   }
-  #tip .p { color: #5f7288; font-size: 10.5px; margin-bottom: 3px; }
+  #tip .p { color: var(--text-mute); font-size: 10.5px; margin-bottom: 3px; }
 
   #panel {
     position: fixed;
     top: 12px; right: 12px; bottom: 12px;
     width: var(--pw);
     display: flex; flex-direction: column;
-    background: rgba(13, 17, 24, 0.9);
+    background: rgba(14, 6, 9, 0.92);
     -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
-    border: 1px solid rgba(255,255,255,0.09);
+    border: 1px solid var(--panel-border);
     border-radius: 16px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.55);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.65);
     transform: translateX(calc(100% + 24px));
     transition: transform .38s cubic-bezier(.22,.9,.3,1);
     pointer-events: none;
@@ -118,41 +152,41 @@
   .p-head {
     display: flex; align-items: flex-start; gap: 10px;
     padding: 16px 16px 13px 18px;
-    border-bottom: 1px solid rgba(255,255,255,0.07);
+    border-bottom: 1px solid rgba(235, 220, 212, 0.07);
     flex: 0 0 auto;
   }
   .p-titles { min-width: 0; flex: 1 1 auto; }
   .p-kicker {
     font-size: 10.5px; letter-spacing: .09em; text-transform: uppercase;
-    color: #6d84a0; font-weight: 600; margin-bottom: 4px;
+    color: var(--text-mute); font-weight: 600; margin-bottom: 4px;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .p-head h2 {
     margin: 0; font-size: 17.5px; line-height: 1.3; font-weight: 650;
-    color: #f2f6fb; letter-spacing: -0.01em; word-break: break-word;
+    color: var(--text); letter-spacing: -0.01em; word-break: break-word;
   }
   .p-close {
     flex: 0 0 auto;
     width: 30px; height: 30px; border-radius: 9px;
-    border: 1px solid rgba(255,255,255,0.09);
-    background: rgba(255,255,255,0.04);
-    color: #93a8c0; cursor: pointer; font-size: 13px;
+    border: 1px solid var(--panel-border);
+    background: rgba(235, 220, 212, 0.04);
+    color: var(--text-dim); cursor: pointer; font-size: 13px;
     display: grid; place-items: center; transition: background .15s, color .15s;
   }
-  .p-close:hover { background: rgba(255,255,255,0.11); color: #fff; }
+  .p-close:hover { background: rgba(235, 220, 212, 0.12); color: var(--accent); }
 
   .p-body {
     flex: 1 1 auto; overflow-y: auto; padding: 16px 18px 20px;
-    scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.14) transparent;
+    scrollbar-width: thin; scrollbar-color: rgba(235, 220, 212,.14) transparent;
   }
   .p-body::-webkit-scrollbar { width: 8px; }
-  .p-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,.13); border-radius: 4px; }
+  .p-body::-webkit-scrollbar-thumb { background: rgba(235, 220, 212,.13); border-radius: 4px; }
 
   .p-sec { margin-bottom: 20px; }
   .p-sec:last-child { margin-bottom: 0; }
   .p-label {
     font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase;
-    color: #5f7288; font-weight: 600; margin-bottom: 9px;
+    color: var(--text-mute); font-weight: 600; margin-bottom: 9px;
   }
 
   .mini { width: 100%; }
@@ -160,32 +194,73 @@
 
   .para { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
   .para .pnum {
-    font-size: 26px; font-weight: 650; color: #ffe9a8; letter-spacing: -0.02em;
+    font-size: 26px; font-weight: 650; color: var(--mako-13); letter-spacing: -0.02em;
     font-variant-numeric: tabular-nums; line-height: 1.1;
   }
   .sect {
-    margin-top: 7px; font-size: 12.5px; color: #b9c9db; line-height: 1.55;
+    margin-top: 7px; font-size: 12.5px; color: var(--mako-12); line-height: 1.55;
   }
   .inherit {
-    margin-top: 7px; font-size: 11.5px; color: #6d84a0; line-height: 1.55;
-    padding-left: 10px; border-left: 2px solid rgba(255,255,255,0.09);
+    margin-top: 7px; font-size: 11.5px; color: var(--text-mute); line-height: 1.55;
+    padding-left: 10px; border-left: 2px solid rgba(235, 220, 212, 0.09);
   }
 
-  .p-path { font-size: 12.5px; color: #93a8c0; line-height: 1.75; word-break: break-word; }
-  .p-path .psep { color: #3d4c60; padding: 0 5px; }
-  .p-path .pcur { color: #e6edf5; font-weight: 600; }
+  /* paragraph text block */
+  #paraTextSection { display: none; }
+  .show-para {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 14px;
+    background: rgba(235, 220, 212, 0.06);
+    border: 1px solid rgba(235, 220, 212, 0.12);
+    border-radius: 9px;
+    color: var(--accent);
+    font: inherit; font-size: 12.5px; font-weight: 550;
+    cursor: pointer;
+    transition: background .15s, border-color .15s, color .15s;
+  }
+  .show-para:hover {
+    background: rgba(235, 220, 212, 0.12);
+    border-color: rgba(235, 220, 212, 0.22);
+    color: var(--mako-15);
+  }
+  .show-para svg { width: 13px; height: 13px; opacity: 0.85; }
+
+  .para-text {
+    margin-top: 12px;
+    padding: 14px 16px;
+    background: rgba(0, 0, 0, 0.28);
+    border: 1px solid rgba(235, 220, 212, 0.08);
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.78;
+    color: var(--mako-13);
+    white-space: pre-wrap;
+  }
+  .para-text .ptitle {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--mako-9);
+    font-weight: 600;
+    margin-bottom: 9px;
+  }
+  .para-text .pbody { color: var(--mako-14); }
+
+  .p-path { font-size: 12.5px; color: var(--text-dim); line-height: 1.75; word-break: break-word; }
+  .p-path .psep { color: var(--mako-5); padding: 0 5px; }
+  .p-path .pcur { color: var(--text); font-weight: 600; }
 
   .p-foot {
     flex: 0 0 auto; padding: 10px 18px 13px;
-    font-size: 10.5px; color: #4e6076; line-height: 1.55;
-    border-top: 1px solid rgba(255,255,255,0.06);
+    font-size: 10.5px; color: var(--mako-7); line-height: 1.55;
+    border-top: 1px solid rgba(235, 220, 212, 0.06);
   }
 
   #err {
     position: absolute; inset: 0; display: none; place-items: center;
-    padding: 40px; text-align: center; color: #8fa3ba; font-size: 14px; line-height: 1.8;
+    padding: 40px; text-align: center; color: var(--text-dim); font-size: 14px; line-height: 1.8;
   }
-  #err code { background: rgba(255,255,255,.08); padding: 2px 6px; border-radius: 5px; color: #cfe0f0; }
+  #err code { background: rgba(235,220,212,.08); padding: 2px 6px; border-radius: 5px; color: var(--mako-13); }
 
   @media (max-width: 859px) {
     #panel {
@@ -225,9 +300,9 @@
   </div>
 
   <div id="legend" class="panel">
-    <span><i class="dot" style="background:#5b9bf5"></i>Logic</span>
-    <span><i class="dot" style="background:#4ec98a"></i>Nature</span>
-    <span><i class="dot" style="background:#c084fc"></i>Spirit</span>
+    <span><i class="dot" style="background:#86555C"></i>Logic</span>
+    <span><i class="dot" style="background:#B98687"></i>Nature</span>
+    <span><i class="dot" style="background:#EBDCD4"></i>Spirit</span>
   </div>
 
   <div id="tip"></div>
@@ -253,6 +328,16 @@
       <div class="sect" id="pSect"></div>
       <div class="inherit" id="pInherit" style="display:none"></div>
     </section>
+    <section class="p-sec" id="paraTextSection">
+      <div class="p-label">Paragraph text</div>
+      <button id="showParaBtn" class="show-para">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+        </svg>
+        <span id="showParaLabel">Show § 86</span>
+      </button>
+      <div id="paraTextDisplay" class="para-text" style="display:none"></div>
+    </section>
     <section class="p-sec">
       <div class="p-label">Path</div>
       <div class="p-path" id="pPath"></div>
@@ -270,6 +355,9 @@
 const canvas = document.getElementById("c");
 const ctx = canvas.getContext("2d");
 let dpr = 1, W = 1, H = 1;
+
+const FONT_STACK = '"Spline Sans", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
+const FONT_SVG   = "Spline Sans, Inter, system-ui, sans-serif";
 
 function resize() {
   dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -312,19 +400,31 @@ let dragging = false, moved = false, dragStart = null;
 let panelNode = null;
 
 const EASE = 0.06;
-
-/* ---- fisheye strength: >1 magnifies center, compresses rim ---- */
 const FISHEYE = 1.45;
+
+/* Minimum tree-depth at which the paragraph-text button may appear */
+const MIN_DEPTH_FOR_TEXT = 5;
 
 let preferredZoom = 1;
 let firstNodeClick = true;
 
-const PALETTE = ["#5b9bf5", "#4ec98a", "#c084fc"];
+/* loaded from paragraphs.json */
+let PARA_TEXTS = {};
+
+/* =========================================================
+   BRANCH COLORS  (mako samples)
+   ========================================================= */
+const BRANCH_COLORS = [
+  "#86555C",  // Logic  (mako[7])
+  "#B98687",  // Nature (mako[10])
+  "#EBDCD4"   // Spirit (mako[14])
+];
 
 /* =========================================================
    PARAGRAPH MAP  (1830 Encyclopaedia, Werke 8–10)
    ========================================================= */
 const PARAS = {
+  /* ---------- Part One: Logic ---------- */
   "1":   { p: "84–244", s: "Part One — The Science of Logic" },
 
   "1.1": { p: "84–111", s: "First Book — The Doctrine of Being" },
@@ -337,12 +437,30 @@ const PARAS = {
   "1.1.1.1.3.3": { p: "88" },
   "1.1.1.2":   { p: "89–95" },
   "1.1.1.2.1": { p: "89–91" },
+  "1.1.1.2.1.1": { p: "89" },
+  "1.1.1.2.1.2": { p: "90" },
+  "1.1.1.2.1.3": { p: "91" },
+  "1.1.1.2.1.3.1": { p: "92" },
+  "1.1.1.2.1.3.2": { p: "92" },
+  "1.1.1.2.1.3.3": { p: "92" },
   "1.1.1.2.2": { p: "92–94" },
   "1.1.1.2.3": { p: "95" },
+  "1.1.1.2.3.1": { p: "94" },
+  "1.1.1.2.3.2": { p: "95" },
+  "1.1.1.2.3.3": { p: "95" },
   "1.1.1.3":   { p: "96–98" },
   "1.1.1.3.1": { p: "96" },
+  "1.1.1.3.1.1": { p: "96" },
+  "1.1.1.3.1.2": { p: "96" },
+  "1.1.1.3.1.3": { p: "96" },
   "1.1.1.3.2": { p: "97" },
+  "1.1.1.3.2.1": { p: "97" },
+  "1.1.1.3.2.2": { p: "97" },
+  "1.1.1.3.2.3": { p: "97" },
   "1.1.1.3.3": { p: "98" },
+  "1.1.1.3.3.1": { p: "98" },
+  "1.1.1.3.3.2": { p: "98" },
+  "1.1.1.3.3.3": { p: "98" },
   "1.1.2":   { p: "99–106" },
   "1.1.2.1": { p: "99" },
   "1.1.2.2": { p: "100–104" },
@@ -380,6 +498,7 @@ const PARAS = {
   "1.3.3.2": { p: "223–234" },
   "1.3.3.3": { p: "236–244" },
 
+  /* ---------- Part Two: Nature ---------- */
   "2": { p: "245–376", s: "Part Two — The Philosophy of Nature" },
   "2.1": { p: "253–271", s: "First Division — Mechanics" },
   "2.1.1": { p: "254–259" },
@@ -397,6 +516,7 @@ const PARAS = {
   "2.3.2": { p: "350–359" },
   "2.3.3": { p: "360–376" },
 
+  /* ---------- Part Three: Spirit ---------- */
   "3": { p: "377–577", s: "Part Three — The Philosophy of Spirit" },
   "3.1": { p: "377–482", s: "First Section — Subjective Spirit" },
   "3.1.1": { p: "388–412" },
@@ -438,11 +558,6 @@ function mobius(z, a) {
   };
 }
 
-/* =========================================================
-   FISHEYE WARP
-   Scales hyperbolic radius by FISHEYE, keeping |r| < 1.
-   Large FISHEYE → center magnified, rim compressed.
-   ========================================================= */
 function warpRadius(r) {
   if (r < 1e-6) return 0;
   if (r > 0.999999) r = 0.999999;
@@ -502,9 +617,9 @@ function prepare(data) {
     n._sx = 0; n._sy = 0;
   }
 
-  data._color = "#cbd5e1";
+  data._color = "#C89999";
   for (let i = 0; i < data._children.length; i++) {
-    const col = PALETTE[i % PALETTE.length];
+    const col = BRANCH_COLORS[i % BRANCH_COLORS.length];
     (function paint(n) {
       n._color = col;
       for (let j = 0; j < n._children.length; j++) paint(n._children[j]);
@@ -561,9 +676,7 @@ function strokeGeo(p, q, cx0, cy0, s) {
 }
 
 /* =========================================================
-   LABEL VISIBILITY SET
-   Focused node + parent + all children + all siblings.
-   Everything else is hidden.
+   LABEL VISIBILITY
    ========================================================= */
 function buildLabelSet() {
   labelSet = new Set();
@@ -590,19 +703,20 @@ function draw() {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.clearRect(0, 0, W, H);
 
+  /* mako-tinted radial glow */
   const g = ctx.createRadialGradient(cx0, cy0, 0, cx0, cy0, Math.max(W, H) * 0.72);
-  g.addColorStop(0, "rgba(38, 54, 78, 0.5)");
-  g.addColorStop(1, "rgba(8, 10, 15, 0)");
+  g.addColorStop(0, "rgba(61, 35, 43, 0.55)");   // mako[3] tint
+  g.addColorStop(1, "rgba(11, 4, 5, 0)");
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, W, H);
 
   ctx.beginPath();
   ctx.arc(cx0, cy0, scale, 0, Math.PI * 2);
-  ctx.strokeStyle = "rgba(120, 152, 195, 0.15)";
+  ctx.strokeStyle = "rgba(235, 220, 212, 0.10)";
   ctx.lineWidth = 1;
   ctx.stroke();
 
-  /* ---- transform + fisheye ---- */
+  /* transform + fisheye */
   for (let i = 0; i < NODES.length; i++) {
     const n = NODES[i];
     const z = mobius(n._z, A);
@@ -622,7 +736,7 @@ function draw() {
     n._sy = cy0 + scale * zi;
   }
 
-  /* ---- edges ---- */
+  /* edges */
   ctx.lineCap = "round";
   for (let i = 0; i < NODES.length; i++) {
     const n = NODES[i];
@@ -635,18 +749,18 @@ function draw() {
     const inLabel = labelSet.has(n._id) || labelSet.has(p._id);
 
     if (hot) {
-      ctx.strokeStyle = "rgba(255, 214, 102, " + Math.min(0.95, 0.35 + m * 0.8) + ")";
+      ctx.strokeStyle = "rgba(247, 243, 237, " + Math.min(0.95, 0.35 + m * 0.8) + ")";
       ctx.lineWidth = Math.max(0.8, Math.min(2.8, 0.9 + 2.6 * m));
     } else {
       const baseA = inLabel ? 0.42 : 0.12;
       const al = Math.min(0.65, baseA + m * 0.4);
-      ctx.strokeStyle = "rgba(126, 158, 196, " + al + ")";
+      ctx.strokeStyle = "rgba(200, 153, 153, " + al + ")";  // mako[11]
       ctx.lineWidth = Math.max(0.4, Math.min(2.0, (inLabel ? 0.7 : 0.3) + 2.0 * m));
     }
     strokeGeo(p._w, n._w, cx0, cy0, scale);
   }
 
-  /* ---- nodes ---- */
+  /* nodes */
   for (let i = 0; i < NODES.length; i++) {
     const n = NODES[i];
     const m = n._m;
@@ -660,10 +774,10 @@ function draw() {
     ctx.arc(n._sx, n._sy, hot ? rr + 2.2 : rr, 0, Math.PI * 2);
 
     if (hot) {
-      ctx.fillStyle = "#ffd666";
+      ctx.fillStyle = "#F7F3ED";  // mako[15]
       ctx.globalAlpha = 1;
     } else {
-      ctx.fillStyle = n._color || "#9ab";
+      ctx.fillStyle = n._color || "#986469";
       const minA = labelSet.has(n._id) ? 0.55 : 0.18;
       ctx.globalAlpha = Math.min(1, minA + m * 1.0);
     }
@@ -671,23 +785,23 @@ function draw() {
 
     if (hot) {
       ctx.globalAlpha = 1;
-      ctx.strokeStyle = "rgba(255,214,102,0.55)";
+      ctx.strokeStyle = "rgba(247, 243, 237, 0.55)";
       ctx.lineWidth = 1.2;
       ctx.stroke();
     }
     ctx.globalAlpha = 1;
   }
 
-  /* ---- focus ring ---- */
+  /* focus ring */
   if (FOCUS) {
     ctx.beginPath();
     ctx.arc(cx0, cy0, 9, 0, Math.PI * 2);
-    ctx.strokeStyle = "rgba(255, 214, 102, 0.35)";
+    ctx.strokeStyle = "rgba(235, 220, 212, 0.35)";
     ctx.lineWidth = 1;
     ctx.stroke();
   }
 
-  /* ---- labels: only labelSet + hover path ---- */
+  /* labels */
   const vis = [];
   labelSet.forEach(function (id) { vis.push(NODES[id]); });
   vis.sort(function (a, b) { return b._m - a._m; });
@@ -714,20 +828,15 @@ function drawLabel(n, cx0, mode) {
     fs = 7.5 + 6.5 * m;
     if (fs < 6) return;
     const a = Math.min(1, 0.18 + m * 1.25);
-    color = "rgba(255, 226, 150, " + a + ")";
-  } else if (mode === "focus") {
+    color = "rgba(247, 243, 237, " + a + ")";      // mako[15]
+  } else {
     fs = Math.max(10, 7.5 + 6.5 * m);
     const a = Math.min(1, 0.65 + m * 1.25);
-    color = "rgba(234, 242, 250, " + a + ")";
-  } else {
-    fs = 7.5 + 6.5 * m;
-    if (fs < 8.2) return;
-    const a = Math.min(1, 0.18 + m * 1.25);
-    color = "rgba(226, 236, 248, " + a + ")";
+    color = "rgba(235, 220, 212, " + a + ")";      // mako[14]
   }
 
   const size = Math.max(8, fs);
-  ctx.font = "500 " + size.toFixed(1) + "px ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
+  ctx.font = "500 " + size.toFixed(1) + "px " + FONT_STACK;
   ctx.textBaseline = "middle";
 
   const left = n._sx < cx0;
@@ -749,7 +858,7 @@ function drawLabel(n, cx0, mode) {
 }
 
 /* =========================================================
-   TARGET ZOOM  (neighborhood of the node)
+   TARGET ZOOM
    ========================================================= */
 function targetZoomFor(node) {
   if (!node || node === ROOT) return 1;
@@ -770,9 +879,7 @@ function loop() {
     A.im += dy * EASE;
     dirty = true;
   } else if (A.re !== AT.re || A.im !== AT.im) {
-    A.re = AT.re;
-    A.im = AT.im;
-    dirty = true;
+    A.re = AT.re; A.im = AT.im; dirty = true;
   }
 
   const dz = ZOOMT - ZOOM;
@@ -780,8 +887,7 @@ function loop() {
     ZOOM += dz * EASE;
     dirty = true;
   } else if (ZOOM !== ZOOMT) {
-    ZOOM = ZOOMT;
-    dirty = true;
+    ZOOM = ZOOMT; dirty = true;
   }
 
   const dpx = PANTX - PANX;
@@ -791,9 +897,7 @@ function loop() {
     PANY += dpy * EASE;
     dirty = true;
   } else if (PANX !== PANTX || PANY !== PANTY) {
-    PANX = PANTX;
-    PANY = PANTY;
-    dirty = true;
+    PANX = PANTX; PANY = PANTY; dirty = true;
   }
 
   const ds = viewShiftTarget - viewShift;
@@ -801,8 +905,7 @@ function loop() {
     viewShift += ds * 0.16;
     dirty = true;
   } else if (viewShift !== viewShiftTarget) {
-    viewShift = viewShiftTarget;
-    dirty = true;
+    viewShift = viewShiftTarget; dirty = true;
   }
 
   if (dirty || needsDraw) {
@@ -813,7 +916,7 @@ function loop() {
 }
 
 /* =========================================================
-   PANEL / PARAGRAPHS
+   PANEL HELPERS
    ========================================================= */
 const panel = document.getElementById("panel");
 
@@ -878,7 +981,7 @@ function closePanel() {
   needsDraw = true;
 }
 
-/* ---------- measuring + mini-tree ---------- */
+/* ---------- mini-tree ---------- */
 const measureCtx = document.createElement("canvas").getContext("2d");
 
 function fitText(text, maxW, font) {
@@ -892,25 +995,25 @@ function fitText(text, maxW, font) {
 function pillSVG(x, y, w, h, node, opts) {
   opts = opts || {};
   const idx = node._id;
-  const color = node._color || "#9ab";
+  const color = node._color || "#986469";
   const active = !!opts.active;
   const dim = !!opts.dim;
   const compact = !!opts.compact;
 
   const fill = active
-    ? "rgba(255,214,102,0.10)"
+    ? "rgba(235, 220, 212, 0.10)"
     : dim
-      ? "rgba(255,255,255,0.025)"
-      : "rgba(255,255,255,0.05)";
+      ? "rgba(235, 220, 212, 0.025)"
+      : "rgba(235, 220, 212, 0.05)";
   const stroke = active
-    ? "rgba(255,214,102,0.72)"
+    ? "rgba(235, 220, 212, 0.72)"
     : dim
-      ? "rgba(255,255,255,0.08)"
-      : "rgba(255,255,255,0.12)";
+      ? "rgba(235, 220, 212, 0.08)"
+      : "rgba(235, 220, 212, 0.12)";
   const op = dim ? 0.72 : 1;
 
   const fontPx = compact ? 10 : 11.5;
-  const font = "500 " + fontPx + "px ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
+  const font = "500 " + fontPx + "px " + FONT_STACK;
 
   const dotX = x + (compact ? 9 : 11);
   const dotR = compact ? 2.4 : 3.2;
@@ -924,9 +1027,9 @@ function pillSVG(x, y, w, h, node, opts) {
         ' fill="' + fill + '" stroke="' + stroke + '" stroke-width="1"/>' +
       '<circle cx="' + dotX + '" cy="' + (y + h / 2) + '" r="' + dotR + '" fill="' + color + '"/>' +
       '<text x="' + textX + '" y="' + (y + h / 2 + 0.5) + '"' +
-        ' font-family="ui-sans-serif, system-ui, -apple-system, \'Segoe UI\', Roboto, sans-serif"' +
+        ' font-family="' + FONT_SVG + '"' +
         ' font-size="' + fontPx + '" font-weight="500"' +
-        ' fill="' + (active ? "#ffe9a8" : "#dbe7f2") + '" dominant-baseline="middle">' +
+        ' fill="' + (active ? "#F7F3ED" : "#EBDCD4") + '" dominant-baseline="middle">' +
         esc(label) +
       '</text>' +
     '</g>'
@@ -969,20 +1072,21 @@ function renderMiniTree(node) {
   parts.push('<svg width="' + W0 + '" height="' + H0 + '" viewBox="0 0 ' + W0 + ' ' + H0 + '" xmlns="http://www.w3.org/2000/svg">');
 
   const centerX = W0 / 2;
+  const LINE = "rgba(235, 220, 212, 0.16)";
 
   /* ancestor spine */
   let prevBottom = null;
   for (const r of ancRows) {
     if (prevBottom !== null) {
-      parts.push('<line x1="' + centerX + '" y1="' + prevBottom + '" x2="' + centerX + '" y2="' + r.y + '" stroke="rgba(255,255,255,0.16)" stroke-width="1"/>');
+      parts.push('<line x1="' + centerX + '" y1="' + prevBottom + '" x2="' + centerX + '" y2="' + r.y + '" stroke="' + LINE + '" stroke-width="1"/>');
     }
     prevBottom = r.y + r.h;
   }
   if (prevBottom !== null) {
-    parts.push('<line x1="' + centerX + '" y1="' + prevBottom + '" x2="' + centerX + '" y2="' + selfRow.y + '" stroke="rgba(255,255,255,0.16)" stroke-width="1"/>');
+    parts.push('<line x1="' + centerX + '" y1="' + prevBottom + '" x2="' + centerX + '" y2="' + selfRow.y + '" stroke="' + LINE + '" stroke-width="1"/>');
   }
 
-  /* self → children (vertical stack, left spine) */
+  /* self → children */
   if (kidRows.length) {
     const selfBottom = selfRow.y + selfRow.h;
     const spineX = 14;
@@ -992,13 +1096,13 @@ function renderMiniTree(node) {
     const lastKid = kidRows[kidRows.length - 1];
     const lastCenter = lastKid.y + lastKid.h / 2;
 
-    parts.push('<line x1="' + centerX + '" y1="' + selfBottom + '" x2="' + centerX + '" y2="' + elbowY + '" stroke="rgba(255,255,255,0.16)" stroke-width="1"/>');
-    parts.push('<line x1="' + centerX + '" y1="' + elbowY + '" x2="' + spineX + '" y2="' + elbowY + '" stroke="rgba(255,255,255,0.16)" stroke-width="1"/>');
-    parts.push('<line x1="' + spineX + '" y1="' + elbowY + '" x2="' + spineX + '" y2="' + lastCenter + '" stroke="rgba(255,255,255,0.16)" stroke-width="1"/>');
+    parts.push('<line x1="' + centerX + '" y1="' + selfBottom + '" x2="' + centerX + '" y2="' + elbowY + '" stroke="' + LINE + '" stroke-width="1"/>');
+    parts.push('<line x1="' + centerX + '" y1="' + elbowY + '" x2="' + spineX + '" y2="' + elbowY + '" stroke="' + LINE + '" stroke-width="1"/>');
+    parts.push('<line x1="' + spineX + '" y1="' + elbowY + '" x2="' + spineX + '" y2="' + lastCenter + '" stroke="' + LINE + '" stroke-width="1"/>');
 
     for (const kr of kidRows) {
       const cy = kr.y + kr.h / 2;
-      parts.push('<line x1="' + spineX + '" y1="' + cy + '" x2="' + pillX + '" y2="' + cy + '" stroke="rgba(255,255,255,0.16)" stroke-width="1"/>');
+      parts.push('<line x1="' + spineX + '" y1="' + cy + '" x2="' + pillX + '" y2="' + cy + '" stroke="' + LINE + '" stroke-width="1"/>');
     }
 
     for (const kr of kidRows) {
@@ -1028,6 +1132,7 @@ function renderMiniTree(node) {
   });
 }
 
+/* ---------- panel renderer ---------- */
 function renderPanel(node) {
   document.getElementById("pKicker").textContent = sectionFor(node);
   document.getElementById("pTitle").textContent = node.name || "—";
@@ -1060,6 +1165,41 @@ function renderPanel(node) {
     pInherit.style.display = "none";
   }
 
+  /* ---- paragraph text section ---- */
+  const secEl = document.getElementById("paraTextSection");
+  const btn = document.getElementById("showParaBtn");
+  const lbl = document.getElementById("showParaLabel");
+  const display = document.getElementById("paraTextDisplay");
+
+  display.style.display = "none";
+  display.innerHTML = "";
+
+  const pnum = info ? info.p : null;
+  const isSingle = pnum && !/[–-]/.test(pnum);
+  const deep = node._depth >= MIN_DEPTH_FOR_TEXT;
+  const entry = isSingle ? PARA_TEXTS[pnum] : null;
+
+  if (deep && entry && entry.text && entry.text.length) {
+    secEl.style.display = "block";
+    btn.style.display = "inline-flex";
+    lbl.textContent = "Show § " + pnum;
+    btn.onclick = function () {
+      if (display.style.display === "none") {
+        display.innerHTML =
+          (entry.title ? '<div class="ptitle">§ ' + esc(pnum) + ' — ' + esc(entry.title) + "</div>" : "") +
+          '<div class="pbody">' + esc(entry.text) + "</div>";
+        display.style.display = "block";
+        lbl.textContent = "Hide § " + pnum;
+      } else {
+        display.style.display = "none";
+        lbl.textContent = "Show § " + pnum;
+      }
+    };
+  } else {
+    secEl.style.display = "none";
+  }
+
+  /* ---- path ---- */
   const chain = [];
   let n = node;
   while (n) { chain.unshift(n); n = n._parent; }
@@ -1090,8 +1230,7 @@ function focusOn(n) {
   if (!n) return;
   FOCUS = n;
   AT = { re: n._z.re, im: n._z.im };
-  PANTX = 0;
-  PANTY = 0;
+  PANTX = 0; PANTY = 0;
 
   if (n === ROOT) {
     ZOOMT = preferredZoom;
@@ -1177,11 +1316,8 @@ canvas.addEventListener("pointerup", function (e) {
       focusOn(n);
       openPanel(n);
     } else {
-      if (panelNode) {
-        closePanel();
-      } else if (FOCUS && FOCUS._parent) {
-        focusOn(FOCUS._parent);
-      }
+      if (panelNode) closePanel();
+      else if (FOCUS && FOCUS._parent) focusOn(FOCUS._parent);
     }
   }
   dragging = false;
@@ -1229,13 +1365,8 @@ function clampPan() {
 
 window.addEventListener("keydown", function (e) {
   if (e.key === "Escape" || e.key === "Backspace") {
-    if (panelNode) {
-      e.preventDefault();
-      closePanel();
-    } else if (FOCUS && FOCUS._parent) {
-      e.preventDefault();
-      focusOn(FOCUS._parent);
-    }
+    if (panelNode) { e.preventDefault(); closePanel(); }
+    else if (FOCUS && FOCUS._parent) { e.preventDefault(); focusOn(FOCUS._parent); }
   }
 });
 
@@ -1330,17 +1461,22 @@ async function boot() {
       "<div><b>Could not load <code>tree.json</code></b><br/><br/>" +
       "Make sure the JSON file sits next to <code>index.html</code> " +
       "and that you are serving the folder (GitHub Pages does this automatically).<br/><br/>" +
-      '<span style="color:#5f7288;font-size:12px">' + esc(err.message) + "</span></div>";
+      '<span style="color:#86555C;font-size:12px">' + esc(err.message) + "</span></div>";
     return;
   }
+
+  /* Try to load paragraphs.json — non-fatal if missing */
+  try {
+    const pr = await fetch("paragraphs.json", { cache: "no-cache" });
+    if (pr.ok) PARA_TEXTS = await pr.json();
+  } catch (_) { /* no paragraphs.json — feature simply won't appear */ }
 
   prepare(data);
 
   FOCUS = data;
   A = { re: data._z.re, im: data._z.im };
   AT = { re: data._z.re, im: data._z.im };
-  ZOOM = 1;
-  ZOOMT = 1;
+  ZOOM = 1; ZOOMT = 1;
   preferredZoom = 1;
   PANX = PANY = PANTX = PANTY = 0;
 
