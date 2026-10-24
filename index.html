@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>Hegel's Encyclopedia — Hyperbolic Browser</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; height: 100%; overflow: hidden;
+    background: #080a0f;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  canvas { display: block; touch-action: none; cursor: grab; }
+  canvas.grabbing { cursor: grabbing; }
+
+  #ui { position: fixed; inset: 0; pointer-events: none; z-index: 10; }
+
+  .panel {
+    background: rgba(14, 18, 26, 0.82);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+  }
+
+  #top {
+    position: absolute; top: 12px; left: 12px; right: 12px;
+    display: flex; gap: 10px; align-items: flex-start; flex-wrap: wrap;
+  }
+
+  #crumbs {
+    pointer-events: auto;
+    display: flex; align-items: center; gap: 1px;
+    padding: 7px 10px; font-size: 13px;
+    max-width: min(1000px, calc(100vw - 280px));
+    overflow-x: auto; white-space: nowrap;
+    scrollbar-width: thin;
+  }
+  #crumbs::-webkit-scrollbar { height: 4px; }
+  #crumbs::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 2px; }
+  #crumbs button {
+    background: none; border: 0; color: #93a8c0; cursor: pointer;
+    padding: 3px 6px; border-radius: 6px; font: inherit; white-space: nowrap;
+  }
+  #crumbs button:hover { background: rgba(255,255,255,0.09); color: #fff; }
+  #crumbs .sep { color: #3d4c60; padding: 0 1px; }
+  #crumbs .cur { color: #fff; font-weight: 600; }
+
+  #searchWrap { position: relative; pointer-events: auto; }
+  #search {
+    width: 240px; padding: 9px 12px; border-radius: 12px; outline: none;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(14,18,26,0.82);
+    -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+    color: #e6edf5; font-size: 13px; font-family: inherit;
+  }
+  #search:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,.15); }
+  #results {
+    position: absolute; top: calc(100% + 6px); left: 0; width: 360px;
+    max-height: 340px; overflow-y: auto; display: none; padding: 4px;
+  }
+  #results .r { padding: 7px 10px; font-size: 12.5px; color: #d4e0ec; cursor: pointer; border-radius: 8px; }
+  #results .r:hover { background: rgba(255,255,255,0.08); }
+  #results .r .p { color: #5f7288; font-size: 10.5px; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #results .empty { padding: 10px; color: #5f7288; font-size: 12px; }
+
+  #hint {
+    position: absolute; bottom: 12px; left: 12px;
+    padding: 9px 14px; font-size: 11.5px; color: #7d8ea3; line-height: 1.65;
+  }
+  #hint b { color: #a8bccf; font-weight: 600; }
+
+  #legend {
+    position: absolute; bottom: 12px; right: 12px;
+    padding: 9px 14px; font-size: 12px; display: flex; gap: 16px; align-items: center;
+  }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; margin-right: 7px; vertical-align: middle; }
+
+  #tip {
+    position: absolute; padding: 7px 11px; font-size: 12px; color: #e6edf5;
+    max-width: 340px; display: none; pointer-events: none;
+    background: rgba(8,12,18,0.96);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 9px; line-height: 1.5;
+    box-shadow: 0 10px 30px rgba(0,0,0,.5);
+  }
+  #tip .p { color: #5f7288; font-size: 10.5px; margin-bottom: 3px; }
+
+  #err {
+    position: absolute; inset: 0; display: none; place-items: center;
+    padding: 40px; text-align: center; color: #8fa3ba; font-size: 14px; line-height: 1.8;
+  }
+  #err code { background: rgba(255,255,255,.08); padding: 2px 6px; border-radius: 5px; color: #cfe0f0; }
+</style>
+</head>
+<body>
+
+<canvas id="c"></canvas>
+
+<div id="ui">
+  <div id="top">
+    <div id="crumbs" class="panel"></div>
+    <div id="searchWrap">
+      <input id="search" class="panel" placeholder="Search the Encyclopedia…" autocomplete="off" spellcheck="false" />
+      <div id="results" class="panel"></div>
+    </div>
+  </div>
+
+  <div id="hint" class="panel">
+    <b>Click</b> a node to focus &nbsp;·&nbsp; <b>click background</b> or <b>Esc</b> to go up<br/>
+    <b>Scroll</b> to zoom &nbsp;·&nbsp; <b>Drag</b> to pan when zoomed
+  </div>
+
+  <div id="legend" class="panel">
+    <span><i class="dot" style="background:#5b9bf5"></i>Logic</span>
+    <span><i class="dot" style="background:#4ec98a"></i>Nature</span>
+    <span><i class="dot" style="background:#c084fc"></i>Spirit</span>
+  </div>
+
+  <div id="tip"></div>
+  <div id="err"></div>
+</div>
+
+<script>
+"use strict";
+
+/* =========================================================
+   CANVAS / DPR
+   ========================================================= */
+const canvas = document.getElementById("c");
+const ctx = canvas.getContext("2d");
+let dpr = 1, W = 1, H = 1;
+
+function resize() {
+  dpr = Math.min(window.devicePixelRatio || 1, 2);
+  W = window.innerWidth;
+  H = window.innerHeight;
+  canvas.width = Math.round(W * dpr);
+  canvas.height = Math.round(H * dpr);
+  canvas.style.width = W + "px";
+  canvas.style.height = H + "px";
+  needsDraw = true;
+}
+
+/* =========================================================
+   STATE
+   ========================================================= */
+let NODES = [];               // flat list
+let ROOT = null;
+let MAXD = 1;
+
+let A  = { re: 0, im: 0 };    // current Möbius parameter
+let AT = { re: 0, im: 0 };    // target
+let FOCUS = null;
+let HOVER = null;
+let hoverPath = new Set();
+
+let ZOOM = 1, PANX = 0, PANY = 0;
+let needsDraw = true;
+let dragging = false, moved = false, dragStart = null;
+
+const PALETTE = ["#5b9bf5", "#4ec98a", "#c084fc"];
+
+/* =========================================================
+   COMPLEX HELPERS  (Poincaré disk Möbius transform)
+   f(z) = (z - a) / (1 - conj(a) z)     moves a → 0
+   ========================================================= */
+function mobius(z, a) {
+  const ar = a.re, ai = a.im;
+  const dr = ar * z.re + ai * z.im;   // Re(conj(a)·z)
+  const di = ar * z.im - ai * z.re;   // Im(conj(a)·z)
+  const nr = z.re - ar, ni = z.im - ai;
+  const denr = 1 - dr, deni = -di;
+  const den = denr * denr + deni * deni;
+  if (den < 1e-12) return { re: 0, im: 0 };
+  return {
+    re: (nr * denr + ni * deni) / den,
+    im: (ni * denr - nr * deni) / den
+  };
+}
+
+/* =========================================================
+   LAYOUT
+   ========================================================= */
+function prepare(data) {
+  NODES = [];
+  MAXD = 0;
+
+  (function walk(n, parent, depth) {
+    n._id = NODES.length;
+    n._parent = parent;
+    n._depth = depth;
+    n._children = n.children || [];
+    if (depth > MAXD) MAXD = depth;
+    NODES.push(n);
+    for (let i = 0; i < n._children.length; i++) walk(n._children[i], n, depth + 1);
+  })(data, null, 0);
+
+  ROOT = data;
+
+  /* leaf counts → angular weight */
+  (function countLeaves(n) {
+    if (n._children.length === 0) { n._leaves = 1; return 1; }
+    let s = 0;
+    for (let i = 0; i < n._children.length; i++) s += countLeaves(n._children[i]);
+    n._leaves = s;
+    return s;
+  })(data);
+
+  /* angular wedges, proportional to leaf count */
+  (function assign(n, a0, a1) {
+    n._ang = (a0 + a1) * 0.5;
+    n._a0 = a0; n._a1 = a1;
+    if (n._children.length) {
+      let total = 0;
+      for (let i = 0; i < n._children.length; i++) total += n._children[i]._leaves;
+      let cur = a0;
+      for (let i = 0; i < n._children.length; i++) {
+        const c = n._children[i];
+        const w = (a1 - a0) * (c._leaves / total);
+        assign(c, cur, cur + w);
+        cur += w;
+      }
+    }
+  })(data, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2);
+
+  /* radii: linear in depth, filling the disk */
+  const dr = 0.93 / Math.max(1, MAXD);
+  for (let i = 0; i < NODES.length; i++) {
+    const n = NODES[i];
+    const r = dr * n._depth;
+    n._z = { re: r * Math.cos(n._ang), im: r * Math.sin(n._ang) };
+    n._w = { re: 0, im: 0 };
+    n._m = 0;
+    n._sx = 0; n._sy = 0;
+  }
+
+  /* colours by top-level branch */
+  data._color = "#cbd5e1";
+  for (let i = 0; i < data._children.length; i++) {
+    const col = PALETTE[i % PALETTE.length];
+    (function paint(n) {
+      n._color = col;
+      for (let j = 0; j < n._children.length; j++) paint(n._children[j]);
+    })(data._children[i]);
+  }
+}
+
+/* =========================================================
+   GEODESIC DRAWING (arc orthogonal to the unit circle)
+   ========================================================= */
+function strokeGeo(p, q, cx0, cy0, s) {
+  const px = p.re, py = p.im, qx = q.re, qy = q.im;
+  const p2 = px * px + py * py;
+  const q2 = qx * qx + qy * qy;
+
+  const det = 4 * (px * qy - py * qx);
+
+  if (Math.abs(det) < 1e-7) {                 // collinear with origin → straight
+    ctx.beginPath();
+    ctx.moveTo(cx0 + s * px, cy0 + s * py);
+    ctx.lineTo(cx0 + s * qx, cy0 + s * qy);
+    ctx.stroke();
+    return;
+  }
+
+  const b1 = 1 + p2, b2 = 1 + q2;
+  const cx = (b1 * 2 * qy - 2 * py * b2) / det;
+  const cy = (2 * px * b2 - b1 * 2 * qx) / det;
+  const R2 = cx * cx + cy * cy - 1;
+
+  if (R2 <= 1e-9 || R2 > 25e6) {              // degenerate / numerically huge
+    ctx.beginPath();
+    ctx.moveTo(cx0 + s * px, cy0 + s * py);
+    ctx.lineTo(cx0 + s * qx, cy0 + s * qy);
+    ctx.stroke();
+    return;
+  }
+
+  const R = Math.sqrt(R2);
+  const tp = Math.atan2(py - cy, px - cx);
+  const tq = Math.atan2(qy - cy, qx - cx);
+
+  let d = tq - tp;
+  while (d < 0) d += Math.PI * 2;
+  while (d >= Math.PI * 2) d -= Math.PI * 2;
+
+  const tm = tp + d / 2;
+  const mx = cx + R * Math.cos(tm);
+  const my = cy + R * Math.sin(tm);
+  const inside = (mx * mx + my * my) < 1;
+
+  ctx.beginPath();
+  ctx.arc(cx0 + s * cx, cy0 + s * cy, s * R, tp, tq, !inside);
+  ctx.stroke();
+}
+
+/* =========================================================
+   DRAW
+   ========================================================= */
+function draw() {
+  const cx0 = W / 2 + PANX;
+  const cy0 = H / 2 + PANY;
+  const scale = Math.min(W, H) * 0.47 * ZOOM;
+
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, W, H);
+
+  /* soft glow behind the disk */
+  const g = ctx.createRadialGradient(cx0, cy0, 0, cx0, cy0, Math.max(W, H) * 0.7);
+  g.addColorStop(0, "rgba(38, 54, 78, 0.5)");
+  g.addColorStop(1, "rgba(8, 10, 15, 0)");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, W, H);
+
+  /* disk boundary */
+  ctx.beginPath();
+  ctx.arc(cx0, cy0, scale, 0, Math.PI * 2);
+  ctx.strokeStyle = "rgba(120, 152, 195, 0.15)";
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  /* ---- transform every node ---- */
+  for (let i = 0; i < NODES.length; i++) {
+    const n = NODES[i];
+    const z = mobius(n._z, A);
+    let r2 = z.re * z.re + z.im * z.im;
+    if (r2 > 0.9999995) r2 = 0.9999995;
+    n._w = z;
+    n._m = 1 - r2;
+    n._sx = cx0 + scale * z.re;
+    n._sy = cy0 + scale * z.im;
+  }
+
+  /* ---- edges ---- */
+  ctx.lineCap = "round";
+  for (let i = 0; i < NODES.length; i++) {
+    const n = NODES[i];
+    const p = n._parent;
+    if (!p) continue;
+    const m = n._m < p._m ? n._m : p._m;
+    if (m < 0.012) continue;
+
+    const hot = hoverPath.has(n) && hoverPath.has(p);
+    if (hot) {
+      ctx.strokeStyle = "rgba(255, 214, 102, " + Math.min(0.95, 0.35 + m * 0.8) + ")";
+      ctx.lineWidth = Math.max(0.8, Math.min(2.8, 0.9 + 2.6 * m));
+    } else {
+      const al = Math.min(0.55, 0.05 + m * 0.5);
+      ctx.strokeStyle = "rgba(126, 158, 196, " + al + ")";
+      ctx.lineWidth = Math.max(0.4, Math.min(2.0, 0.35 + 2.1 * m));
+    }
+    strokeGeo(p._w, n._w, cx0, cy0, scale);
+  }
+
+  /* ---- nodes ---- */
+  for (let i = 0; i < NODES.length; i++) {
+    const n = NODES[i];
+    const m = n._m;
+    if (m < 0.006) continue;
+
+    const rr = Math.max(0.6, Math.min(11, 1.1 + 7.5 * m));
+    const hot = hoverPath.has(n);
+
+    ctx.beginPath();
+    ctx.arc(n._sx, n._sy, hot ? rr + 2.2 : rr, 0, Math.PI * 2);
+
+    if (hot) {
+      ctx.fillStyle = "#ffd666";
+      ctx.globalAlpha = 1;
+    } else {
+      ctx.fillStyle = n._color || "#9ab";
+      ctx.globalAlpha = Math.min(1, 0.22 + m * 1.15);
+    }
+    ctx.fill();
+
+    if (hot) {
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = "rgba(255,214,102,0.55)";
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  /* ---- focus ring ---- */
+  if (FOCUS) {
+    ctx.beginPath();
+    ctx.arc(cx0, cy0, 9, 0, Math.PI * 2);
+    ctx.strokeStyle = "rgba(255, 214, 102, 0.35)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  /* ---- labels ---- */
+  const cand = [];
+  for (let i = 0; i < NODES.length; i++) {
+    const n = NODES[i];
+    if (n._m > 0.16) cand.push(n);
+  }
+  cand.sort((a, b) => b._m - a._m);
+
+  const LIMIT = 80;
+  for (let i = 0; i < cand.length && i < LIMIT; i++) {
+    drawLabel(cand[i], cx0, false);
+  }
+
+  /* hovered path labels always visible */
+  if (HOVER) {
+    let x = HOVER;
+    while (x) {
+      if (x._m > 0.02) drawLabel(x, cx0, true);
+      x = x._parent;
+    }
+  }
+}
+
+function drawLabel(n, cx0, force) {
+  const m = n._m;
+  const fs = 7.5 + 6.5 * m;
+  if (!force && fs < 8.2) return;
+  if (force && fs < 6) return;
+
+  const size = Math.max(8, fs);
+  ctx.font = "500 " + size.toFixed(1) + "px ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
+  ctx.textBaseline = "middle";
+
+  const left = n._sx < cx0;
+  ctx.textAlign = left ? "right" : "left";
+
+  const rr = Math.max(0.6, Math.min(11, 1.1 + 7.5 * m));
+  const tx = n._sx + (left ? -(rr + 5) : (rr + 5));
+
+  const maxW = 210;
+  let s = n.name;
+  if (ctx.measureText(s).width > maxW) {
+    while (s.length > 4 && ctx.measureText(s + "…").width > maxW) s = s.slice(0, -1);
+    s = s.replace(/[\s,;:.\-]+$/, "") + "…";
+  }
+
+  const a = Math.min(1, 0.18 + m * 1.25);
+  ctx.fillStyle = force ? "rgba(255, 226, 150, " + a + ")" : "rgba(226, 236, 248, " + a + ")";
+  ctx.fillText(s, tx, n._sy);
+}
+
+/* =========================================================
+   MAIN LOOP
+   ========================================================= */
+function loop() {
+  const dx = AT.re - A.re;
+  const dy = AT.im - A.im;
+
+  if (Math.abs(dx) > 1e-6 || Math.abs(dy) > 1e-6) {
+    A.re += dx * 0.14;
+    A.im += dy * 0.14;
+    needsDraw = true;
+  } else if (A.re !== AT.re || A.im !== AT.im) {
+    A.re = AT.re;
+    A.im = AT.im;
+    needsDraw = true;
+  }
+
+  if (needsDraw) {
+    draw();
+    needsDraw = false;
+  }
+  requestAnimationFrame(loop);
+}
+
+/* =========================================================
+   INTERACTION
+   ========================================================= */
+function hitTest(mx, my) {
+  let best = null, bestScore = Infinity;
+  for (let i = 0; i < NODES.length; i++) {
+    const n = NODES[i];
+    if (n._m < 0.02) continue;
+    const dx = n._sx - mx, dy = n._sy - my;
+    const d2 = dx * dx + dy * dy;
+    if (d2 > 196) continue;                       // 14px radius
+    const score = d2 * (1.4 - Math.min(1, n._m)); // prefer bigger (closer) nodes
+    if (score < bestScore) { bestScore = score; best = n; }
+  }
+  return best;
+}
+
+function focusOn(n) {
+  if (!n || n === FOCUS) return;
+  FOCUS = n;
+  AT = { re: n._z.re, im: n._z.im };
+  ZOOM = 1;
+  PANX = 0;
+  PANY = 0;
+  buildCrumbs();
+  needsDraw = true;
+}
+
+function setHover(n) {
+  if (HOVER === n) return;
+  HOVER = n;
+  hoverPath = new Set();
+  let x = n;
+  while (x) { hoverPath.add(x); x = x._parent; }
+  needsDraw = true;
+
+  const tip = document.getElementById("tip");
+  if (!n) { tip.style.display = "none"; return; }
+
+  const parts = [];
+  let y = n._parent;
+  while (y) { parts.unshift(y.name); y = y._parent; }
+  const path = parts.length ? parts.join(" › ") : "";
+
+  tip.innerHTML = (path ? '<div class="p">' + esc(path) + "</div>" : "") + esc(n.name);
+  tip.style.display = "block";
+}
+
+/* ---- pointer ---- */
+function localPos(e) {
+  const r = canvas.getBoundingClientRect();
+  return { x: e.clientX - r.left, y: e.clientY - r.top };
+}
+
+canvas.addEventListener("pointerdown", (e) => {
+  canvas.setPointerCapture(e.pointerId);
+  dragging = true;
+  moved = false;
+  dragStart = { x: e.clientX, y: e.clientY, px: PANX, py: PANY };
+  canvas.classList.add("grabbing");
+});
+
+canvas.addEventListener("pointermove", (e) => {
+  const { x, y } = localPos(e);
+
+  if (dragging) {
+    const dx = e.clientX - dragStart.x;
+    const dy = e.clientY - dragStart.y;
+    if (!moved && Math.abs(dx) + Math.abs(dy) > 5) moved = true;
+    if (moved) {
+      PANX = dragStart.px + dx;
+      PANY = dragStart.py + dy;
+      clampPan();
+      needsDraw = true;
+    }
+    return;
+  }
+
+  const n = hitTest(x, y);
+  setHover(n);
+
+  if (n) {
+    const tip = document.getElementById("tip");
+    tip.style.left = Math.min(W - 360, x + 16) + "px";
+    tip.style.top = Math.min(H - 90, y + 16) + "px";
+  }
+});
+
+canvas.addEventListener("pointerup", (e) => {
+  canvas.classList.remove("grabbing");
+  if (dragging && !moved) {
+    const { x, y } = localPos(e);
+    const n = hitTest(x, y);
+    if (n) focusOn(n);
+    else if (FOCUS && FOCUS._parent) focusOn(FOCUS._parent);
+  }
+  dragging = false;
+});
+
+canvas.addEventListener("pointerleave", () => {
+  setHover(null);
+  dragging = false;
+  canvas.classList.remove("grabbing");
+});
+
+canvas.addEventListener("wheel", (e) => {
+  e.preventDefault();
+  const { x, y } = localPos(e);
+
+  const oldZoom = ZOOM;
+  ZOOM = Math.min(16, Math.max(1, ZOOM * Math.exp(-e.deltaY * 0.0016)));
+  if (ZOOM === oldZoom) return;
+
+  const base = Math.min(W, H) * 0.47;
+  const sOld = base * oldZoom;
+  const sNew = base * ZOOM;
+
+  // keep the point under the cursor fixed
+  const wx = (x - W / 2 - PANX) / sOld;
+  const wy = (y - H / 2 - PANY) / sOld;
+  PANX = x - W / 2 - sNew * wx;
+  PANY = y - H / 2 - sNew * wy;
+
+  clampPan();
+  needsDraw = true;
+}, { passive: false });
+
+function clampPan() {
+  const maxPan = Math.max(W, H) * (ZOOM - 1) * 0.55;
+  PANX = Math.max(-maxPan, Math.min(maxPan, PANX));
+  PANY = Math.max(-maxPan, Math.min(maxPan, PANY));
+  if (ZOOM <= 1.001) { PANX = 0; PANY = 0; }
+}
+
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" || e.key === "Backspace") {
+    if (FOCUS && FOCUS._parent) {
+      e.preventDefault();
+      focusOn(FOCUS._parent);
+    }
+  }
+});
+
+/* =========================================================
+   UI: breadcrumbs, legend, search
+   ========================================================= */
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+function buildCrumbs() {
+  const el = document.getElementById("crumbs");
+  el.innerHTML = "";
+  const chain = [];
+  let n = FOCUS;
+  while (n) { chain.unshift(n); n = n._parent; }
+
+  chain.forEach((node, i) => {
+    if (i) {
+      const s = document.createElement("span");
+      s.className = "sep";
+      s.textContent = "›";
+      el.appendChild(s);
+    }
+    const b = document.createElement("button");
+    b.textContent = node.name;
+    if (node === FOCUS) {
+      b.className = "cur";
+      b.disabled = true;
+    } else {
+      b.onclick = () => focusOn(node);
+    }
+    el.appendChild(b);
+  });
+
+  el.scrollLeft = el.scrollWidth;
+}
+
+function buildLegend() {
+  // static markup already in the HTML; nothing to do
+}
+
+/* ---- search ---- */
+const searchEl = document.getElementById("search");
+const resultsEl = document.getElementById("results");
+
+searchEl.addEventListener("input", () => {
+  const q = searchEl.value.trim().toLowerCase();
+  if (q.length < 2) { resultsEl.style.display = "none"; return; }
+
+  const hits = [];
+  for (let i = 0; i < NODES.length && hits.length < 60; i++) {
+    const n = NODES[i];
+    if (n.name && n.name.toLowerCase().indexOf(q) !== -1) hits.push(n);
+  }
+
+  resultsEl.innerHTML = "";
+  if (!hits.length) {
+    resultsEl.innerHTML = '<div class="empty">No matches</div>';
+    resultsEl.style.display = "block";
+    return;
+  }
+
+  for (const n of hits) {
+    const d = document.createElement("div");
+    d.className = "r";
+    const parts = [];
+    let y = n._parent;
+    while (y) { parts.unshift(y.name); y = y._parent; }
+    d.innerHTML =
+      '<div>' + esc(n.name) + "</div>" +
+      '<div class="p">' + esc(parts.join(" › ")) + "</div>";
+    d.onclick = () => {
+      focusOn(n);
+      resultsEl.style.display = "none";
+      searchEl.value = "";
+      searchEl.blur();
+    };
+    resultsEl.appendChild(d);
+  }
+  resultsEl.style.display = "block";
+});
+
+document.addEventListener("click", (e) => {
+  if (!document.getElementById("searchWrap").contains(e.target)) {
+    resultsEl.style.display = "none";
+  }
+});
+
+/* =========================================================
+   BOOT
+   ========================================================= */
+async function boot() {
+  resize();
+  window.addEventListener("resize", resize);
+
+  let data;
+  try {
+    const res = await fetch("tree.json", { cache: "no-cache" });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    data = await res.json();
+  } catch (err) {
+    const box = document.getElementById("err");
+    box.style.display = "grid";
+    box.innerHTML =
+      "<div><b>Could not load <code>tree.json</code></b><br/><br/>" +
+      "Make sure the JSON file sits next to <code>index.html</code> " +
+      "and that you are serving the folder (GitHub Pages does this automatically).<br/><br/>" +
+      '<span style="color:#5f7288;font-size:12px">' + esc(err.message) + "</span></div>";
+    return;
+  }
+
+  prepare(data);
+
+  FOCUS = data;
+  A = { re: data._z.re, im: data._z.im };
+  AT = { re: data._z.re, im: data._z.im };
+
+  buildCrumbs();
+  buildLegend();
+
+  needsDraw = true;
+  requestAnimationFrame(loop);
+}
+
+boot();
+</script>
+</body>
+</html>
