@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
-<title>Hegel's Encyclopedia — Hyperbolic Browser</title>
+<title>Hegel — Hyperbolic Browser</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -12,7 +12,6 @@
     color-scheme: dark;
     --pw: clamp(320px, 34vw, 430px);
 
-    /* mako palette (seaborn/viridisLite family) */
     --mako-0:  #0B0405;
     --mako-1:  #1B0F14;
     --mako-2:  #2B1920;
@@ -72,9 +71,37 @@
   }
   body.panel-open #top { right: calc(var(--pw) + 24px); }
 
-  #searchWrap { position: relative; pointer-events: auto; flex: 0 1 auto; min-width: 0; }
+  /* dataset switcher */
+  #datasetSwitch {
+    pointer-events: auto;
+    display: flex;
+    gap: 2px;
+    padding: 3px;
+    border-radius: 12px;
+    flex: 0 0 auto;
+  }
+  #datasetSwitch button {
+    border: 0;
+    background: transparent;
+    color: var(--text-mute);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 550;
+    padding: 6px 11px;
+    border-radius: 9px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background .15s, color .15s;
+  }
+  #datasetSwitch button:hover { color: var(--text-dim); background: rgba(235,220,212,0.06); }
+  #datasetSwitch button.active {
+    background: rgba(235,220,212,0.12);
+    color: var(--text);
+  }
+
+  #searchWrap { position: relative; pointer-events: auto; flex: 1 1 200px; min-width: 0; max-width: 300px; }
   #search {
-    width: 236px; max-width: 100%; padding: 9px 12px; border-radius: 12px; outline: none;
+    width: 100%; padding: 9px 12px; border-radius: 12px; outline: none;
     border: 1px solid var(--panel-border);
     background: var(--panel-bg);
     -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
@@ -205,7 +232,6 @@
     padding-left: 10px; border-left: 2px solid rgba(235, 220, 212, 0.09);
   }
 
-  /* paragraph text block */
   #paraTextSection { display: none; }
   .show-para {
     display: inline-flex; align-items: center; gap: 8px;
@@ -273,7 +299,8 @@
     body.panel-open #legend { right: 12px; opacity: 0; pointer-events: none; }
     body.panel-open #hint { opacity: 0; pointer-events: none; }
     #results { width: min(360px, calc(100vw - 32px)); }
-    #search { width: 190px; }
+    #searchWrap { max-width: 160px; }
+    #datasetSwitch button { font-size: 11px; padding: 5px 8px; }
   }
 </style>
 </head>
@@ -283,8 +310,12 @@
 
 <div id="ui">
   <div id="top">
+    <div id="datasetSwitch" class="panel">
+      <button data-dataset="encyclopedia" class="active">Encyclopedia</button>
+      <button data-dataset="logic">Logic</button>
+    </div>
     <div id="searchWrap">
-      <input id="search" class="panel" placeholder="Search the Encyclopedia…" autocomplete="off" spellcheck="false" />
+      <input id="search" class="panel" placeholder="Search…" autocomplete="off" spellcheck="false" />
       <div id="results" class="panel"></div>
     </div>
     <button id="fsBtn" class="iconbtn" title="Toggle fullscreen" aria-label="Toggle fullscreen">
@@ -299,11 +330,7 @@
     <b>Scroll</b> to zoom &nbsp;·&nbsp; <b>Drag</b> to pan
   </div>
 
-  <div id="legend" class="panel">
-    <span><i class="dot" style="background:#86555C"></i>Logic</span>
-    <span><i class="dot" style="background:#B98687"></i>Nature</span>
-    <span><i class="dot" style="background:#EBDCD4"></i>Spirit</span>
-  </div>
+  <div id="legend" class="panel"></div>
 
   <div id="tip"></div>
   <div id="err"></div>
@@ -312,7 +339,7 @@
 <aside id="panel" aria-hidden="true">
   <div class="p-head">
     <div class="p-titles">
-      <div class="p-kicker" id="pKicker">Encyclopedia</div>
+      <div class="p-kicker" id="pKicker">—</div>
       <h2 id="pTitle">—</h2>
     </div>
     <button class="p-close" id="pClose" aria-label="Close panel">✕</button>
@@ -323,7 +350,7 @@
       <div id="miniTree" class="mini"></div>
     </section>
     <section class="p-sec">
-      <div class="p-label">Encyclopedia reference</div>
+      <div class="p-label" id="refLabel">Encyclopedia reference</div>
       <div class="para" id="pPara"></div>
       <div class="sect" id="pSect"></div>
       <div class="inherit" id="pInherit" style="display:none"></div>
@@ -334,7 +361,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
         </svg>
-        <span id="showParaLabel">Show § 86</span>
+        <span id="showParaLabel">Show text</span>
       </button>
       <div id="paraTextDisplay" class="para-text" style="display:none"></div>
     </section>
@@ -343,7 +370,7 @@
       <div class="p-path" id="pPath"></div>
     </section>
   </div>
-  <div class="p-foot">Paragraph numbers follow the 1830 edition of the <i>Encyclopaedia of Philosophical Sciences</i> (Werke, vols. 8–10).</div>
+  <div class="p-foot" id="pFoot">—</div>
 </aside>
 
 <script>
@@ -402,74 +429,97 @@ let panelNode = null;
 const EASE = 0.06;
 const FISHEYE = 1.45;
 
-/* Minimum tree-depth at which the paragraph-text button may appear */
-const MIN_DEPTH_FOR_TEXT = 5;
-
 let preferredZoom = 1;
 let firstNodeClick = true;
 
-/* loaded from paragraphs.json */
+/* active dataset */
+let ACTIVE = null;
+let ACTIVE_PARAS = {};
 let PARA_TEXTS = {};
 
 /* =========================================================
-   BRANCH COLORS  (mako samples)
+   BRANCH COLORS
    ========================================================= */
-const BRANCH_COLORS = [
-  "#86555C",  // Logic  (mako[7])
-  "#B98687",  // Nature (mako[10])
-  "#EBDCD4"   // Spirit (mako[14])
-];
+const BRANCH_COLORS = ["#86555C", "#B98687", "#EBDCD4"];
 
 /* =========================================================
-   PARAGRAPH MAP  (1830 Encyclopaedia, Werke 8–10)
+   DATASETS
    ========================================================= */
-const PARAS = {
-  /* ---------- Part One: Logic ---------- */
-  "1":   { p: "84–244", s: "Part One — The Science of Logic" },
+const DATASETS = {
+  encyclopedia: {
+    id: "encyclopedia",
+    label: "Encyclopedia",
+    treeFile: "tree.json",
+    parasFile: "paragraphs.json",
+    refPrefix: "§",
+    refLabel: "Encyclopedia reference",
+    textLabel: "Paragraph text",
+    showLabel: "Show §",
+    minDepth: 5,
+    allowRangesForText: false,
+    textKeyBy: "p",
+    legend: [
+      { label: "Logic", color: "#86555C" },
+      { label: "Nature", color: "#B98687" },
+      { label: "Spirit", color: "#EBDCD4" }
+    ],
+    foot: "Paragraph numbers follow the 1830 edition of the <i>Encyclopaedia of Philosophical Sciences</i> (Werke, vols. 8–10).",
+    loaded: false,
+    treeData: null,
+    parasData: null
+  },
+  logic: {
+    id: "logic",
+    label: "Logic",
+    treeFile: "logic-tree.json",
+    parasFile: "logic-paragraphs.json",
+    refPrefix: "",
+    refLabel: "Reference (Miller translation)",
+    textLabel: "Section text",
+    showLabel: "Show",
+    minDepth: 5,
+    allowRangesForText: true,
+    textKeyBy: "id",
+    legend: [
+      { label: "Volume One", color: "#86555C" },
+      { label: "Volume Two", color: "#EBDCD4" }
+    ],
+    foot: "Page ranges follow A. V. Miller’s translation of the <i>Science of Logic</i> (1969). The Logic has no numbered paragraphs; references are to Books, Sections, Chapters, and Miller pages.",
+    loaded: false,
+    treeData: null,
+    parasData: null
+  }
+};
 
+/* =========================================================
+   PARAGRAPH MAP — ENCYCLOPEDIA
+   ========================================================= */
+const PARAS_ENCYCLOPEDIA = {
+  "1":   { p: "84–244", s: "Part One — The Science of Logic" },
   "1.1": { p: "84–111", s: "First Book — The Doctrine of Being" },
-  "1.1.1":   { p: "86–98" },
+  "1.1.1": { p: "86–98" },
   "1.1.1.1": { p: "86–88" },
   "1.1.1.1.1": { p: "86" },
   "1.1.1.1.2": { p: "87" },
   "1.1.1.1.3": { p: "88" },
   "1.1.1.1.3.2": { p: "88" },
   "1.1.1.1.3.3": { p: "88" },
-  "1.1.1.2":   { p: "89–95" },
+  "1.1.1.2": { p: "89–95" },
   "1.1.1.2.1": { p: "89–91" },
-  "1.1.1.2.1.1": { p: "89" },
-  "1.1.1.2.1.2": { p: "90" },
-  "1.1.1.2.1.3": { p: "91" },
-  "1.1.1.2.1.3.1": { p: "92" },
-  "1.1.1.2.1.3.2": { p: "92" },
-  "1.1.1.2.1.3.3": { p: "92" },
   "1.1.1.2.2": { p: "92–94" },
   "1.1.1.2.3": { p: "95" },
-  "1.1.1.2.3.1": { p: "94" },
-  "1.1.1.2.3.2": { p: "95" },
-  "1.1.1.2.3.3": { p: "95" },
-  "1.1.1.3":   { p: "96–98" },
+  "1.1.1.3": { p: "96–98" },
   "1.1.1.3.1": { p: "96" },
-  "1.1.1.3.1.1": { p: "96" },
-  "1.1.1.3.1.2": { p: "96" },
-  "1.1.1.3.1.3": { p: "96" },
   "1.1.1.3.2": { p: "97" },
-  "1.1.1.3.2.1": { p: "97" },
-  "1.1.1.3.2.2": { p: "97" },
-  "1.1.1.3.2.3": { p: "97" },
   "1.1.1.3.3": { p: "98" },
-  "1.1.1.3.3.1": { p: "98" },
-  "1.1.1.3.3.2": { p: "98" },
-  "1.1.1.3.3.3": { p: "98" },
-  "1.1.2":   { p: "99–106" },
+  "1.1.2": { p: "99–106" },
   "1.1.2.1": { p: "99" },
   "1.1.2.2": { p: "100–104" },
   "1.1.2.3": { p: "105–106" },
-  "1.1.3":   { p: "107–111" },
+  "1.1.3": { p: "107–111" },
   "1.1.3.1": { p: "107" },
   "1.1.3.2": { p: "108–109" },
   "1.1.3.3": { p: "110–111" },
-
   "1.2": { p: "112–159", s: "Second Book — The Doctrine of Essence" },
   "1.2.1": { p: "112–125" },
   "1.2.1.1": { p: "112–113" },
@@ -483,7 +533,6 @@ const PARAS = {
   "1.2.3.1": { p: "142–144" },
   "1.2.3.2": { p: "145–149" },
   "1.2.3.3": { p: "150–159" },
-
   "1.3": { p: "160–244", s: "Third Book — The Doctrine of the Concept" },
   "1.3.1": { p: "163–193" },
   "1.3.1.1": { p: "163–165" },
@@ -497,8 +546,6 @@ const PARAS = {
   "1.3.3.1": { p: "216–222" },
   "1.3.3.2": { p: "223–234" },
   "1.3.3.3": { p: "236–244" },
-
-  /* ---------- Part Two: Nature ---------- */
   "2": { p: "245–376", s: "Part Two — The Philosophy of Nature" },
   "2.1": { p: "253–271", s: "First Division — Mechanics" },
   "2.1.1": { p: "254–259" },
@@ -515,8 +562,6 @@ const PARAS = {
   "2.3.1": { p: "338–349" },
   "2.3.2": { p: "350–359" },
   "2.3.3": { p: "360–376" },
-
-  /* ---------- Part Three: Spirit ---------- */
   "3": { p: "377–577", s: "Part Three — The Philosophy of Spirit" },
   "3.1": { p: "377–482", s: "First Section — Subjective Spirit" },
   "3.1.1": { p: "388–412" },
@@ -539,6 +584,63 @@ const PARAS = {
   "3.3.1": { p: "556–563" },
   "3.3.2": { p: "564–571" },
   "3.3.3": { p: "572–577" }
+};
+
+/* =========================================================
+   PARAGRAPH MAP — SCIENCE OF LOGIC (Miller page ranges)
+   ========================================================= */
+const PARAS_LOGIC = {
+  "SL": { p: "Miller pp. 67–843", s: "Science of Logic" },
+  "I": { p: "Miller pp. 67–506", s: "Volume One: The Objective Logic" },
+  "II": { p: "Miller pp. 507–843", s: "Volume Two: Subjective Logic" },
+
+  "I.1": { p: "Miller pp. 67–336", s: "Book One: The Doctrine of Being" },
+  "I.1.1": { p: "Miller pp. 81–184", s: "Section One: Determinateness (Quality)" },
+  "I.1.1.1": { p: "Miller pp. 82–108", s: "Chapter 1: Being" },
+  "I.1.1.2": { p: "Miller pp. 109–156", s: "Chapter 2: Determinate Being" },
+  "I.1.1.3": { p: "Miller pp. 157–184", s: "Chapter 3: Being-for-self" },
+
+  "I.1.2": { p: "Miller pp. 185–281", s: "Section Two: Magnitude (Quantity)" },
+  "I.1.2.1": { p: "Miller pp. 187–203", s: "Chapter 1: Quantity" },
+  "I.1.2.2": { p: "Miller pp. 204–270", s: "Chapter 2: Quantum" },
+  "I.1.2.3": { p: "Miller pp. 271–281", s: "Chapter 3: The Quantitative Relation" },
+
+  "I.1.3": { p: "Miller pp. 282–336", s: "Section Three: Measure" },
+  "I.1.3.1": { p: "Miller pp. 288–301", s: "Chapter 1: Specific Quantity" },
+  "I.1.3.2": { p: "Miller pp. 302–325", s: "Chapter 2: Real Measure" },
+  "I.1.3.3": { p: "Miller pp. 326–336", s: "Chapter 3: The Becoming of Essence" },
+
+  "I.2": { p: "Miller pp. 337–506", s: "Book Two: The Doctrine of Essence" },
+  "I.2.1": { p: "Miller pp. 340–417", s: "Section One: Essence as Reflection Within Itself" },
+  "I.2.1.1": { p: "Miller pp. 341–353", s: "Chapter 1: Illusory Being" },
+  "I.2.1.2": { p: "Miller pp. 354–385", s: "Chapter 2: The Determinations of Reflection" },
+  "I.2.1.3": { p: "Miller pp. 386–417", s: "Chapter 3: Ground" },
+
+  "I.2.2": { p: "Miller pp. 418–464", s: "Section Two: Appearance" },
+  "I.2.2.1": { p: "Miller pp. 420–436", s: "Chapter 1: Existence" },
+  "I.2.2.2": { p: "Miller pp. 437–448", s: "Chapter 2: Appearance" },
+  "I.2.2.3": { p: "Miller pp. 449–464", s: "Chapter 3: The Essential Relation" },
+
+  "I.2.3": { p: "Miller pp. 465–506", s: "Section Three: Actuality" },
+  "I.2.3.1": { p: "Miller pp. 466–476", s: "Chapter 1: The Absolute" },
+  "I.2.3.2": { p: "Miller pp. 477–488", s: "Chapter 2: Actuality" },
+  "I.2.3.3": { p: "Miller pp. 489–506", s: "Chapter 3: The Absolute Relation" },
+
+  "II.1": { p: "Miller pp. 507–843", s: "The Doctrine of the Notion" },
+  "II.1.1": { p: "Miller pp. 528–624", s: "Section One: Subjectivity" },
+  "II.1.1.1": { p: "Miller pp. 529–549", s: "Chapter 1: The Notion" },
+  "II.1.1.2": { p: "Miller pp. 550–587", s: "Chapter 2: The Judgment" },
+  "II.1.1.3": { p: "Miller pp. 588–624", s: "Chapter 3: The Syllogism" },
+
+  "II.1.2": { p: "Miller pp. 625–669", s: "Section Two: Objectivity" },
+  "II.1.2.1": { p: "Miller pp. 631–644", s: "Chapter 1: Mechanism" },
+  "II.1.2.2": { p: "Miller pp. 645–650", s: "Chapter 2: Chemism" },
+  "II.1.2.3": { p: "Miller pp. 651–669", s: "Chapter 3: Teleology" },
+
+  "II.1.3": { p: "Miller pp. 670–843", s: "Section Three: The Idea" },
+  "II.1.3.1": { p: "Miller pp. 676–688", s: "Chapter 1: Life" },
+  "II.1.3.2": { p: "Miller pp. 689–734", s: "Chapter 2: The Idea of Cognition" },
+  "II.1.3.3": { p: "Miller pp. 735–843", s: "Chapter 3: The Absolute Idea" }
 };
 
 /* =========================================================
@@ -703,9 +805,8 @@ function draw() {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.clearRect(0, 0, W, H);
 
-  /* mako-tinted radial glow */
   const g = ctx.createRadialGradient(cx0, cy0, 0, cx0, cy0, Math.max(W, H) * 0.72);
-  g.addColorStop(0, "rgba(61, 35, 43, 0.55)");   // mako[3] tint
+  g.addColorStop(0, "rgba(61, 35, 43, 0.55)");
   g.addColorStop(1, "rgba(11, 4, 5, 0)");
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, W, H);
@@ -716,7 +817,6 @@ function draw() {
   ctx.lineWidth = 1;
   ctx.stroke();
 
-  /* transform + fisheye */
   for (let i = 0; i < NODES.length; i++) {
     const n = NODES[i];
     const z = mobius(n._z, A);
@@ -736,7 +836,6 @@ function draw() {
     n._sy = cy0 + scale * zi;
   }
 
-  /* edges */
   ctx.lineCap = "round";
   for (let i = 0; i < NODES.length; i++) {
     const n = NODES[i];
@@ -754,13 +853,12 @@ function draw() {
     } else {
       const baseA = inLabel ? 0.42 : 0.12;
       const al = Math.min(0.65, baseA + m * 0.4);
-      ctx.strokeStyle = "rgba(200, 153, 153, " + al + ")";  // mako[11]
+      ctx.strokeStyle = "rgba(200, 153, 153, " + al + ")";
       ctx.lineWidth = Math.max(0.4, Math.min(2.0, (inLabel ? 0.7 : 0.3) + 2.0 * m));
     }
     strokeGeo(p._w, n._w, cx0, cy0, scale);
   }
 
-  /* nodes */
   for (let i = 0; i < NODES.length; i++) {
     const n = NODES[i];
     const m = n._m;
@@ -774,7 +872,7 @@ function draw() {
     ctx.arc(n._sx, n._sy, hot ? rr + 2.2 : rr, 0, Math.PI * 2);
 
     if (hot) {
-      ctx.fillStyle = "#F7F3ED";  // mako[15]
+      ctx.fillStyle = "#F7F3ED";
       ctx.globalAlpha = 1;
     } else {
       ctx.fillStyle = n._color || "#986469";
@@ -792,7 +890,6 @@ function draw() {
     ctx.globalAlpha = 1;
   }
 
-  /* focus ring */
   if (FOCUS) {
     ctx.beginPath();
     ctx.arc(cx0, cy0, 9, 0, Math.PI * 2);
@@ -801,7 +898,6 @@ function draw() {
     ctx.stroke();
   }
 
-  /* labels */
   const vis = [];
   labelSet.forEach(function (id) { vis.push(NODES[id]); });
   vis.sort(function (a, b) { return b._m - a._m; });
@@ -828,11 +924,11 @@ function drawLabel(n, cx0, mode) {
     fs = 7.5 + 6.5 * m;
     if (fs < 6) return;
     const a = Math.min(1, 0.18 + m * 1.25);
-    color = "rgba(247, 243, 237, " + a + ")";      // mako[15]
+    color = "rgba(247, 243, 237, " + a + ")";
   } else {
     fs = Math.max(10, 7.5 + 6.5 * m);
     const a = Math.min(1, 0.65 + m * 1.25);
-    color = "rgba(235, 220, 212, " + a + ")";      // mako[14]
+    color = "rgba(235, 220, 212, " + a + ")";
   }
 
   const size = Math.max(8, fs);
@@ -926,12 +1022,22 @@ function esc(s) {
 }
 
 function paraFor(node) {
-  if (node === ROOT) return { p: "1–577", note: "The Encyclopaedia as a whole" };
+  if (!ACTIVE) return null;
+  if (node === ROOT) {
+    return { p: ACTIVE_PARAS[ROOT.id_]?.p || "—", holder: ROOT, exact: true, textKey: null };
+  }
   let n = node;
   while (n) {
-    if (n.id_ && PARAS[n.id_]) {
-      const e = PARAS[n.id_];
-      return { p: e.p, holder: n, exact: n === node };
+    if (n.id_ && ACTIVE_PARAS[n.id_]) {
+      const e = ACTIVE_PARAS[n.id_];
+      const exact = n === node;
+      return {
+        p: e.p,
+        s: e.s,
+        holder: n,
+        exact: exact,
+        textKey: exact ? (ACTIVE.textKeyBy === "id" ? n.id_ : e.p) : null
+      };
     }
     n = n._parent;
   }
@@ -941,15 +1047,22 @@ function paraFor(node) {
 function sectionFor(node) {
   let n = node;
   while (n) {
-    if (n.id_ && PARAS[n.id_] && PARAS[n.id_].s) return PARAS[n.id_].s;
+    if (n.id_ && ACTIVE_PARAS[n.id_] && ACTIVE_PARAS[n.id_].s) return ACTIVE_PARAS[n.id_].s;
     n = n._parent;
   }
-  return "Encyclopaedia";
+  const parts = [];
+  n = node;
+  while (n && n !== ROOT) {
+    parts.unshift(n.name);
+    n = n._parent;
+  }
+  return parts.length ? parts.join(" › ") : (ROOT ? ROOT.name : "—");
 }
 
 function fmtParagraph(p) {
   if (!p) return "—";
-  return /[–-]/.test(p) ? "§§" + p : "§" + p;
+  if (!ACTIVE || !ACTIVE.refPrefix) return p;
+  return /[–-]/.test(p) ? ACTIVE.refPrefix + ACTIVE.refPrefix + p : ACTIVE.refPrefix + p;
 }
 
 function updateViewShift() {
@@ -1074,7 +1187,6 @@ function renderMiniTree(node) {
   const centerX = W0 / 2;
   const LINE = "rgba(235, 220, 212, 0.16)";
 
-  /* ancestor spine */
   let prevBottom = null;
   for (const r of ancRows) {
     if (prevBottom !== null) {
@@ -1086,7 +1198,6 @@ function renderMiniTree(node) {
     parts.push('<line x1="' + centerX + '" y1="' + prevBottom + '" x2="' + centerX + '" y2="' + selfRow.y + '" stroke="' + LINE + '" stroke-width="1"/>');
   }
 
-  /* self → children */
   if (kidRows.length) {
     const selfBottom = selfRow.y + selfRow.h;
     const spineX = 14;
@@ -1110,7 +1221,6 @@ function renderMiniTree(node) {
     }
   }
 
-  /* ancestor + self pills */
   const ancW = Math.min(W0 - 60, 250);
   const ancX = centerX - ancW / 2;
   const selfW = Math.min(W0 - 8, 270);
@@ -1146,16 +1256,13 @@ function renderPanel(node) {
 
   if (info) {
     pPara.innerHTML = '<span class="pnum">' + esc(fmtParagraph(info.p)) + "</span>";
-    pSect.textContent = sectionFor(node);
+    pSect.textContent = info.s || sectionFor(node);
 
     if (info.exact === false && info.holder) {
       pInherit.style.display = "block";
       pInherit.innerHTML =
         "Listed here as a sub-division of <b>" + esc(info.holder.name) + "</b> (" +
         esc(fmtParagraph(info.p)) + ").";
-    } else if (info.note) {
-      pInherit.style.display = "block";
-      pInherit.textContent = info.note;
     } else {
       pInherit.style.display = "none";
     }
@@ -1165,7 +1272,7 @@ function renderPanel(node) {
     pInherit.style.display = "none";
   }
 
-  /* ---- paragraph text section ---- */
+  /* paragraph text section */
   const secEl = document.getElementById("paraTextSection");
   const btn = document.getElementById("showParaBtn");
   const lbl = document.getElementById("showParaLabel");
@@ -1176,30 +1283,31 @@ function renderPanel(node) {
 
   const pnum = info ? info.p : null;
   const isSingle = pnum && !/[–-]/.test(pnum);
-  const deep = node._depth >= MIN_DEPTH_FOR_TEXT;
-  const entry = isSingle ? PARA_TEXTS[pnum] : null;
+  const deep = node._depth >= ACTIVE.minDepth;
+  const entry = info && info.textKey ? PARA_TEXTS[info.textKey] : null;
+  const canShow = deep && entry && entry.text && (ACTIVE.allowRangesForText || isSingle);
 
-  if (deep && entry && entry.text && entry.text.length) {
+  if (canShow) {
     secEl.style.display = "block";
     btn.style.display = "inline-flex";
-    lbl.textContent = "Show § " + pnum;
+    lbl.textContent = ACTIVE.showLabel + " " + pnum;
     btn.onclick = function () {
       if (display.style.display === "none") {
         display.innerHTML =
-          (entry.title ? '<div class="ptitle">§ ' + esc(pnum) + ' — ' + esc(entry.title) + "</div>" : "") +
+          (entry.title ? '<div class="ptitle">' + esc(entry.title) + "</div>" : "") +
           '<div class="pbody">' + esc(entry.text) + "</div>";
         display.style.display = "block";
-        lbl.textContent = "Hide § " + pnum;
+        lbl.textContent = "Hide " + pnum;
       } else {
         display.style.display = "none";
-        lbl.textContent = "Show § " + pnum;
+        lbl.textContent = ACTIVE.showLabel + " " + pnum;
       }
     };
   } else {
     secEl.style.display = "none";
   }
 
-  /* ---- path ---- */
+  /* path */
   const chain = [];
   let n = node;
   while (n) { chain.unshift(n); n = n._parent; }
@@ -1421,6 +1529,84 @@ document.addEventListener("click", function (e) {
 });
 
 /* =========================================================
+   DATASET SWITCHING
+   ========================================================= */
+function updateLegend() {
+  const el = document.getElementById("legend");
+  el.innerHTML = ACTIVE.legend.map(function (item) {
+    return '<span><i class="dot" style="background:' + item.color + '"></i>' + esc(item.label) + "</span>";
+  }).join("");
+}
+
+function updateDatasetChrome() {
+  document.getElementById("refLabel").textContent = ACTIVE.refLabel;
+  document.getElementById("pFoot").innerHTML = ACTIVE.foot;
+  searchEl.placeholder = "Search " + ACTIVE.label + "…";
+  document.querySelectorAll("#datasetSwitch button").forEach(function (b) {
+    b.classList.toggle("active", b.dataset.dataset === ACTIVE.id);
+  });
+}
+
+function applyDataset(key, initial) {
+  const ds = DATASETS[key];
+  if (!ds || !ds.loaded) return;
+
+  ACTIVE = ds;
+  ACTIVE_PARAS = key === "encyclopedia" ? PARAS_ENCYCLOPEDIA : PARAS_LOGIC;
+  PARA_TEXTS = ds.parasData || {};
+
+  prepare(ds.treeData);
+
+  FOCUS = ROOT;
+  A = { re: ROOT._z.re, im: ROOT._z.im };
+  AT = { re: ROOT._z.re, im: ROOT._z.im };
+  ZOOM = 1; ZOOMT = 1;
+  preferredZoom = 1;
+  firstNodeClick = true;
+  PANX = PANY = PANTX = PANTY = 0;
+
+  buildLabelSet();
+  updateLegend();
+  updateDatasetChrome();
+  closePanel();
+  needsDraw = true;
+}
+
+async function loadDataset(key) {
+  const ds = DATASETS[key];
+  if (!ds || ds.loaded) return;
+  try {
+    const [treeRes, parasRes] = await Promise.all([
+      fetch(ds.treeFile, { cache: "no-cache" }),
+      fetch(ds.parasFile, { cache: "no-cache" }).catch(function () { return null; })
+    ]);
+    if (!treeRes.ok) throw new Error("HTTP " + treeRes.status + " for " + ds.treeFile);
+    ds.treeData = await treeRes.json();
+    ds.parasData = parasRes && parasRes.ok ? await parasRes.json() : {};
+    ds.loaded = true;
+  } catch (err) {
+    const box = document.getElementById("err");
+    box.style.display = "grid";
+    box.innerHTML =
+      "<div><b>Could not load <code>" + esc(ds.treeFile) + "</code></b><br/><br/>" +
+      "Make sure the file sits next to <code>index.html</code> and that you are serving the folder.<br/><br/>" +
+      '<span style="color:#86555C;font-size:12px">' + esc(err.message) + "</span></div>";
+    throw err;
+  }
+}
+
+document.querySelectorAll("#datasetSwitch button").forEach(function (btn) {
+  btn.addEventListener("click", async function () {
+    const key = btn.dataset.dataset;
+    if (ACTIVE && ACTIVE.id === key) return;
+    try {
+      if (!DATASETS[key].loaded) await loadDataset(key);
+      applyDataset(key, false);
+    } catch (_) { /* error already shown */ }
+  });
+});
+
+/* =========================================================
    FULLSCREEN + PANEL CONTROLS
    ========================================================= */
 document.getElementById("fsBtn").addEventListener("click", function () {
@@ -1449,41 +1635,15 @@ async function boot() {
   resize();
   window.addEventListener("resize", resize);
 
-  let data;
   try {
-    const res = await fetch("tree.json", { cache: "no-cache" });
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    data = await res.json();
-  } catch (err) {
-    const box = document.getElementById("err");
-    box.style.display = "grid";
-    box.innerHTML =
-      "<div><b>Could not load <code>tree.json</code></b><br/><br/>" +
-      "Make sure the JSON file sits next to <code>index.html</code> " +
-      "and that you are serving the folder (GitHub Pages does this automatically).<br/><br/>" +
-      '<span style="color:#86555C;font-size:12px">' + esc(err.message) + "</span></div>";
-    return;
-  }
+    await loadDataset("encyclopedia");
+  } catch (_) { return; }
 
-  /* Try to load paragraphs.json — non-fatal if missing */
-  try {
-    const pr = await fetch("paragraphs.json", { cache: "no-cache" });
-    if (pr.ok) PARA_TEXTS = await pr.json();
-  } catch (_) { /* no paragraphs.json — feature simply won't appear */ }
+  applyDataset("encyclopedia", true);
 
-  prepare(data);
+  /* prefetch Logic in the background */
+  loadDataset("logic").catch(function () {});
 
-  FOCUS = data;
-  A = { re: data._z.re, im: data._z.im };
-  AT = { re: data._z.re, im: data._z.im };
-  ZOOM = 1; ZOOMT = 1;
-  preferredZoom = 1;
-  PANX = PANY = PANTX = PANTY = 0;
-
-  buildLabelSet();
-  updateViewShift();
-
-  needsDraw = true;
   requestAnimationFrame(loop);
 }
 
