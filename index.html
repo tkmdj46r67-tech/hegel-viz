@@ -12,17 +12,17 @@
     color-scheme: dark;
     --pw: clamp(320px, 34vw, 430px);
 
-    /* Defaults = Encyclopedia / mako palette */
-    --bg: #0B0405;
-    --text: #F7F3ED;
-    --text-dim: #B98687;
-    --text-mute: #986469;
-    --accent: #EBDCD4;
-    --accent-soft: #E0C5C2;
-    --tint-rgb: 235, 220, 212;
-    --shade-rgb: 11, 4, 5;
-    --panel-bg: rgba(27, 15, 20, 0.85);
-    --panel-border: rgba(235, 220, 212, 0.09);
+    /* navia palette (shared by both datasets) */
+    --bg: #05203D;
+    --text: #F0EFC8;
+    --text-dim: #CDE19B;
+    --text-mute: #63A96D;
+    --accent: #CDE19B;
+    --accent-soft: #E0ECB8;
+    --tint-rgb: 205, 225, 155;
+    --shade-rgb: 5, 32, 61;
+    --panel-bg: rgba(5, 32, 61, 0.85);
+    --panel-border: rgba(205, 225, 155, 0.12);
 
     --font: "Spline Sans", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
@@ -440,80 +440,55 @@ let PARA_TEXTS = {};
 let PAL = null;
 
 /* =========================================================
-   PALETTES
-   Encyclopedia → mako (warm plum / rose / cream)
-   Logic        → navia (green / cream)
+   SHARED PALETTE (navia)
    ========================================================= */
-const PALETTES = {
-  encyclopedia: {
-    css: {
-      '--bg': '#0B0405',
-      '--text': '#F7F3ED',
-      '--text-dim': '#B98687',
-      '--text-mute': '#986469',
-      '--accent': '#EBDCD4',
-      '--accent-soft': '#E0C5C2',
-      '--tint-rgb': '235, 220, 212',
-      '--shade-rgb': '11, 4, 5',
-      '--panel-bg': 'rgba(27, 15, 20, 0.85)',
-      '--panel-border': 'rgba(235, 220, 212, 0.09)'
-    },
-    radialInner: 'rgba(61, 35, 43, 0.55)',
-    radialOuter: 'rgba(11, 4, 5, 0)',
-    diskStroke: 'rgba(235, 220, 212, 0.10)',
-    edgeRGB: '200, 153, 153',
-    edgeHoverRGB: '247, 243, 237',
-    nodeHover: '#F7F3ED',
-    nodeHoverStroke: 'rgba(247, 243, 237, 0.55)',
-    focusRing: 'rgba(235, 220, 212, 0.35)',
-    labelFocusRGB: '235, 220, 212',
-    labelHoverRGB: '247, 243, 237',
-    fallback: '#986469',
-    branches: ['#86555C', '#B98687', '#EBDCD4'],
-    svgLine: 'rgba(235, 220, 212, 0.16)',
-    svgPillFillRGB: '235, 220, 212',
-    svgPillActiveRGB: '235, 220, 212',
-    svgPillTextActive: '#F7F3ED',
-    svgPillTextNormal: '#EBDCD4'
-  },
-  logic: {
-    css: {
-      '--bg': '#05203D',
-      '--text': '#F0EFC8',
-      '--text-dim': '#CDE19B',
-      '--text-mute': '#63A96D',
-      '--accent': '#CDE19B',
-      '--accent-soft': '#E0ECB8',
-      '--tint-rgb': '205, 225, 155',
-      '--shade-rgb': '5, 32, 61',
-      '--panel-bg': 'rgba(5, 32, 61, 0.85)',
-      '--panel-border': 'rgba(205, 225, 155, 0.12)'
-    },
-    radialInner: 'rgba(46, 119, 140, 0.55)',
-    radialOuter: 'rgba(5, 32, 61, 0)',
-    diskStroke: 'rgba(205, 225, 155, 0.14)',
-    edgeRGB: '99, 169, 109',
-    edgeHoverRGB: '240, 239, 200',
-    nodeHover: '#F0EFC8',
-    nodeHoverStroke: 'rgba(240, 239, 200, 0.55)',
-    focusRing: 'rgba(205, 225, 155, 0.35)',
-    labelFocusRGB: '205, 225, 155',
-    labelHoverRGB: '240, 239, 200',
-    fallback: '#99CC6F',
-    branches: ['#63A96D', '#F0EFC8'],
-    svgLine: 'rgba(99, 169, 109, 0.22)',
-    svgPillFillRGB: '99, 169, 109',
-    svgPillActiveRGB: '240, 239, 200',
-    svgPillTextActive: '#F0EFC8',
-    svgPillTextNormal: '#CDE19B'
-  }
+const NAVIA_CSS = {
+  '--bg': '#05203D',
+  '--text': '#F0EFC8',
+  '--text-dim': '#CDE19B',
+  '--text-mute': '#63A96D',
+  '--accent': '#CDE19B',
+  '--accent-soft': '#E0ECB8',
+  '--tint-rgb': '205, 225, 155',
+  '--shade-rgb': '5, 32, 61',
+  '--panel-bg': 'rgba(5, 32, 61, 0.85)',
+  '--panel-border': 'rgba(205, 225, 155, 0.12)'
 };
 
-function applyPalette(key) {
-  const pal = PALETTES[key];
-  PAL = pal;
+const NAVIA_BASE = {
+  radialInner: 'rgba(46, 119, 140, 0.55)',
+  radialOuter: 'rgba(5, 32, 61, 0)',
+  diskStroke: 'rgba(205, 225, 155, 0.14)',
+  edgeRGB: '99, 169, 109',
+  edgeHoverRGB: '240, 239, 200',
+  nodeHover: '#F0EFC8',
+  nodeHoverStroke: 'rgba(240, 239, 200, 0.55)',
+  focusRing: 'rgba(205, 225, 155, 0.35)',
+  labelFocusRGB: '205, 225, 155',
+  labelHoverRGB: '240, 239, 200',
+  fallback: '#99CC6F',
+  svgLine: 'rgba(99, 169, 109, 0.22)',
+  svgPillFillRGB: '99, 169, 109',
+  svgPillActiveRGB: '240, 239, 200',
+  svgPillTextActive: '#F0EFC8',
+  svgPillTextNormal: '#CDE19B'
+};
+
+const PALETTES = {
+  encyclopedia: Object.assign({}, NAVIA_BASE, {
+    css: NAVIA_CSS,
+    branches: ['#63A96D', '#2E778C', '#F0EFC8']
+  }),
+  logic: Object.assign({}, NAVIA_BASE, {
+    css: NAVIA_CSS,
+    branches: ['#63A96D', '#F0EFC8']
+  })
+};
+
+function applyPalette() {
+  PAL = PALETTES.logic;
   const r = document.documentElement.style;
-  for (const k in pal.css) r.setProperty(k, pal.css[k]);
+  for (const k in NAVIA_CSS) r.setProperty(k, NAVIA_CSS[k]);
 }
 
 /* =========================================================
@@ -533,9 +508,9 @@ const DATASETS = {
     allowRangesForText: false,
     textKeyBy: "p",
     legend: [
-      { label: "Logic",  color: "#86555C" },
-      { label: "Nature", color: "#B98687" },
-      { label: "Spirit", color: "#EBDCD4" }
+      { label: "Logic",  color: "#63A96D" },
+      { label: "Nature", color: "#2E778C" },
+      { label: "Spirit", color: "#F0EFC8" }
     ],
     foot: "Paragraph numbers follow the 1830 edition of the <i>Encyclopaedia of Philosophical Sciences</i> (Werke, vols. 8–10).",
     loaded: false,
@@ -793,9 +768,11 @@ function prepare(data) {
     n._sx = 0; n._sy = 0;
   }
 
+  /* branch colors resolved by ACTIVE dataset (both use navia branches) */
+  const branches = PALETTES[ACTIVE.id].branches;
   data._color = PAL.fallback;
   for (let i = 0; i < data._children.length; i++) {
-    const col = PAL.branches[i % PAL.branches.length];
+    const col = branches[i % branches.length];
     (function paint(n) {
       n._color = col;
       for (let j = 0; j < n._children.length; j++) paint(n._children[j]);
@@ -1627,7 +1604,6 @@ function applyDataset(key) {
   ACTIVE_PARAS = key === "encyclopedia" ? PARAS_ENCYCLOPEDIA : PARAS_LOGIC;
   PARA_TEXTS = ds.parasData || {};
 
-  applyPalette(key);
   prepare(ds.treeData);
 
   FOCUS = ROOT;
@@ -1663,7 +1639,7 @@ async function loadDataset(key) {
     box.innerHTML =
       "<div><b>Could not load <code>" + esc(ds.treeFile) + "</code></b><br/><br/>" +
       "Make sure the file sits next to <code>index.html</code> and that you are serving the folder.<br/><br/>" +
-      '<span style="color:' + (PAL ? PAL.fallback : '#986469') + ';font-size:12px">' + esc(err.message) + "</span></div>";
+      '<span style="color:' + (PAL ? PAL.fallback : '#99CC6F') + ';font-size:12px">' + esc(err.message) + "</span></div>";
     throw err;
   }
 }
@@ -1708,7 +1684,7 @@ async function boot() {
   resize();
   window.addEventListener("resize", resize);
 
-  applyPalette("encyclopedia");
+  applyPalette();
 
   try {
     await loadDataset("encyclopedia");
