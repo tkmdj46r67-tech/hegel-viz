@@ -12,17 +12,17 @@
     color-scheme: dark;
     --pw: clamp(320px, 34vw, 430px);
 
-    /* Defaults = Encyclopedia / new warm-cream-to-navy palette */
-    --bg: #092642;
-    --text: #EED8B2;
-    --text-dim: #E7C197;
-    --text-mute: #C66760;
-    --accent: #EED8B2;
-    --accent-soft: #E7C197;
-    --tint-rgb: 231, 193, 151;
-    --shade-rgb: 9, 38, 66;
-    --panel-bg: rgba(46, 78, 115, 0.72);
-    --panel-border: rgba(231, 193, 151, 0.12);
+    /* Defaults = Encyclopedia / mako palette */
+    --bg: #0B0405;
+    --text: #F7F3ED;
+    --text-dim: #B98687;
+    --text-mute: #986469;
+    --accent: #EBDCD4;
+    --accent-soft: #E0C5C2;
+    --tint-rgb: 235, 220, 212;
+    --shade-rgb: 11, 4, 5;
+    --panel-bg: rgba(27, 15, 20, 0.85);
+    --panel-border: rgba(235, 220, 212, 0.09);
 
     --font: "Spline Sans", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
@@ -441,40 +441,40 @@ let PAL = null;
 
 /* =========================================================
    PALETTES
-   Encyclopedia → warm cream / tan / terracotta / mauve / navy
-   Logic        → navia green / cream
+   Encyclopedia → mako (warm plum / rose / cream)
+   Logic        → navia (green / cream)
    ========================================================= */
 const PALETTES = {
   encyclopedia: {
     css: {
-      '--bg': '#092642',
-      '--text': '#EED8B2',
-      '--text-dim': '#E7C197',
-      '--text-mute': '#C66760',
-      '--accent': '#EED8B2',
-      '--accent-soft': '#E7C197',
-      '--tint-rgb': '231, 193, 151',
-      '--shade-rgb': '9, 38, 66',
-      '--panel-bg': 'rgba(46, 78, 115, 0.72)',
-      '--panel-border': 'rgba(231, 193, 151, 0.12)'
+      '--bg': '#0B0405',
+      '--text': '#F7F3ED',
+      '--text-dim': '#B98687',
+      '--text-mute': '#986469',
+      '--accent': '#EBDCD4',
+      '--accent-soft': '#E0C5C2',
+      '--tint-rgb': '235, 220, 212',
+      '--shade-rgb': '11, 4, 5',
+      '--panel-bg': 'rgba(27, 15, 20, 0.85)',
+      '--panel-border': 'rgba(235, 220, 212, 0.09)'
     },
-    radialInner: 'rgba(46, 78, 115, 0.55)',
-    radialOuter: 'rgba(9, 38, 66, 0)',
-    diskStroke: 'rgba(231, 193, 151, 0.14)',
-    edgeRGB: '231, 193, 151',
-    edgeHoverRGB: '238, 216, 178',
-    nodeHover: '#EED8B2',
-    nodeHoverStroke: 'rgba(238, 216, 178, 0.55)',
-    focusRing: 'rgba(231, 193, 151, 0.35)',
-    labelFocusRGB: '231, 193, 151',
-    labelHoverRGB: '238, 216, 178',
-    fallback: '#C66760',
-    branches: ['#C66760', '#786072', '#EED8B2'],
-    svgLine: 'rgba(231, 193, 151, 0.20)',
-    svgPillFillRGB: '231, 193, 151',
-    svgPillActiveRGB: '238, 216, 178',
-    svgPillTextActive: '#EED8B2',
-    svgPillTextNormal: '#E7C197'
+    radialInner: 'rgba(61, 35, 43, 0.55)',
+    radialOuter: 'rgba(11, 4, 5, 0)',
+    diskStroke: 'rgba(235, 220, 212, 0.10)',
+    edgeRGB: '200, 153, 153',
+    edgeHoverRGB: '247, 243, 237',
+    nodeHover: '#F7F3ED',
+    nodeHoverStroke: 'rgba(247, 243, 237, 0.55)',
+    focusRing: 'rgba(235, 220, 212, 0.35)',
+    labelFocusRGB: '235, 220, 212',
+    labelHoverRGB: '247, 243, 237',
+    fallback: '#986469',
+    branches: ['#86555C', '#B98687', '#EBDCD4'],
+    svgLine: 'rgba(235, 220, 212, 0.16)',
+    svgPillFillRGB: '235, 220, 212',
+    svgPillActiveRGB: '235, 220, 212',
+    svgPillTextActive: '#F7F3ED',
+    svgPillTextNormal: '#EBDCD4'
   },
   logic: {
     css: {
@@ -533,9 +533,9 @@ const DATASETS = {
     allowRangesForText: false,
     textKeyBy: "p",
     legend: [
-      { label: "Logic",  color: "#C66760" },
-      { label: "Nature", color: "#786072" },
-      { label: "Spirit", color: "#EED8B2" }
+      { label: "Logic",  color: "#86555C" },
+      { label: "Nature", color: "#B98687" },
+      { label: "Spirit", color: "#EBDCD4" }
     ],
     foot: "Paragraph numbers follow the 1830 edition of the <i>Encyclopaedia of Philosophical Sciences</i> (Werke, vols. 8–10).",
     loaded: false,
@@ -1663,7 +1663,7 @@ async function loadDataset(key) {
     box.innerHTML =
       "<div><b>Could not load <code>" + esc(ds.treeFile) + "</code></b><br/><br/>" +
       "Make sure the file sits next to <code>index.html</code> and that you are serving the folder.<br/><br/>" +
-      '<span style="color:' + (PAL ? PAL.fallback : '#C66760') + ';font-size:12px">' + esc(err.message) + "</span></div>";
+      '<span style="color:' + (PAL ? PAL.fallback : '#986469') + ';font-size:12px">' + esc(err.message) + "</span></div>";
     throw err;
   }
 }
