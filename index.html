@@ -12,34 +12,19 @@
     color-scheme: dark;
     --pw: clamp(320px, 34vw, 430px);
 
-    /* lipari palette (Crameri, Scientific Colour Maps) — 16-step approximation */
-    --lipari-0:  #1b0c41;
-    --lipari-1:  #221d5c;
-    --lipari-2:  #282d6e;
-    --lipari-3:  #303d7a;
-    --lipari-4:  #3b4d7f;
-    --lipari-5:  #4b5c7d;
-    --lipari-6:  #5e6b78;
-    --lipari-7:  #737a72;
-    --lipari-8:  #8a896c;
-    --lipari-9:  #a09867;
-    --lipari-10: #b5a765;
-    --lipari-11: #c9b66a;
-    --lipari-12: #dbc574;
-    --lipari-13: #ead485;
-    --lipari-14: #f5e39d;
-    --lipari-15: #fdf3c4;
+    /* Defaults = Encyclopedia / Managua palette */
+    --bg: #5E2841;
+    --text: #E5D5BC;
+    --text-dim: #C5AB80;
+    --text-mute: #DA9655;
+    --accent: #74C3E9;
+    --accent-soft: #A8D6EE;
+    --tint-rgb: 116, 195, 233;
+    --shade-rgb: 50, 15, 40;
+    --panel-bg: rgba(94, 40, 65, 0.85);
+    --panel-border: rgba(116, 195, 233, 0.10);
 
     --font: "Spline Sans", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-
-    --bg: var(--lipari-0);
-    --panel-bg: rgba(27, 12, 65, 0.85);
-    --panel-border: rgba(253, 243, 196, 0.10);
-    --text: var(--lipari-15);
-    --text-dim: var(--lipari-12);
-    --text-mute: var(--lipari-8);
-    --accent: var(--lipari-14);
-    --accent-soft: var(--lipari-12);
   }
   * { box-sizing: border-box; }
   html, body {
@@ -49,6 +34,7 @@
     font-family: var(--font);
     -webkit-font-smoothing: antialiased;
     -webkit-tap-highlight-color: transparent;
+    transition: background-color .35s ease;
   }
   canvas { display: block; width: 100vw; height: 100vh; touch-action: none; cursor: grab; }
   canvas.grabbing { cursor: grabbing; }
@@ -62,6 +48,7 @@
     border: 1px solid var(--panel-border);
     border-radius: 12px;
     box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+    transition: background-color .35s ease, border-color .35s ease;
   }
 
   #top {
@@ -72,7 +59,6 @@
   }
   body.panel-open #top { right: calc(var(--pw) + 24px); }
 
-  /* dataset switcher */
   #datasetSwitch {
     pointer-events: auto;
     display: flex;
@@ -94,9 +80,12 @@
     white-space: nowrap;
     transition: background .15s, color .15s;
   }
-  #datasetSwitch button:hover { color: var(--text-dim); background: rgba(253, 243, 196, 0.06); }
+  #datasetSwitch button:hover {
+    color: var(--text-dim);
+    background: rgba(var(--tint-rgb), 0.06);
+  }
   #datasetSwitch button.active {
-    background: rgba(253, 243, 196, 0.14);
+    background: rgba(var(--tint-rgb), 0.14);
     color: var(--text);
   }
 
@@ -107,18 +96,19 @@
     background: var(--panel-bg);
     -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
     color: var(--text); font-size: 13px; font-family: inherit;
+    transition: border-color .15s, box-shadow .15s, background-color .35s ease;
   }
   #search::placeholder { color: var(--text-mute); }
   #search:focus {
-    border-color: var(--lipari-11);
-    box-shadow: 0 0 0 3px rgba(201, 182, 106, 0.18);
+    border-color: var(--accent-soft);
+    box-shadow: 0 0 0 3px rgba(var(--tint-rgb), 0.18);
   }
   #results {
     position: absolute; top: calc(100% + 6px); left: 0; width: 360px;
     max-height: 340px; overflow-y: auto; display: none; padding: 4px;
   }
-  #results .r { padding: 7px 10px; font-size: 12.5px; color: var(--lipari-13); cursor: pointer; border-radius: 8px; }
-  #results .r:hover { background: rgba(253, 243, 196, 0.08); }
+  #results .r { padding: 7px 10px; font-size: 12.5px; color: var(--text-dim); cursor: pointer; border-radius: 8px; }
+  #results .r:hover { background: rgba(var(--tint-rgb), 0.08); }
   #results .r .p { color: var(--text-mute); font-size: 10.5px; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   #results .empty { padding: 10px; color: var(--text-mute); font-size: 12px; }
 
@@ -130,9 +120,10 @@
     border: 1px solid var(--panel-border);
     background: var(--panel-bg);
     -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
-    color: var(--text-dim); cursor: pointer; transition: background .15s, color .15s;
+    color: var(--text-dim); cursor: pointer;
+    transition: background .15s, color .15s, border-color .35s;
   }
-  .iconbtn:hover { background: rgba(253, 243, 196, 0.09); color: var(--accent); }
+  .iconbtn:hover { background: rgba(var(--tint-rgb), 0.09); color: var(--accent); }
   .iconbtn svg { width: 17px; height: 17px; display: block; }
 
   #hint {
@@ -154,11 +145,12 @@
   #tip {
     position: absolute; padding: 7px 11px; font-size: 12px; color: var(--text);
     max-width: 340px; display: none; pointer-events: none;
-    background: rgba(20, 6, 52, 0.96);
-    border: 1px solid rgba(253, 243, 196, 0.14);
+    background: rgba(var(--shade-rgb), 0.96);
+    border: 1px solid rgba(var(--tint-rgb), 0.14);
     border-radius: 9px; line-height: 1.5;
     box-shadow: 0 10px 30px rgba(0,0,0,.6);
     z-index: 5;
+    transition: background-color .35s ease, border-color .35s ease;
   }
   #tip .p { color: var(--text-mute); font-size: 10.5px; margin-bottom: 3px; }
 
@@ -167,13 +159,13 @@
     top: 12px; right: 12px; bottom: 12px;
     width: var(--pw);
     display: flex; flex-direction: column;
-    background: rgba(30, 10, 70, 0.92);
+    background: rgba(var(--shade-rgb), 0.92);
     -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
     border: 1px solid var(--panel-border);
     border-radius: 16px;
     box-shadow: 0 20px 60px rgba(0,0,0,0.65);
     transform: translateX(calc(100% + 24px));
-    transition: transform .38s cubic-bezier(.22,.9,.3,1);
+    transition: transform .38s cubic-bezier(.22,.9,.3,1), background-color .35s ease, border-color .35s ease;
     pointer-events: none;
     z-index: 30;
     overflow: hidden;
@@ -183,8 +175,9 @@
   .p-head {
     display: flex; align-items: flex-start; gap: 10px;
     padding: 16px 16px 13px 18px;
-    border-bottom: 1px solid rgba(253, 243, 196, 0.08);
+    border-bottom: 1px solid rgba(var(--tint-rgb), 0.08);
     flex: 0 0 auto;
+    transition: border-color .35s ease;
   }
   .p-titles { min-width: 0; flex: 1 1 auto; }
   .p-kicker {
@@ -200,18 +193,19 @@
     flex: 0 0 auto;
     width: 30px; height: 30px; border-radius: 9px;
     border: 1px solid var(--panel-border);
-    background: rgba(253, 243, 196, 0.04);
+    background: rgba(var(--tint-rgb), 0.04);
     color: var(--text-dim); cursor: pointer; font-size: 13px;
-    display: grid; place-items: center; transition: background .15s, color .15s;
+    display: grid; place-items: center;
+    transition: background .15s, color .15s, border-color .35s;
   }
-  .p-close:hover { background: rgba(253, 243, 196, 0.14); color: var(--accent); }
+  .p-close:hover { background: rgba(var(--tint-rgb), 0.14); color: var(--accent); }
 
   .p-body {
     flex: 1 1 auto; overflow-y: auto; padding: 16px 18px 20px;
-    scrollbar-width: thin; scrollbar-color: rgba(253, 243, 196,.14) transparent;
+    scrollbar-width: thin; scrollbar-color: rgba(var(--tint-rgb),.14) transparent;
   }
   .p-body::-webkit-scrollbar { width: 8px; }
-  .p-body::-webkit-scrollbar-thumb { background: rgba(253, 243, 196,.13); border-radius: 4px; }
+  .p-body::-webkit-scrollbar-thumb { background: rgba(var(--tint-rgb),.13); border-radius: 4px; }
 
   .p-sec { margin-bottom: 20px; }
   .p-sec:last-child { margin-bottom: 0; }
@@ -225,23 +219,24 @@
 
   .para { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
   .para .pnum {
-    font-size: 26px; font-weight: 650; color: var(--lipari-13); letter-spacing: -0.02em;
+    font-size: 26px; font-weight: 650; color: var(--text); letter-spacing: -0.02em;
     font-variant-numeric: tabular-nums; line-height: 1.1;
   }
   .sect {
-    margin-top: 7px; font-size: 12.5px; color: var(--lipari-11); line-height: 1.55;
+    margin-top: 7px; font-size: 12.5px; color: var(--text-dim); line-height: 1.55;
   }
   .inherit {
     margin-top: 7px; font-size: 11.5px; color: var(--text-mute); line-height: 1.55;
-    padding-left: 10px; border-left: 2px solid rgba(253, 243, 196, 0.10);
+    padding-left: 10px; border-left: 2px solid rgba(var(--tint-rgb), 0.10);
+    transition: border-color .35s ease;
   }
 
   #paraTextSection { display: none; }
   .show-para {
     display: inline-flex; align-items: center; gap: 8px;
     padding: 8px 14px;
-    background: rgba(253, 243, 196, 0.06);
-    border: 1px solid rgba(253, 243, 196, 0.14);
+    background: rgba(var(--tint-rgb), 0.06);
+    border: 1px solid rgba(var(--tint-rgb), 0.14);
     border-radius: 9px;
     color: var(--accent);
     font: inherit; font-size: 12.5px; font-weight: 550;
@@ -249,9 +244,9 @@
     transition: background .15s, border-color .15s, color .15s;
   }
   .show-para:hover {
-    background: rgba(253, 243, 196, 0.14);
-    border-color: rgba(253, 243, 196, 0.24);
-    color: var(--lipari-15);
+    background: rgba(var(--tint-rgb), 0.14);
+    border-color: rgba(var(--tint-rgb), 0.24);
+    color: var(--text);
   }
   .show-para svg { width: 13px; height: 13px; opacity: 0.85; }
 
@@ -259,38 +254,40 @@
     margin-top: 12px;
     padding: 14px 16px;
     background: rgba(0, 0, 0, 0.30);
-    border: 1px solid rgba(253, 243, 196, 0.09);
+    border: 1px solid rgba(var(--tint-rgb), 0.09);
     border-radius: 10px;
     font-size: 13px;
     line-height: 1.78;
-    color: var(--lipari-12);
+    color: var(--text-dim);
     white-space: pre-wrap;
+    transition: border-color .35s ease;
   }
   .para-text .ptitle {
     font-size: 11px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--lipari-9);
+    color: var(--text-mute);
     font-weight: 600;
     margin-bottom: 9px;
   }
-  .para-text .pbody { color: var(--lipari-15); }
+  .para-text .pbody { color: var(--text); }
 
   .p-path { font-size: 12.5px; color: var(--text-dim); line-height: 1.75; word-break: break-word; }
-  .p-path .psep { color: var(--lipari-5); padding: 0 5px; }
+  .p-path .psep { color: rgba(var(--tint-rgb), 0.35); padding: 0 5px; }
   .p-path .pcur { color: var(--text); font-weight: 600; }
 
   .p-foot {
     flex: 0 0 auto; padding: 10px 18px 13px;
-    font-size: 10.5px; color: var(--lipari-7); line-height: 1.55;
-    border-top: 1px solid rgba(253, 243, 196, 0.07);
+    font-size: 10.5px; color: var(--text-mute); line-height: 1.55;
+    border-top: 1px solid rgba(var(--tint-rgb), 0.07);
+    transition: border-color .35s ease;
   }
 
   #err {
     position: absolute; inset: 0; display: none; place-items: center;
     padding: 40px; text-align: center; color: var(--text-dim); font-size: 14px; line-height: 1.8;
   }
-  #err code { background: rgba(253,243,196,.08); padding: 2px 6px; border-radius: 5px; color: var(--lipari-13); }
+  #err code { background: rgba(var(--tint-rgb), .08); padding: 2px 6px; border-radius: 5px; color: var(--text); }
 
   @media (max-width: 859px) {
     #panel {
@@ -440,11 +437,84 @@ let firstNodeClick = true;
 let ACTIVE = null;
 let ACTIVE_PARAS = {};
 let PARA_TEXTS = {};
+let PAL = null;   // current palette object
 
 /* =========================================================
-   BRANCH COLORS  (lipari: blue → brown → cream)
+   PALETTES
+   Encyclopedia → managua: blue / beige / orange
+   Logic        → navia:   green / cream
    ========================================================= */
-const BRANCH_COLORS = ["#303d7a", "#8a896c", "#fdf3c4"];
+const PALETTES = {
+  encyclopedia: {
+    css: {
+      '--bg': '#5E2841',
+      '--text': '#E5D5BC',
+      '--text-dim': '#C5AB80',
+      '--text-mute': '#DA9655',
+      '--accent': '#74C3E9',
+      '--accent-soft': '#A8D6EE',
+      '--tint-rgb': '116, 195, 233',
+      '--shade-rgb': '50, 15, 40',
+      '--panel-bg': 'rgba(94, 40, 65, 0.85)',
+      '--panel-border': 'rgba(116, 195, 233, 0.10)'
+    },
+    radialInner: 'rgba(76, 59, 111, 0.55)',
+    radialOuter: 'rgba(50, 15, 40, 0)',
+    diskStroke: 'rgba(116, 195, 233, 0.12)',
+    edgeRGB: '197, 171, 128',
+    edgeHoverRGB: '116, 195, 233',
+    nodeHover: '#74C3E9',
+    nodeHoverStroke: 'rgba(116, 195, 233, 0.55)',
+    focusRing: 'rgba(116, 195, 233, 0.35)',
+    labelFocusRGB: '197, 171, 128',
+    labelHoverRGB: '116, 195, 233',
+    fallback: '#DA9655',
+    branches: ['#74C3E9', '#DA9655', '#C5AB80'],
+    svgLine: 'rgba(197, 171, 128, 0.20)',
+    svgPillFillRGB: '197, 171, 128',
+    svgPillActiveRGB: '116, 195, 233',
+    svgPillTextActive: '#74C3E9',
+    svgPillTextNormal: '#C5AB80'
+  },
+  logic: {
+    css: {
+      '--bg': '#05203D',
+      '--text': '#F0EFC8',
+      '--text-dim': '#CDE19B',
+      '--text-mute': '#63A96D',
+      '--accent': '#CDE19B',
+      '--accent-soft': '#E0ECB8',
+      '--tint-rgb': '205, 225, 155',
+      '--shade-rgb': '5, 32, 61',
+      '--panel-bg': 'rgba(5, 32, 61, 0.85)',
+      '--panel-border': 'rgba(205, 225, 155, 0.12)'
+    },
+    radialInner: 'rgba(46, 119, 140, 0.55)',
+    radialOuter: 'rgba(5, 32, 61, 0)',
+    diskStroke: 'rgba(205, 225, 155, 0.14)',
+    edgeRGB: '99, 169, 109',
+    edgeHoverRGB: '240, 239, 200',
+    nodeHover: '#F0EFC8',
+    nodeHoverStroke: 'rgba(240, 239, 200, 0.55)',
+    focusRing: 'rgba(205, 225, 155, 0.35)',
+    labelFocusRGB: '205, 225, 155',
+    labelHoverRGB: '240, 239, 200',
+    fallback: '#99CC6F',
+    branches: ['#63A96D', '#F0EFC8'],
+    svgLine: 'rgba(99, 169, 109, 0.22)',
+    svgPillFillRGB: '99, 169, 109',
+    svgPillActiveRGB: '240, 239, 200',
+    svgPillTextActive: '#F0EFC8',
+    svgPillTextNormal: '#CDE19B'
+  }
+};
+
+function applyPalette(key) {
+  const pal = PALETTES[key];
+  PAL = pal;
+  const r = document.documentElement.style;
+  for (const k in pal.css) r.setProperty(k, pal.css[k]);
+}
 
 /* =========================================================
    DATASETS
@@ -463,9 +533,9 @@ const DATASETS = {
     allowRangesForText: false,
     textKeyBy: "p",
     legend: [
-      { label: "Logic",  color: "#303d7a" },
-      { label: "Nature", color: "#8a896c" },
-      { label: "Spirit", color: "#fdf3c4" }
+      { label: "Logic",  color: "#74C3E9" },
+      { label: "Nature", color: "#DA9655" },
+      { label: "Spirit", color: "#C5AB80" }
     ],
     foot: "Paragraph numbers follow the 1830 edition of the <i>Encyclopaedia of Philosophical Sciences</i> (Werke, vols. 8–10).",
     loaded: false,
@@ -485,8 +555,8 @@ const DATASETS = {
     allowRangesForText: true,
     textKeyBy: "id",
     legend: [
-      { label: "Volume One", color: "#303d7a" },
-      { label: "Volume Two", color: "#fdf3c4" }
+      { label: "Volume One", color: "#63A96D" },
+      { label: "Volume Two", color: "#F0EFC8" }
     ],
     foot: "Page ranges follow A. V. Miller’s translation of the <i>Science of Logic</i> (1969). The Logic has no numbered paragraphs; references are to Books, Sections, Chapters, and Miller pages.",
     loaded: false,
@@ -723,9 +793,9 @@ function prepare(data) {
     n._sx = 0; n._sy = 0;
   }
 
-  data._color = "#4b5c7d";
+  data._color = PAL.fallback;
   for (let i = 0; i < data._children.length; i++) {
-    const col = BRANCH_COLORS[i % BRANCH_COLORS.length];
+    const col = PAL.branches[i % PAL.branches.length];
     (function paint(n) {
       n._color = col;
       for (let j = 0; j < n._children.length; j++) paint(n._children[j]);
@@ -810,14 +880,14 @@ function draw() {
   ctx.clearRect(0, 0, W, H);
 
   const g = ctx.createRadialGradient(cx0, cy0, 0, cx0, cy0, Math.max(W, H) * 0.72);
-  g.addColorStop(0, "rgba(48, 61, 122, 0.55)");
-  g.addColorStop(1, "rgba(20, 6, 52, 0)");
+  g.addColorStop(0, PAL.radialInner);
+  g.addColorStop(1, PAL.radialOuter);
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, W, H);
 
   ctx.beginPath();
   ctx.arc(cx0, cy0, scale, 0, Math.PI * 2);
-  ctx.strokeStyle = "rgba(253, 243, 196, 0.12)";
+  ctx.strokeStyle = PAL.diskStroke;
   ctx.lineWidth = 1;
   ctx.stroke();
 
@@ -852,12 +922,12 @@ function draw() {
     const inLabel = labelSet.has(n._id) || labelSet.has(p._id);
 
     if (hot) {
-      ctx.strokeStyle = "rgba(253, 243, 196, " + Math.min(0.95, 0.35 + m * 0.8) + ")";
+      ctx.strokeStyle = "rgba(" + PAL.edgeHoverRGB + ", " + Math.min(0.95, 0.35 + m * 0.8) + ")";
       ctx.lineWidth = Math.max(0.8, Math.min(2.8, 0.9 + 2.6 * m));
     } else {
       const baseA = inLabel ? 0.42 : 0.12;
       const al = Math.min(0.65, baseA + m * 0.4);
-      ctx.strokeStyle = "rgba(115, 122, 114, " + al + ")";
+      ctx.strokeStyle = "rgba(" + PAL.edgeRGB + ", " + al + ")";
       ctx.lineWidth = Math.max(0.4, Math.min(2.0, (inLabel ? 0.7 : 0.3) + 2.0 * m));
     }
     strokeGeo(p._w, n._w, cx0, cy0, scale);
@@ -876,10 +946,10 @@ function draw() {
     ctx.arc(n._sx, n._sy, hot ? rr + 2.2 : rr, 0, Math.PI * 2);
 
     if (hot) {
-      ctx.fillStyle = "#fdf3c4";
+      ctx.fillStyle = PAL.nodeHover;
       ctx.globalAlpha = 1;
     } else {
-      ctx.fillStyle = n._color || "#4b5c7d";
+      ctx.fillStyle = n._color || PAL.fallback;
       const minA = labelSet.has(n._id) ? 0.55 : 0.18;
       ctx.globalAlpha = Math.min(1, minA + m * 1.0);
     }
@@ -887,7 +957,7 @@ function draw() {
 
     if (hot) {
       ctx.globalAlpha = 1;
-      ctx.strokeStyle = "rgba(253, 243, 196, 0.55)";
+      ctx.strokeStyle = PAL.nodeHoverStroke;
       ctx.lineWidth = 1.2;
       ctx.stroke();
     }
@@ -897,7 +967,7 @@ function draw() {
   if (FOCUS) {
     ctx.beginPath();
     ctx.arc(cx0, cy0, 9, 0, Math.PI * 2);
-    ctx.strokeStyle = "rgba(253, 243, 196, 0.35)";
+    ctx.strokeStyle = PAL.focusRing;
     ctx.lineWidth = 1;
     ctx.stroke();
   }
@@ -928,11 +998,11 @@ function drawLabel(n, cx0, mode) {
     fs = 7.5 + 6.5 * m;
     if (fs < 6) return;
     const a = Math.min(1, 0.18 + m * 1.25);
-    color = "rgba(253, 243, 196, " + a + ")";
+    color = "rgba(" + PAL.labelHoverRGB + ", " + a + ")";
   } else {
     fs = Math.max(10, 7.5 + 6.5 * m);
     const a = Math.min(1, 0.65 + m * 1.25);
-    color = "rgba(201, 182, 106, " + a + ")";
+    color = "rgba(" + PAL.labelFocusRGB + ", " + a + ")";
   }
 
   const size = Math.max(8, fs);
@@ -1112,21 +1182,21 @@ function fitText(text, maxW, font) {
 function pillSVG(x, y, w, h, node, opts) {
   opts = opts || {};
   const idx = node._id;
-  const color = node._color || "#4b5c7d";
+  const color = node._color || PAL.fallback;
   const active = !!opts.active;
   const dim = !!opts.dim;
   const compact = !!opts.compact;
 
   const fill = active
-    ? "rgba(253, 243, 196, 0.10)"
+    ? "rgba(" + PAL.svgPillActiveRGB + ", 0.10)"
     : dim
-      ? "rgba(253, 243, 196, 0.025)"
-      : "rgba(253, 243, 196, 0.05)";
+      ? "rgba(" + PAL.svgPillFillRGB + ", 0.025)"
+      : "rgba(" + PAL.svgPillFillRGB + ", 0.05)";
   const stroke = active
-    ? "rgba(253, 243, 196, 0.72)"
+    ? "rgba(" + PAL.svgPillActiveRGB + ", 0.72)"
     : dim
-      ? "rgba(253, 243, 196, 0.08)"
-      : "rgba(253, 243, 196, 0.14)";
+      ? "rgba(" + PAL.svgPillFillRGB + ", 0.08)"
+      : "rgba(" + PAL.svgPillFillRGB + ", 0.14)";
   const op = dim ? 0.72 : 1;
 
   const fontPx = compact ? 10 : 11.5;
@@ -1146,7 +1216,7 @@ function pillSVG(x, y, w, h, node, opts) {
       '<text x="' + textX + '" y="' + (y + h / 2 + 0.5) + '"' +
         ' font-family="' + FONT_SVG + '"' +
         ' font-size="' + fontPx + '" font-weight="500"' +
-        ' fill="' + (active ? "#fdf3c4" : "#c9b66a") + '" dominant-baseline="middle">' +
+        ' fill="' + (active ? PAL.svgPillTextActive : PAL.svgPillTextNormal) + '" dominant-baseline="middle">' +
         esc(label) +
       '</text>' +
     '</g>'
@@ -1189,7 +1259,7 @@ function renderMiniTree(node) {
   parts.push('<svg width="' + W0 + '" height="' + H0 + '" viewBox="0 0 ' + W0 + ' ' + H0 + '" xmlns="http://www.w3.org/2000/svg">');
 
   const centerX = W0 / 2;
-  const LINE = "rgba(115, 122, 114, 0.22)";
+  const LINE = PAL.svgLine;
 
   let prevBottom = null;
   for (const r of ancRows) {
@@ -1557,6 +1627,7 @@ function applyDataset(key) {
   ACTIVE_PARAS = key === "encyclopedia" ? PARAS_ENCYCLOPEDIA : PARAS_LOGIC;
   PARA_TEXTS = ds.parasData || {};
 
+  applyPalette(key);
   prepare(ds.treeData);
 
   FOCUS = ROOT;
@@ -1592,7 +1663,7 @@ async function loadDataset(key) {
     box.innerHTML =
       "<div><b>Could not load <code>" + esc(ds.treeFile) + "</code></b><br/><br/>" +
       "Make sure the file sits next to <code>index.html</code> and that you are serving the folder.<br/><br/>" +
-      '<span style="color:#c9b66a;font-size:12px">' + esc(err.message) + "</span></div>";
+      '<span style="color:' + (PAL ? PAL.fallback : '#DA9655') + ';font-size:12px">' + esc(err.message) + "</span></div>";
     throw err;
   }
 }
@@ -1636,6 +1707,9 @@ window.addEventListener("resize", function () {
 async function boot() {
   resize();
   window.addEventListener("resize", resize);
+
+  /* Apply default palette immediately so the empty UI looks right */
+  applyPalette("encyclopedia");
 
   try {
     await loadDataset("encyclopedia");
