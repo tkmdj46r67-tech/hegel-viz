@@ -32,7 +32,6 @@
     box-shadow: 0 8px 30px rgba(0,0,0,0.35);
   }
 
-  /* ---------- top bar ---------- */
   #top {
     position: absolute; top: 12px; left: 12px; right: 12px;
     display: flex; gap: 10px; align-items: flex-start;
@@ -72,7 +71,6 @@
   .iconbtn:hover { background: rgba(255,255,255,0.09); color: #fff; }
   .iconbtn svg { width: 17px; height: 17px; display: block; }
 
-  /* ---------- bottom chrome ---------- */
   #hint {
     position: absolute; bottom: 12px; left: 12px;
     padding: 9px 14px; font-size: 11.5px; color: #7d8ea3; line-height: 1.65;
@@ -99,7 +97,6 @@
   }
   #tip .p { color: #5f7288; font-size: 10.5px; margin-bottom: 3px; }
 
-  /* ---------- detail panel ---------- */
   #panel {
     position: fixed;
     top: 12px; right: 12px; bottom: 12px;
@@ -294,14 +291,14 @@ let NODES = [];
 let ROOT = null;
 let MAXD = 1;
 
-let A  = { re: 0, im: 0 };        // current Möbius parameter
-let AT = { re: 0, im: 0 };        // target
+let A  = { re: 0, im: 0 };
+let AT = { re: 0, im: 0 };
 
-let ZOOM  = 1;                    // current zoom
-let ZOOMT = 1;                    // target zoom
+let ZOOM  = 1;
+let ZOOMT = 1;
 
-let PANX = 0, PANY = 0;           // current pan
-let PANTX = 0, PANTY = 0;         // target pan
+let PANX = 0, PANY = 0;
+let PANTX = 0, PANTY = 0;
 
 let viewShift = 0, viewShiftTarget = 0;
 
@@ -313,14 +310,19 @@ let needsDraw = true;
 let dragging = false, moved = false, dragStart = null;
 let panelNode = null;
 
-const EASE = 0.14;
+/* ---- easing ---- */
+const EASE = 0.06;              // lower = slower
+
+/* ---- resting zoom, persisted across clicks ---- */
+let preferredZoom = 1;
+let firstNodeClick = true;
+
 const PALETTE = ["#5b9bf5", "#4ec98a", "#c084fc"];
 
 /* =========================================================
    PARAGRAPH MAP  (1830 Encyclopaedia, Werke 8–10)
    ========================================================= */
 const PARAS = {
-  /* ---------- Part One: Logic ---------- */
   "1":   { p: "84–244", s: "Part One — The Science of Logic" },
 
   "1.1": { p: "84–111", s: "First Book — The Doctrine of Being" },
@@ -376,7 +378,6 @@ const PARAS = {
   "1.3.3.2": { p: "223–234" },
   "1.3.3.3": { p: "236–244" },
 
-  /* ---------- Part Two: Nature ---------- */
   "2": { p: "245–376", s: "Part Two — The Philosophy of Nature" },
   "2.1": { p: "253–271", s: "First Division — Mechanics" },
   "2.1.1": { p: "254–259" },
@@ -394,7 +395,6 @@ const PARAS = {
   "2.3.2": { p: "350–359" },
   "2.3.3": { p: "360–376" },
 
-  /* ---------- Part Three: Spirit ---------- */
   "3": { p: "377–577", s: "Part Three — The Philosophy of Spirit" },
   "3.1": { p: "377–482", s: "First Section — Subjective Spirit" },
   "3.1.1": { p: "388–412" },
@@ -686,30 +686,12 @@ function drawLabel(n, cx0, force) {
 }
 
 /* =========================================================
-   TARGET-ZOOM  (frame parent + children)
+   TARGET ZOOM  (neighborhood of the node)
    ========================================================= */
-function computeTargetZoom(node) {
+function targetZoomFor(node) {
   if (!node || node === ROOT) return 1;
-
-  const a = node._z;
-  let maxR = 0;
-
-  if (node._parent) {
-    const w = mobius(node._parent._z, a);
-    const r = Math.hypot(w.re, w.im);
-    if (r > maxR) maxR = r;
-  }
-  for (let i = 0; i < node._children.length; i++) {
-    const w = mobius(node._children[i]._z, a);
-    const r = Math.hypot(w.re, w.im);
-    if (r > maxR) maxR = r;
-  }
-
-  if (maxR < 0.005) return 1;
-
-  const R_view = Math.min(0.85, maxR * 1.3);
-  const zoom = 0.729 / R_view;
-  return Math.max(1, Math.min(10, zoom));
+  const d = node._depth;
+  return 3.5 + Math.min(d, 8) * 0.35;
 }
 
 /* =========================================================
@@ -731,7 +713,7 @@ function loop() {
   }
 
   const dz = ZOOMT - ZOOM;
-  if (Math.abs(dz) > 0.001) {
+  if (Math.abs(dz) > 0.0008) {
     ZOOM += dz * EASE;
     dirty = true;
   } else if (ZOOM !== ZOOMT) {
@@ -741,7 +723,7 @@ function loop() {
 
   const dpx = PANTX - PANX;
   const dpy = PANTY - PANY;
-  if (Math.abs(dpx) > 0.2 || Math.abs(dpy) > 0.2) {
+  if (Math.abs(dpx) > 0.15 || Math.abs(dpy) > 0.15) {
     PANX += dpx * EASE;
     PANY += dpy * EASE;
     dirty = true;
@@ -892,14 +874,12 @@ function renderMiniTree(node) {
   const wrap = document.getElementById("miniTree");
   const W0 = Math.max(240, wrap.clientWidth || 340);
 
-  /* full ancestor chain root → node */
   const chain = [];
   let n = node;
   while (n) { chain.unshift(n); n = n._parent; }
 
   const kids = node._children || [];
 
-  /* row metrics */
   const ancH = 22, ancGap = 15;
   const selfH = 28, selfGap = 20;
   const kidH = 26;
@@ -926,7 +906,6 @@ function renderMiniTree(node) {
   const parts = [];
   parts.push('<svg width="' + W0 + '" height="' + H0 + '" viewBox="0 0 ' + W0 + ' ' + H0 + '" xmlns="http://www.w3.org/2000/svg">');
 
-  /* vertical spine connectors between ancestor / self rows */
   let prevBottom = null;
   for (let i = 0; i < rows.length; i++) {
     const r = rows[i];
@@ -938,7 +917,6 @@ function renderMiniTree(node) {
     prevBottom = r.y + r.h;
   }
 
-  /* self → children connectors */
   if (kidRow) {
     const selfBottom = selfRow.y + selfRow.h;
     const busY = selfBottom + selfGap / 2;
@@ -958,7 +936,6 @@ function renderMiniTree(node) {
     }
   }
 
-  /* pills */
   const ancW = Math.min(W0 - 60, 250);
   const ancX = (W0 - ancW) / 2;
   const selfW = Math.min(W0 - 8, 270);
@@ -992,7 +969,6 @@ function renderMiniTree(node) {
   });
 }
 
-/* ---------- panel renderer ---------- */
 function renderPanel(node) {
   document.getElementById("pKicker").textContent = sectionFor(node);
   document.getElementById("pTitle").textContent = node.name || "—";
@@ -1055,9 +1031,22 @@ function focusOn(n) {
   if (!n) return;
   FOCUS = n;
   AT = { re: n._z.re, im: n._z.im };
-  ZOOMT = computeTargetZoom(n);
   PANTX = 0;
   PANTY = 0;
+
+  if (n === ROOT) {
+    /* root: preserve the current resting zoom (never zoom out) */
+    ZOOMT = preferredZoom;
+  } else if (firstNodeClick) {
+    /* very first click on a node: zoom in to a useful, depth-aware level */
+    ZOOMT = Math.max(preferredZoom, targetZoomFor(n));
+    preferredZoom = ZOOMT;
+    firstNodeClick = false;
+  } else {
+    /* subsequent clicks preserve the resting zoom — no zoom out */
+    ZOOMT = preferredZoom;
+  }
+
   needsDraw = true;
 }
 
@@ -1152,8 +1141,8 @@ canvas.addEventListener("wheel", function (e) {
   const pos = localPos(e);
 
   const factor = Math.exp(-e.deltaY * 0.0016);
-  const newZoom = Math.min(10, Math.max(1, ZOOM * factor));
-  if (newZoom === ZOOM) return;
+  const newZoom = Math.min(12, Math.max(1, ZOOM * factor));
+  if (Math.abs(newZoom - ZOOM) < 0.001) return;
 
   const cx = W / 2 + viewShift;
   const cy = H / 2;
@@ -1164,6 +1153,7 @@ canvas.addEventListener("wheel", function (e) {
 
   ZOOM = newZoom;
   ZOOMT = newZoom;
+  preferredZoom = newZoom;       // wheel becomes the new resting level
   PANX = pos.x - cx - base * ZOOM * wx;
   PANY = pos.y - cy - base * ZOOM * wy;
   PANTX = PANX;
@@ -1294,6 +1284,7 @@ async function boot() {
   AT = { re: data._z.re, im: data._z.im };
   ZOOM = 1;
   ZOOMT = 1;
+  preferredZoom = 1;
   PANX = PANY = PANTX = PANTY = 0;
 
   updateViewShift();
