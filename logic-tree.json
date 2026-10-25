@@ -3,6 +3,22 @@
   "name": "Science of Logic",
   "children": [
     {
+      "id_": "SL.Prefaces",
+      "name": "Prefaces",
+      "children": [
+        { "id_": "SL.Preface1", "name": "First Preface" },
+        { "id_": "SL.Preface2", "name": "Second Preface" }
+      ]
+    },
+    {
+      "id_": "SL.Introduction",
+      "name": "Introduction",
+      "children": [
+        { "id_": "SL.Intro.GeneralNotion", "name": "General Notion" },
+        { "id_": "SL.Intro.GeneralDivision", "name": "General Division" }
+      ]
+    },
+    {
       "id_": "I",
       "name": "Volume One: The Objective Logic",
       "children": [
@@ -10,6 +26,8 @@
           "id_": "I.1",
           "name": "Book One: The Doctrine of Being",
           "children": [
+            { "id_": "I.1.0", "name": "Science Begin" },
+            { "id_": "I.1.0b", "name": "Division Being" },
             {
               "id_": "I.1.1",
               "name": "Section One: Determinateness (Quality)",
@@ -25,8 +43,13 @@
                       "name": "C. Becoming",
                       "children": [
                         { "id_": "I.1.1.1.3.1", "name": "1. Unity of Being and Nothing" },
+                        { "id_": "I.1.1.1.3.R1", "name": "Remark Opposition" },
+                        { "id_": "I.1.1.1.3.R2", "name": "Remark Expression" },
+                        { "id_": "I.1.1.1.3.R3", "name": "Remark Isolation" },
+                        { "id_": "I.1.1.1.3.R4", "name": "Remark Beginning" },
                         { "id_": "I.1.1.1.3.2", "name": "2. Moments of Becoming" },
-                        { "id_": "I.1.1.1.3.3", "name": "3. Sublation of Becoming" }
+                        { "id_": "I.1.1.1.3.3", "name": "3. Sublation of Becoming" },
+                        { "id_": "I.1.1.1.3.RS", "name": "Remark Sublate" }
                       ]
                     }
                   ]
@@ -41,6 +64,7 @@
                       "children": [
                         { "id_": "I.1.1.2.1.1", "name": "a. Determinate Being in General" },
                         { "id_": "I.1.1.2.1.2", "name": "b. Quality" },
+                        { "id_": "I.1.1.2.1.RQ", "name": "Remark Quality" },
                         { "id_": "I.1.1.2.1.3", "name": "c. Something" }
                       ]
                     },
@@ -56,6 +80,7 @@
                           "children": [
                             { "id_": "I.1.1.2.2.3.1", "name": "α. The Immediacy of Finitude" },
                             { "id_": "I.1.1.2.2.3.2", "name": "β. Limitation and the Ought" },
+                            { "id_": "I.1.1.2.2.3.RO", "name": "Remark Ought" },
                             { "id_": "I.1.1.2.2.3.3", "name": "γ. Transition of the Finite into the Infinite" }
                           ]
                         }
@@ -69,41 +94,16 @@
                         { "id_": "I.1.1.2.3.2", "name": "b. Alternating Determination of Finite and Infinite" },
                         { "id_": "I.1.1.2.3.3", "name": "c. Affirmative Infinity" }
                       ]
-                    },
-                    { "id_": "I.1.1.2.4", "name": "Transition" }
+                    }
                   ]
                 },
                 {
                   "id_": "I.1.1.3",
                   "name": "Chapter 3: Being-for-self",
                   "children": [
-                    {
-                      "id_": "I.1.1.3.1",
-                      "name": "A. Being-for-self as Such",
-                      "children": [
-                        { "id_": "I.1.1.3.1.1", "name": "a. Determinate Being and Being-for-self" },
-                        { "id_": "I.1.1.3.1.2", "name": "b. Being-for-one" },
-                        { "id_": "I.1.1.3.1.3", "name": "c. The One" }
-                      ]
-                    },
-                    {
-                      "id_": "I.1.1.3.2",
-                      "name": "B. The One and the Many",
-                      "children": [
-                        { "id_": "I.1.1.3.2.1", "name": "a. The One in its Own Self" },
-                        { "id_": "I.1.1.3.2.2", "name": "b. The One and the Void" },
-                        { "id_": "I.1.1.3.2.3", "name": "c. Many Ones — Repulsion" }
-                      ]
-                    },
-                    {
-                      "id_": "I.1.1.3.3",
-                      "name": "C. Repulsion and Attraction",
-                      "children": [
-                        { "id_": "I.1.1.3.3.1", "name": "a. Exclusion of the One" },
-                        { "id_": "I.1.1.3.3.2", "name": "b. The One One of Attraction" },
-                        { "id_": "I.1.1.3.3.3", "name": "c. Relation of Repulsion and Attraction" }
-                      ]
-                    }
+                    { "id_": "I.1.1.3.1", "name": "A. Being-for-self as Such" },
+                    { "id_": "I.1.1.3.2", "name": "B. The One and the Many" },
+                    { "id_": "I.1.1.3.3", "name": "C. Repulsion and Attraction" }
                   ]
                 }
               ]
@@ -112,98 +112,18 @@
               "id_": "I.1.2",
               "name": "Section Two: Magnitude (Quantity)",
               "children": [
-                {
-                  "id_": "I.1.2.1",
-                  "name": "Chapter 1: Quantity",
-                  "children": [
-                    { "id_": "I.1.2.1.1", "name": "A. Pure Quantity" },
-                    { "id_": "I.1.2.1.2", "name": "B. Continuous and Discrete Magnitude" },
-                    { "id_": "I.1.2.1.3", "name": "C. Limitation of Quantity" }
-                  ]
-                },
-                {
-                  "id_": "I.1.2.2",
-                  "name": "Chapter 2: Quantum",
-                  "children": [
-                    { "id_": "I.1.2.2.1", "name": "A. Number" },
-                    {
-                      "id_": "I.1.2.2.2",
-                      "name": "B. Extensive and Intensive Quantum",
-                      "children": [
-                        { "id_": "I.1.2.2.2.1", "name": "a. Their Difference" },
-                        { "id_": "I.1.2.2.2.2", "name": "b. Identity of Extensive and Intensive Magnitude" },
-                        { "id_": "I.1.2.2.2.3", "name": "c. Alteration of Quantum" }
-                      ]
-                    },
-                    {
-                      "id_": "I.1.2.2.3",
-                      "name": "C. Quantitative Infinity",
-                      "children": [
-                        { "id_": "I.1.2.2.3.1", "name": "a. Its Notion" },
-                        { "id_": "I.1.2.2.3.2", "name": "b. The Qualitative Infinite Progress" },
-                        { "id_": "I.1.2.2.3.3", "name": "c. The Infinity of Quantum" }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "id_": "I.1.2.3",
-                  "name": "Chapter 3: The Quantitative Relation",
-                  "children": [
-                    { "id_": "I.1.2.3.1", "name": "A. The Direct Ratio" },
-                    { "id_": "I.1.2.3.2", "name": "B. Inverse Ratio" },
-                    { "id_": "I.1.2.3.3", "name": "C. The Ratio of Powers" }
-                  ]
-                }
+                { "id_": "I.1.2.1", "name": "Chapter 1: Quantity" },
+                { "id_": "I.1.2.2", "name": "Chapter 2: Quantum" },
+                { "id_": "I.1.2.3", "name": "Chapter 3: The Quantitative Relation" }
               ]
             },
             {
               "id_": "I.1.3",
               "name": "Section Three: Measure",
               "children": [
-                {
-                  "id_": "I.1.3.1",
-                  "name": "Chapter 1: Specific Quantity",
-                  "children": [
-                    { "id_": "I.1.3.1.1", "name": "A. The Specific Quantum" },
-                    {
-                      "id_": "I.1.3.1.2",
-                      "name": "B. Specifying Measure",
-                      "children": [
-                        { "id_": "I.1.3.1.2.1", "name": "a. The Rule" },
-                        { "id_": "I.1.3.1.2.2", "name": "b. Specifying Measure" },
-                        { "id_": "I.1.3.1.2.3", "name": "c. Relation of the Two Sides as Qualities" }
-                      ]
-                    },
-                    { "id_": "I.1.3.1.3", "name": "C. Being-for-self in Measure" }
-                  ]
-                },
-                {
-                  "id_": "I.1.3.2",
-                  "name": "Chapter 2: Real Measure",
-                  "children": [
-                    {
-                      "id_": "I.1.3.2.1",
-                      "name": "A. Relation of Self-Subsistent Measures",
-                      "children": [
-                        { "id_": "I.1.3.2.1.1", "name": "a. Combination of Two Measures" },
-                        { "id_": "I.1.3.2.1.2", "name": "b. Measure of a Series of Measure Relations" },
-                        { "id_": "I.1.3.2.1.3", "name": "c. Elective Affinity" }
-                      ]
-                    },
-                    { "id_": "I.1.3.2.2", "name": "B. Nodal Line of Measure Relations" },
-                    { "id_": "I.1.3.2.3", "name": "C. The Measureless" }
-                  ]
-                },
-                {
-                  "id_": "I.1.3.3",
-                  "name": "Chapter 3: The Becoming of Essence",
-                  "children": [
-                    { "id_": "I.1.3.3.1", "name": "A. Absolute Indifference" },
-                    { "id_": "I.1.3.3.2", "name": "B. Indifference as Inverse Ratio of its Factors" },
-                    { "id_": "I.1.3.3.3", "name": "C. Transition into Essence" }
-                  ]
-                }
+                { "id_": "I.1.3.1", "name": "Chapter 1: Specific Quantity" },
+                { "id_": "I.1.3.2", "name": "Chapter 2: Real Measure" },
+                { "id_": "I.1.3.3", "name": "Chapter 3: The Becoming of Essence" }
               ]
             }
           ]
@@ -212,169 +132,9 @@
           "id_": "I.2",
           "name": "Book Two: The Doctrine of Essence",
           "children": [
-            {
-              "id_": "I.2.1",
-              "name": "Section One: Essence as Reflection Within Itself",
-              "children": [
-                {
-                  "id_": "I.2.1.1",
-                  "name": "Chapter 1: Illusory Being",
-                  "children": [
-                    { "id_": "I.2.1.1.1", "name": "A. The Essential and the Unessential" },
-                    { "id_": "I.2.1.1.2", "name": "B. Illusory Being" },
-                    {
-                      "id_": "I.2.1.1.3",
-                      "name": "C. Reflection",
-                      "children": [
-                        { "id_": "I.2.1.1.3.1", "name": "a. Positing Reflection" },
-                        { "id_": "I.2.1.1.3.2", "name": "b. External Reflection" },
-                        { "id_": "I.2.1.1.3.3", "name": "c. Determining Reflection" }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "id_": "I.2.1.2",
-                  "name": "Chapter 2: The Determinations of Reflection",
-                  "children": [
-                    { "id_": "I.2.1.2.1", "name": "A. Identity" },
-                    {
-                      "id_": "I.2.1.2.2",
-                      "name": "B. Difference",
-                      "children": [
-                        { "id_": "I.2.1.2.2.1", "name": "a. Absolute Difference" },
-                        { "id_": "I.2.1.2.2.2", "name": "b. Diversity" },
-                        { "id_": "I.2.1.2.2.3", "name": "c. Opposition" }
-                      ]
-                    },
-                    { "id_": "I.2.1.2.3", "name": "C. Contradiction" }
-                  ]
-                },
-                {
-                  "id_": "I.2.1.3",
-                  "name": "Chapter 3: Ground",
-                  "children": [
-                    {
-                      "id_": "I.2.1.3.1",
-                      "name": "A. Absolute Ground",
-                      "children": [
-                        { "id_": "I.2.1.3.1.1", "name": "a. Form and Essence" },
-                        { "id_": "I.2.1.3.1.2", "name": "b. Form and Matter" },
-                        { "id_": "I.2.1.3.1.3", "name": "c. Form and Content" }
-                      ]
-                    },
-                    {
-                      "id_": "I.2.1.3.2",
-                      "name": "B. Determinate Ground",
-                      "children": [
-                        { "id_": "I.2.1.3.2.1", "name": "a. Formal Ground" },
-                        { "id_": "I.2.1.3.2.2", "name": "b. Real Ground" },
-                        { "id_": "I.2.1.3.2.3", "name": "c. The Complete Ground" }
-                      ]
-                    },
-                    {
-                      "id_": "I.2.1.3.3",
-                      "name": "C. Condition",
-                      "children": [
-                        { "id_": "I.2.1.3.3.1", "name": "a. The Relatively Unconditioned" },
-                        { "id_": "I.2.1.3.3.2", "name": "b. The Absolutely Unconditioned" },
-                        { "id_": "I.2.1.3.3.3", "name": "c. The Emergence of the Fact into Existence" }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "id_": "I.2.2",
-              "name": "Section Two: Appearance",
-              "children": [
-                {
-                  "id_": "I.2.2.1",
-                  "name": "Chapter 1: Existence",
-                  "children": [
-                    {
-                      "id_": "I.2.2.1.1",
-                      "name": "A. The Thing and its Properties",
-                      "children": [
-                        { "id_": "I.2.2.1.1.1", "name": "a. Thing-in-itself and Existence" },
-                        { "id_": "I.2.2.1.1.2", "name": "b. Property" },
-                        { "id_": "I.2.2.1.1.3", "name": "c. The Reciprocal Action of Things" }
-                      ]
-                    },
-                    { "id_": "I.2.2.1.2", "name": "B. The Constitution of the Thing out of Matters" },
-                    { "id_": "I.2.2.1.3", "name": "C. The Dissolution of the Thing" }
-                  ]
-                },
-                {
-                  "id_": "I.2.2.2",
-                  "name": "Chapter 2: Appearance",
-                  "children": [
-                    { "id_": "I.2.2.2.1", "name": "A. The Law of Appearance" },
-                    { "id_": "I.2.2.2.2", "name": "B. The World of Appearance and the World-in-itself" },
-                    { "id_": "I.2.2.2.3", "name": "C. The Dissolution of Appearance" }
-                  ]
-                },
-                {
-                  "id_": "I.2.2.3",
-                  "name": "Chapter 3: The Essential Relation",
-                  "children": [
-                    { "id_": "I.2.2.3.1", "name": "A. The Relation of Whole and Parts" },
-                    {
-                      "id_": "I.2.2.3.2",
-                      "name": "B. The Relation of Force and its Expression",
-                      "children": [
-                        { "id_": "I.2.2.3.2.1", "name": "a. The Conditionedness of Force" },
-                        { "id_": "I.2.2.3.2.2", "name": "b. The Solicitation of Force" },
-                        { "id_": "I.2.2.3.2.3", "name": "c. The Infinity of Force" }
-                      ]
-                    },
-                    { "id_": "I.2.2.3.3", "name": "C. The Relation of Outer and Inner" }
-                  ]
-                }
-              ]
-            },
-            {
-              "id_": "I.2.3",
-              "name": "Section Three: Actuality",
-              "children": [
-                {
-                  "id_": "I.2.3.1",
-                  "name": "Chapter 1: The Absolute",
-                  "children": [
-                    { "id_": "I.2.3.1.1", "name": "A. The Exposition of the Absolute" },
-                    { "id_": "I.2.3.1.2", "name": "B. The Absolute Attribute" },
-                    { "id_": "I.2.3.1.3", "name": "C. The Mode of the Absolute" }
-                  ]
-                },
-                {
-                  "id_": "I.2.3.2",
-                  "name": "Chapter 2: Actuality",
-                  "children": [
-                    { "id_": "I.2.3.2.1", "name": "A. Contingency, or Formal Actuality, Possibility and Necessity" },
-                    { "id_": "I.2.3.2.2", "name": "B. Relative Necessity, or Real Actuality, Possibility and Necessity" },
-                    { "id_": "I.2.3.2.3", "name": "C. Absolute Necessity" }
-                  ]
-                },
-                {
-                  "id_": "I.2.3.3",
-                  "name": "Chapter 3: The Absolute Relation",
-                  "children": [
-                    { "id_": "I.2.3.3.1", "name": "A. The Relation of Substantiality" },
-                    {
-                      "id_": "I.2.3.3.2",
-                      "name": "B. The Relation of Causality",
-                      "children": [
-                        { "id_": "I.2.3.3.2.1", "name": "a. Formal Causality" },
-                        { "id_": "I.2.3.3.2.2", "name": "b. The Determinate Relation of Causality" },
-                        { "id_": "I.2.3.3.2.3", "name": "c. Action and Reaction" }
-                      ]
-                    },
-                    { "id_": "I.2.3.3.3", "name": "C. Reciprocity" }
-                  ]
-                }
-              ]
-            }
+            { "id_": "I.2.1", "name": "Section One: Essence as Reflection Within Itself" },
+            { "id_": "I.2.2", "name": "Section Two: Appearance" },
+            { "id_": "I.2.3", "name": "Section Three: Actuality" }
           ]
         }
       ]
@@ -387,185 +147,9 @@
           "id_": "II.1",
           "name": "The Doctrine of the Notion",
           "children": [
-            {
-              "id_": "II.1.1",
-              "name": "Section One: Subjectivity",
-              "children": [
-                {
-                  "id_": "II.1.1.1",
-                  "name": "Chapter 1: The Notion",
-                  "children": [
-                    { "id_": "II.1.1.1.1", "name": "A. The Universal Notion" },
-                    { "id_": "II.1.1.1.2", "name": "B. The Particular Notion" },
-                    { "id_": "II.1.1.1.3", "name": "C. The Individual" }
-                  ]
-                },
-                {
-                  "id_": "II.1.1.2",
-                  "name": "Chapter 2: The Judgment",
-                  "children": [
-                    {
-                      "id_": "II.1.1.2.1",
-                      "name": "A. The Judgment of Existence",
-                      "children": [
-                        { "id_": "II.1.1.2.1.1", "name": "a. The Positive Judgment" },
-                        { "id_": "II.1.1.2.1.2", "name": "b. The Negative Judgment" },
-                        { "id_": "II.1.1.2.1.3", "name": "c. The Infinite Judgment" }
-                      ]
-                    },
-                    {
-                      "id_": "II.1.1.2.2",
-                      "name": "B. The Judgment of Reflection",
-                      "children": [
-                        { "id_": "II.1.1.2.2.1", "name": "a. The Singular Judgment" },
-                        { "id_": "II.1.1.2.2.2", "name": "b. The Particular Judgment" },
-                        { "id_": "II.1.1.2.2.3", "name": "c. The Universal Judgment" }
-                      ]
-                    },
-                    {
-                      "id_": "II.1.1.2.3",
-                      "name": "C. The Judgment of Necessity",
-                      "children": [
-                        { "id_": "II.1.1.2.3.1", "name": "a. The Categorical Judgment" },
-                        { "id_": "II.1.1.2.3.2", "name": "b. The Hypothetical Judgment" },
-                        { "id_": "II.1.1.2.3.3", "name": "c. The Disjunctive Judgment" }
-                      ]
-                    },
-                    {
-                      "id_": "II.1.1.2.4",
-                      "name": "D. The Judgment of the Notion",
-                      "children": [
-                        { "id_": "II.1.1.2.4.1", "name": "a. The Assertoric Judgment" },
-                        { "id_": "II.1.1.2.4.2", "name": "b. The Problematic Judgment" },
-                        { "id_": "II.1.1.2.4.3", "name": "c. The Apodictic Judgment" }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "id_": "II.1.1.3",
-                  "name": "Chapter 3: The Syllogism",
-                  "children": [
-                    {
-                      "id_": "II.1.1.3.1",
-                      "name": "A. The Syllogism of Existence",
-                      "children": [
-                        { "id_": "II.1.1.3.1.1", "name": "a. First Figure" },
-                        { "id_": "II.1.1.3.1.2", "name": "b. Second Figure" },
-                        { "id_": "II.1.1.3.1.3", "name": "c. Third Figure" },
-                        { "id_": "II.1.1.3.1.4", "name": "d. Fourth Figure" }
-                      ]
-                    },
-                    {
-                      "id_": "II.1.1.3.2",
-                      "name": "B. The Syllogism of Reflection",
-                      "children": [
-                        { "id_": "II.1.1.3.2.1", "name": "a. The Syllogism of Allness" },
-                        { "id_": "II.1.1.3.2.2", "name": "b. The Syllogism of Induction" },
-                        { "id_": "II.1.1.3.2.3", "name": "c. The Syllogism of Analogy" }
-                      ]
-                    },
-                    {
-                      "id_": "II.1.1.3.3",
-                      "name": "C. The Syllogism of Necessity",
-                      "children": [
-                        { "id_": "II.1.1.3.3.1", "name": "a. The Categorical Syllogism" },
-                        { "id_": "II.1.1.3.3.2", "name": "b. The Hypothetical Syllogism" },
-                        { "id_": "II.1.1.3.3.3", "name": "c. The Disjunctive Syllogism" }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "id_": "II.1.2",
-              "name": "Section Two: Objectivity",
-              "children": [
-                {
-                  "id_": "II.1.2.1",
-                  "name": "Chapter 1: Mechanism",
-                  "children": [
-                    { "id_": "II.1.2.1.1", "name": "A. The Mechanical Object" },
-                    {
-                      "id_": "II.1.2.1.2",
-                      "name": "B. The Mechanical Process",
-                      "children": [
-                        { "id_": "II.1.2.1.2.1", "name": "a. The Formal Mechanical Process" },
-                        { "id_": "II.1.2.1.2.2", "name": "b. The Real Mechanical Process" },
-                        { "id_": "II.1.2.1.2.3", "name": "c. The Product of the Mechanical Process" }
-                      ]
-                    },
-                    {
-                      "id_": "II.1.2.1.3",
-                      "name": "C. Absolute Mechanism",
-                      "children": [
-                        { "id_": "II.1.2.1.3.1", "name": "a. The Centre" },
-                        { "id_": "II.1.2.1.3.2", "name": "b. Law" },
-                        { "id_": "II.1.2.1.3.3", "name": "c. Transition of Mechanism" }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "id_": "II.1.2.2",
-                  "name": "Chapter 2: Chemism",
-                  "children": [
-                    { "id_": "II.1.2.2.1", "name": "A. The Chemical Object" },
-                    { "id_": "II.1.2.2.2", "name": "B. The Chemical Process" },
-                    { "id_": "II.1.2.2.3", "name": "C. Transition of Chemism" }
-                  ]
-                },
-                {
-                  "id_": "II.1.2.3",
-                  "name": "Chapter 3: Teleology",
-                  "children": [
-                    { "id_": "II.1.2.3.1", "name": "A. The Subjective End" },
-                    { "id_": "II.1.2.3.2", "name": "B. The Means" },
-                    { "id_": "II.1.2.3.3", "name": "C. The Realised End" }
-                  ]
-                }
-              ]
-            },
-            {
-              "id_": "II.1.3",
-              "name": "Section Three: The Idea",
-              "children": [
-                {
-                  "id_": "II.1.3.1",
-                  "name": "Chapter 1: Life",
-                  "children": [
-                    { "id_": "II.1.3.1.1", "name": "A. The Living Individual" },
-                    { "id_": "II.1.3.1.2", "name": "B. The Life Process" },
-                    { "id_": "II.1.3.1.3", "name": "C. The Genus" }
-                  ]
-                },
-                {
-                  "id_": "II.1.3.2",
-                  "name": "Chapter 2: The Idea of Cognition",
-                  "children": [
-                    {
-                      "id_": "II.1.3.2.1",
-                      "name": "A. The Idea of the True",
-                      "children": [
-                        { "id_": "II.1.3.2.1.1", "name": "a. Analytic Cognition" },
-                        {
-                          "id_": "II.1.3.2.1.2",
-                          "name": "b. Synthetic Cognition",
-                          "children": [
-                            { "id_": "II.1.3.2.1.2.1", "name": "1. Definition" },
-                            { "id_": "II.1.3.2.1.2.2", "name": "2. Division" },
-                            { "id_": "II.1.3.2.1.2.3", "name": "3. The Theorem" }
-                          ]
-                        }
-                      ]
-                    },
-                    { "id_": "II.1.3.2.2", "name": "B. The Idea of the Good" }
-                  ]
-                },
-                { "id_": "II.1.3.3", "name": "Chapter 3: The Absolute Idea" }
-              ]
-            }
+            { "id_": "II.1.1", "name": "Section One: Subjectivity" },
+            { "id_": "II.1.2", "name": "Section Two: Objectivity" },
+            { "id_": "II.1.3", "name": "Section Three: The Idea" }
           ]
         }
       ]
