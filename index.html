@@ -11,8 +11,6 @@
   :root {
     color-scheme: dark;
     --pw: clamp(320px, 34vw, 430px);
-
-    /* OKLab palette (dark navy → teal → olive → gold → pale pink) */
     --bg: #001858;
     --text: #FACBF8;
     --text-dim: #F6A178;
@@ -23,7 +21,6 @@
     --shade-rgb: 0, 24, 88;
     --panel-bg: rgba(0, 24, 88, 0.85);
     --panel-border: rgba(251, 166, 137, 0.14);
-
     --font: "Spline Sans", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
   * { box-sizing: border-box; }
@@ -441,7 +438,7 @@ let ACTIVE_PARAS = {};
 let PARA_TEXTS = {};
 
 /* =========================================================
-   SHARED PALETTE (OKLab, converted to sRGB)
+   PALETTE
    ========================================================= */
 const PAL_CSS = {
   '--bg': '#001858',
@@ -497,11 +494,7 @@ const DATASETS = {
     parasFile: "paragraphs.json",
     refPrefix: "§",
     refLabel: "Encyclopedia reference",
-    textLabel: "Paragraph text",
-    showLabel: "Show §",
     minDepth: 5,
-    allowRangesForText: false,
-    textKeyBy: "p",
     legend: [
       { label: "Logic",  color: "#154F62" },
       { label: "Nature", color: "#3E6E55" },
@@ -519,11 +512,7 @@ const DATASETS = {
     parasFile: "logic-paragraphs.json",
     refPrefix: "",
     refLabel: "Analytical table of contents",
-    textLabel: "Analytical text",
-    showLabel: "Show",
-    minDepth: 5,
-    allowRangesForText: true,
-    textKeyBy: "id",
+    minDepth: 3,
     legend: [
       { label: "Volume One", color: "#154F62" },
       { label: "Volume Two", color: "#8E852E" }
@@ -632,10 +621,6 @@ const PARAS_ENCYCLOPEDIA = {
 
 /* =========================================================
    PARAGRAPH MAP — SCIENCE OF LOGIC
-   The `p` field for Logic is left blank because the analytical
-   table of contents replaces Miller page references. These
-   entries only carry the section name (`s`) used for the
-   pSect line when a node has no analytical entries of its own.
    ========================================================= */
 const PARAS_LOGIC = {
   "SL": { p: "", s: "Science of Logic" },
@@ -999,7 +984,6 @@ function drawLabel(n, cx0, mode) {
     s = s.replace(/[\s,;:.\-]+$/, "") + "…";
   }
 
-  /* dark-gray outline for readability on top of the graph */
   ctx.lineJoin = "round";
   ctx.miterLimit = 2;
   ctx.strokeStyle = PAL.labelStroke;
@@ -1093,7 +1077,7 @@ function paraFor(node) {
         s: e.s,
         holder: n,
         exact: exact,
-        textKey: exact ? (ACTIVE.textKeyBy === "id" ? n.id_ : e.p) : null
+        textKey: exact ? n.id_ : null
       };
     }
     n = n._parent;
@@ -1120,6 +1104,26 @@ function fmtParagraph(p) {
   if (!p) return "—";
   if (!ACTIVE || !ACTIVE.refPrefix) return p;
   return /[–-]/.test(p) ? ACTIVE.refPrefix + ACTIVE.refPrefix + p : ACTIVE.refPrefix + p;
+}
+
+/* Normalize paragraph data: accepts both
+   {title, text}  (Encyclopedia style) and
+   [{p, text}]     (Logic analytical TOC style). */
+function normalizeParaData(raw) {
+  if (!raw) return null;
+  if (Array.isArray(raw)) {
+    const filtered = raw.filter(function (e) { return e && e.text; });
+    return filtered.length > 0 ? filtered : null;
+  }
+  if (typeof raw === "object" && raw.text) {
+    return [{ p: raw.p || null, title: raw.title || null, text: raw.text }];
+  }
+  return null;
+}
+
+function extractNum(p) {
+  if (!p) return "";
+  return String(p).replace(/[^0-9]/g, "");
 }
 
 function updateViewShift() {
@@ -1311,15 +1315,24 @@ function renderPanel(node) {
   const pSect = document.getElementById("pSect");
   const pInherit = document.getElementById("pInherit");
 
-  const entries = PARA_TEXTS[node.id_];
-  const hasEntries = Array.isArray(entries) && entries.length > 0;
+  /* Normalize paragraph data — works for both datasets */
+  let entries = null;
+  if (ACTIVE.id === "logic") {
+    entries = normalizeParaData(PARA_TEXTS[node.id_]);
+  } else {
+    const raw = info && info.textKey ? PARA_TEXTS[info.textKey] : null;
+    entries = normalizeParaData(raw);
+  }
 
-  /* ---- Reference line ---- */
-  if (ACTIVE.id === "logic" && hasEntries) {
-    const firstNum = entries[0].p.replace(/[^0-9]/g, "");
-    const lastNum = entries[entries.length - 1].p.replace(/[^0-9]/g, "");
-    const range = firstNum === lastNum ? "§ " + firstNum : "§§ " + firstNum + "–" + lastNum;
-    pPara.innerHTML = '<span class="pnum">' + esc(range) + "</span>";
+  /* ---- Reference number ---- */
+  if (ACTIVE.id === "logic" && entries) {
+    const firstNum = extractNum(entries[0].p);
+    const lastNum = extractNum(entries[entries.length - 1].p);
+    let refText = "—";
+    if (firstNum && lastNum) {
+      refText = firstNum === lastNum ? "§ " + firstNum : "§§ " + firstNum + "–" + lastNum;
+    }
+    pPara.innerHTML = '<span class="pnum">' + esc(refText) + "</span>";
   } else if (info && info.p) {
     pPara.innerHTML = '<span class="pnum">' + esc(fmtParagraph(info.p)) + "</span>";
   } else {
@@ -1352,42 +1365,46 @@ function renderPanel(node) {
   display.style.display = "none";
   display.innerHTML = "";
 
+  const deep = node._depth >= ACTIVE.minDepth;
   let canShow = false;
   let showLabel = "";
   let renderFn = null;
 
-  if (ACTIVE.id === "encyclopedia") {
-    const pnum = info ? info.p : null;
-    const isSingle = pnum && !/[–-]/.test(pnum);
-    const deep = node._depth >= ACTIVE.minDepth;
-    const entry = info && info.textKey ? PARA_TEXTS[info.textKey] : null;
-    if (deep && entry && entry.text && isSingle) {
-      canShow = true;
-      showLabel = "Show § " + pnum;
-      renderFn = function () {
-        const titleLine = entry.title
-          ? '<div class="ptitle">§ ' + esc(pnum) + " — " + esc(entry.title) + "</div>"
-          : "";
-        return titleLine + '<div class="pbody">' + esc(entry.text) + "</div>";
-      };
-    }
-  } else {
-    const deep = node._depth >= ACTIVE.minDepth;
-    if (deep && hasEntries) {
-      canShow = true;
-      if (entries.length === 1) {
-        showLabel = "Show " + entries[0].p;
-      } else {
-        const firstNum = entries[0].p.replace(/[^0-9]/g, "");
-        const lastNum = entries[entries.length - 1].p.replace(/[^0-9]/g, "");
-        showLabel = "Show §§ " + firstNum + "–" + lastNum;
+  if (entries && entries.length > 0) {
+    if (ACTIVE.id === "encyclopedia") {
+      const pnum = info ? info.p : null;
+      const isSingle = pnum && !/[–-]/.test(pnum);
+      if (deep && isSingle && entries[0].text) {
+        canShow = true;
+        showLabel = "Show § " + pnum;
+        renderFn = function () {
+          const titleLine = entries[0].title
+            ? '<div class="ptitle">§ ' + esc(pnum) + " — " + esc(entries[0].title) + "</div>"
+            : '<div class="ptitle">§ ' + esc(pnum) + "</div>";
+          return titleLine + '<div class="pbody">' + esc(entries[0].text) + "</div>";
+        };
       }
-      renderFn = function () {
-        return entries.map(function (e) {
-          return '<div class="ptitle">' + esc(e.p) + "</div>" +
-                 '<div class="pbody">' + esc(e.text) + "</div>";
-        }).join("");
-      };
+    } else if (ACTIVE.id === "logic") {
+      if (deep) {
+        const firstNum = extractNum(entries[0].p);
+        const lastNum = extractNum(entries[entries.length - 1].p);
+        if (firstNum && lastNum) {
+          showLabel = firstNum === lastNum
+            ? "Show § " + firstNum
+            : "Show §§ " + firstNum + "–" + lastNum;
+        } else {
+          showLabel = "Show text";
+        }
+        canShow = true;
+        renderFn = function () {
+          return entries.map(function (e) {
+            const num = extractNum(e.p);
+            const kicker = num ? "§ " + num : (e.title || "");
+            return (kicker ? '<div class="ptitle">' + esc(kicker) + "</div>" : "") +
+                   '<div class="pbody">' + esc(e.text) + "</div>";
+          }).join("");
+        };
+      }
     }
   }
 
@@ -1656,6 +1673,20 @@ function applyDataset(key) {
   ACTIVE = ds;
   ACTIVE_PARAS = key === "encyclopedia" ? PARAS_ENCYCLOPEDIA : PARAS_LOGIC;
   PARA_TEXTS = ds.parasData || {};
+
+  /* Diagnostic for paragraph data shape */
+  if (key === "logic") {
+    const keys = Object.keys(PARA_TEXTS);
+    console.log("[Logic] Loaded " + keys.length + " paragraph entries");
+    if (keys.length > 0) {
+      const sample = PARA_TEXTS[keys[0]];
+      const shape = Array.isArray(sample) ? "array" :
+                    (sample && typeof sample === "object") ? "object" : "unknown";
+      console.log("[Logic] Sample entry shape: " + shape);
+    } else {
+      console.warn("[Logic] No paragraph data loaded. Check logic-paragraphs.json.");
+    }
+  }
 
   prepare(ds.treeData);
 
