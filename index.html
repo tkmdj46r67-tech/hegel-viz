@@ -11,16 +11,19 @@
   :root {
     color-scheme: dark;
     --pw: clamp(320px, 34vw, 430px);
-    --bg: #001858;
-    --text: #FACBF8;
-    --text-dim: #F6A178;
-    --text-mute: #8E852E;
-    --accent: #FBA689;
-    --accent-soft: #FACBF8;
-    --tint-rgb: 251, 166, 137;
-    --shade-rgb: 0, 24, 88;
-    --panel-bg: rgba(0, 24, 88, 0.85);
-    --panel-border: rgba(251, 166, 137, 0.14);
+
+    /* Deep-navy → warm-cream palette */
+    --bg: #021225;              /* darkest navy */
+    --text: #fbf2d7;            /* lightest warm cream */
+    --text-dim: #f0dbb7;        /* warm cream */
+    --text-mute: #bc6461;       /* dusty coral */
+    --accent: #e5b186;          /* warm peach */
+    --accent-soft: #eacca3;     /* lighter peach */
+    --tint-rgb: 229, 177, 134;  /* accent peach */
+    --shade-rgb: 4, 21, 40;     /* navy panel bg */
+    --panel-bg: rgba(4, 21, 40, 0.85);
+    --panel-border: rgba(229, 177, 134, 0.14);
+
     --font: "Spline Sans", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
   * { box-sizing: border-box; }
@@ -432,50 +435,49 @@ const FISHEYE = 1.45;
 let preferredZoom = 1;
 let firstNodeClick = true;
 
-/* active dataset */
 let ACTIVE = null;
 let ACTIVE_PARAS = {};
 let PARA_TEXTS = {};
 
 /* =========================================================
-   PALETTE
+   PALETTE  (deep-navy → warm-cream; same across datasets)
    ========================================================= */
 const PAL_CSS = {
-  '--bg': '#001858',
-  '--text': '#FACBF8',
-  '--text-dim': '#F6A178',
-  '--text-mute': '#8E852E',
-  '--accent': '#FBA689',
-  '--accent-soft': '#FACBF8',
-  '--tint-rgb': '251, 166, 137',
-  '--shade-rgb': '0, 24, 88',
-  '--panel-bg': 'rgba(0, 24, 88, 0.85)',
-  '--panel-border': 'rgba(251, 166, 137, 0.14)'
+  '--bg': '#021225',
+  '--text': '#fbf2d7',
+  '--text-dim': '#f0dbb7',
+  '--text-mute': '#bc6461',
+  '--accent': '#e5b186',
+  '--accent-soft': '#eacca3',
+  '--tint-rgb': '229, 177, 134',
+  '--shade-rgb': '4, 21, 40',
+  '--panel-bg': 'rgba(4, 21, 40, 0.85)',
+  '--panel-border': 'rgba(229, 177, 134, 0.14)'
 };
 
 const PAL = {
-  radialInner:   'rgba(21, 79, 98, 0.42)',
-  radialOuter:   'rgba(0, 24, 88, 0)',
-  diskStroke:    'rgba(251, 166, 137, 0.12)',
-  edgeRGB:       '70, 113, 80',
-  edgeHoverRGB:  '251, 166, 137',
-  nodeHover:     '#FBA689',
-  nodeHoverStroke: 'rgba(251, 166, 137, 0.60)',
-  focusRing:     'rgba(250, 203, 248, 0.35)',
-  labelFocusRGB: '250, 203, 248',
-  labelHoverRGB: '250, 203, 248',
-  labelStroke:   'rgba(20, 20, 20, 0.92)',
-  fallback:      '#8E852E',
-  svgLine:       'rgba(70, 113, 80, 0.22)',
-  svgPillFillRGB:   '251, 166, 137',
-  svgPillActiveRGB: '250, 203, 248',
-  svgPillTextActive: '#FACBF8',
-  svgPillTextNormal: '#F6A178'
+  radialInner:     'rgba(23, 61, 96, 0.42)',
+  radialOuter:     'rgba(2, 18, 37, 0)',
+  diskStroke:      'rgba(229, 177, 134, 0.12)',
+  edgeRGB:         '79, 91, 123',
+  edgeHoverRGB:    '233, 154, 115',
+  nodeHover:       '#e99a73',
+  nodeHoverStroke: 'rgba(233, 154, 115, 0.60)',
+  focusRing:       'rgba(229, 177, 134, 0.40)',
+  labelFocusRGB:   '251, 242, 215',
+  labelHoverRGB:   '233, 154, 115',
+  labelStroke:     'rgba(20, 20, 20, 0.92)',
+  fallback:        '#5b5d79',
+  svgLine:         'rgba(79, 91, 123, 0.22)',
+  svgPillFillRGB:  '229, 177, 134',
+  svgPillActiveRGB:'251, 242, 215',
+  svgPillTextActive: '#fbf2d7',
+  svgPillTextNormal: '#f0dbb7'
 };
 
 const BRANCHES = {
-  encyclopedia: ['#154F62', '#3E6E55', '#8E852E'],
-  logic:        ['#154F62', '#8E852E']
+  encyclopedia: ['#173d60', '#5b5d79', '#c8675f'],
+  logic:        ['#173d60', '#c8675f']
 };
 
 function applyPalette() {
@@ -496,9 +498,9 @@ const DATASETS = {
     refLabel: "Encyclopedia reference",
     minDepth: 5,
     legend: [
-      { label: "Logic",  color: "#154F62" },
-      { label: "Nature", color: "#3E6E55" },
-      { label: "Spirit", color: "#8E852E" }
+      { label: "Logic",  color: "#173d60" },
+      { label: "Nature", color: "#5b5d79" },
+      { label: "Spirit", color: "#c8675f" }
     ],
     foot: "Paragraph numbers follow the 1830 edition of the <i>Encyclopaedia of Philosophical Sciences</i> (Werke, vols. 8–10).",
     loaded: false,
@@ -514,8 +516,8 @@ const DATASETS = {
     refLabel: "Analytical table of contents",
     minDepth: 3,
     legend: [
-      { label: "Volume One", color: "#154F62" },
-      { label: "Volume Two", color: "#8E852E" }
+      { label: "Volume One", color: "#173d60" },
+      { label: "Volume Two", color: "#c8675f" }
     ],
     foot: "Paragraph numbers follow the analytical table of contents of the <i>Science of Logic</i>. Miller page references have been omitted; analytical § numbers are used throughout.",
     loaded: false,
@@ -620,7 +622,7 @@ const PARAS_ENCYCLOPEDIA = {
 };
 
 /* =========================================================
-   PARAGRAPH MAP — SCIENCE OF LOGIC
+   PARAGRAPH MAP — SCIENCE OF LOGIC (section names only)
    ========================================================= */
 const PARAS_LOGIC = {
   "SL": { p: "", s: "Science of Logic" },
@@ -630,7 +632,6 @@ const PARAS_LOGIC = {
   "SL.Introduction": { p: "", s: "Introduction" },
   "SL.Intro.GeneralNotion": { p: "", s: "General Notion of Logic" },
   "SL.Intro.GeneralDivision": { p: "", s: "General Division of Logic" },
-
   "I": { p: "", s: "Volume One: The Objective Logic" },
   "I.1": { p: "", s: "Book One: The Doctrine of Being" },
   "I.1.0": { p: "", s: "With What Must the Science Begin?" },
@@ -660,7 +661,6 @@ const PARAS_LOGIC = {
   "I.2.3.1": { p: "", s: "Chapter 1: The Absolute" },
   "I.2.3.2": { p: "", s: "Chapter 2: Actuality" },
   "I.2.3.3": { p: "", s: "Chapter 3: The Absolute Relation" },
-
   "II": { p: "", s: "Volume Two: Subjective Logic" },
   "II.1": { p: "", s: "The Doctrine of the Notion" },
   "II.1.1": { p: "", s: "Section One: Subjectivity" },
@@ -1073,10 +1073,7 @@ function paraFor(node) {
       const e = ACTIVE_PARAS[n.id_];
       const exact = n === node;
       return {
-        p: e.p,
-        s: e.s,
-        holder: n,
-        exact: exact,
+        p: e.p, s: e.s, holder: n, exact: exact,
         textKey: exact ? n.id_ : null
       };
     }
@@ -1106,9 +1103,6 @@ function fmtParagraph(p) {
   return /[–-]/.test(p) ? ACTIVE.refPrefix + ACTIVE.refPrefix + p : ACTIVE.refPrefix + p;
 }
 
-/* Normalize paragraph data: accepts both
-   {title, text}  (Encyclopedia style) and
-   [{p, text}]     (Logic analytical TOC style). */
 function normalizeParaData(raw) {
   if (!raw) return null;
   if (Array.isArray(raw)) {
@@ -1315,7 +1309,6 @@ function renderPanel(node) {
   const pSect = document.getElementById("pSect");
   const pInherit = document.getElementById("pInherit");
 
-  /* Normalize paragraph data — works for both datasets */
   let entries = null;
   if (ACTIVE.id === "logic") {
     entries = normalizeParaData(PARA_TEXTS[node.id_]);
@@ -1324,7 +1317,6 @@ function renderPanel(node) {
     entries = normalizeParaData(raw);
   }
 
-  /* ---- Reference number ---- */
   if (ACTIVE.id === "logic" && entries) {
     const firstNum = extractNum(entries[0].p);
     const lastNum = extractNum(entries[entries.length - 1].p);
@@ -1339,10 +1331,8 @@ function renderPanel(node) {
     pPara.innerHTML = '<span class="pnum">—</span>';
   }
 
-  /* ---- Section name ---- */
   pSect.textContent = info ? (info.s || sectionFor(node)) : sectionFor(node);
 
-  /* ---- Inherit line ---- */
   if (info && info.exact === false && info.holder) {
     pInherit.style.display = "block";
     if (ACTIVE.id === "logic") {
@@ -1356,7 +1346,6 @@ function renderPanel(node) {
     pInherit.style.display = "none";
   }
 
-  /* ---- Paragraph text section ---- */
   const secEl = document.getElementById("paraTextSection");
   const btn = document.getElementById("showParaBtn");
   const lbl = document.getElementById("showParaLabel");
@@ -1426,7 +1415,6 @@ function renderPanel(node) {
     secEl.style.display = "none";
   }
 
-  /* ---- Path ---- */
   const chain = [];
   let n = node;
   while (n) { chain.unshift(n); n = n._parent; }
@@ -1674,7 +1662,6 @@ function applyDataset(key) {
   ACTIVE_PARAS = key === "encyclopedia" ? PARAS_ENCYCLOPEDIA : PARAS_LOGIC;
   PARA_TEXTS = ds.parasData || {};
 
-  /* Diagnostic for paragraph data shape */
   if (key === "logic") {
     const keys = Object.keys(PARA_TEXTS);
     console.log("[Logic] Loaded " + keys.length + " paragraph entries");
@@ -1683,8 +1670,6 @@ function applyDataset(key) {
       const shape = Array.isArray(sample) ? "array" :
                     (sample && typeof sample === "object") ? "object" : "unknown";
       console.log("[Logic] Sample entry shape: " + shape);
-    } else {
-      console.warn("[Logic] No paragraph data loaded. Check logic-paragraphs.json.");
     }
   }
 
