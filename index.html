@@ -13,11 +13,11 @@
     --pw: clamp(320px, 34vw, 430px);
 
     /* OKLab palette (dark navy → teal → olive → gold → pale pink) */
-    --bg: #001858;          /* very dark navy (L≈0.25) */
-    --text: #FACBF8;        /* pale pink (L≈0.90) */
-    --text-dim: #F6A178;    /* warm peach (L≈0.78) */
-    --text-mute: #8E852E;   /* olive (L≈0.61) */
-    --accent: #FBA689;      /* bright peach (highlight) */
+    --bg: #001858;
+    --text: #FACBF8;
+    --text-dim: #F6A178;
+    --text-mute: #8E852E;
+    --accent: #FBA689;
     --accent-soft: #FACBF8;
     --tint-rgb: 251, 166, 137;
     --shade-rgb: 0, 24, 88;
@@ -268,8 +268,10 @@
     text-transform: uppercase;
     color: var(--text-mute);
     font-weight: 600;
-    margin-bottom: 9px;
+    margin-top: 14px;
+    margin-bottom: 6px;
   }
+  .para-text .ptitle:first-child { margin-top: 0; }
   .para-text .pbody { color: var(--text); }
 
   .p-path { font-size: 12.5px; color: var(--text-dim); line-height: 1.75; word-break: break-word; }
@@ -440,8 +442,6 @@ let PARA_TEXTS = {};
 
 /* =========================================================
    SHARED PALETTE (OKLab, converted to sRGB)
-   Background is very dark; text is very light; hover is bright warm;
-   branches are cool-mid. Three visually distinct zones.
    ========================================================= */
 const PAL_CSS = {
   '--bg': '#001858',
@@ -518,8 +518,8 @@ const DATASETS = {
     treeFile: "logic-tree.json",
     parasFile: "logic-paragraphs.json",
     refPrefix: "",
-    refLabel: "Reference (Miller translation)",
-    textLabel: "Section text",
+    refLabel: "Analytical table of contents",
+    textLabel: "Analytical text",
     showLabel: "Show",
     minDepth: 5,
     allowRangesForText: true,
@@ -528,7 +528,7 @@ const DATASETS = {
       { label: "Volume One", color: "#154F62" },
       { label: "Volume Two", color: "#8E852E" }
     ],
-    foot: "Page ranges follow A. V. Miller’s translation of the <i>Science of Logic</i> (1969). The Logic has no numbered paragraphs; references are to Books, Sections, Chapters, and Miller pages.",
+    foot: "Paragraph numbers follow the analytical table of contents of the <i>Science of Logic</i>. Miller page references have been omitted; analytical § numbers are used throughout.",
     loaded: false,
     treeData: null,
     parasData: null
@@ -631,60 +631,65 @@ const PARAS_ENCYCLOPEDIA = {
 };
 
 /* =========================================================
-   PARAGRAPH MAP — SCIENCE OF LOGIC (Miller page ranges)
+   PARAGRAPH MAP — SCIENCE OF LOGIC
+   The `p` field for Logic is left blank because the analytical
+   table of contents replaces Miller page references. These
+   entries only carry the section name (`s`) used for the
+   pSect line when a node has no analytical entries of its own.
    ========================================================= */
 const PARAS_LOGIC = {
-  "SL": { p: "Miller pp. 67–843", s: "Science of Logic" },
-  "I": { p: "Miller pp. 67–506", s: "Volume One: The Objective Logic" },
-  "II": { p: "Miller pp. 507–843", s: "Volume Two: Subjective Logic" },
+  "SL": { p: "", s: "Science of Logic" },
+  "SL.Prefaces": { p: "", s: "Prefaces" },
+  "SL.Preface1": { p: "", s: "First Preface" },
+  "SL.Preface2": { p: "", s: "Second Preface" },
+  "SL.Introduction": { p: "", s: "Introduction" },
+  "SL.Intro.GeneralNotion": { p: "", s: "General Notion of Logic" },
+  "SL.Intro.GeneralDivision": { p: "", s: "General Division of Logic" },
 
-  "I.1": { p: "Miller pp. 67–336", s: "Book One: The Doctrine of Being" },
-  "I.1.1": { p: "Miller pp. 81–184", s: "Section One: Determinateness (Quality)" },
-  "I.1.1.1": { p: "Miller pp. 82–108", s: "Chapter 1: Being" },
-  "I.1.1.2": { p: "Miller pp. 109–156", s: "Chapter 2: Determinate Being" },
-  "I.1.1.3": { p: "Miller pp. 157–184", s: "Chapter 3: Being-for-self" },
+  "I": { p: "", s: "Volume One: The Objective Logic" },
+  "I.1": { p: "", s: "Book One: The Doctrine of Being" },
+  "I.1.0": { p: "", s: "With What Must the Science Begin?" },
+  "I.1.0b": { p: "", s: "General Division of Being" },
+  "I.1.1": { p: "", s: "Section One: Determinateness (Quality)" },
+  "I.1.1.1": { p: "", s: "Chapter 1: Being" },
+  "I.1.1.2": { p: "", s: "Chapter 2: Determinate Being" },
+  "I.1.1.3": { p: "", s: "Chapter 3: Being-for-self" },
+  "I.1.2": { p: "", s: "Section Two: Magnitude (Quantity)" },
+  "I.1.2.1": { p: "", s: "Chapter 1: Quantity" },
+  "I.1.2.2": { p: "", s: "Chapter 2: Quantum" },
+  "I.1.2.3": { p: "", s: "Chapter 3: The Quantitative Relation" },
+  "I.1.3": { p: "", s: "Section Three: Measure" },
+  "I.1.3.1": { p: "", s: "Chapter 1: Specific Quantity" },
+  "I.1.3.2": { p: "", s: "Chapter 2: Real Measure" },
+  "I.1.3.3": { p: "", s: "Chapter 3: The Becoming of Essence" },
+  "I.2": { p: "", s: "Book Two: The Doctrine of Essence" },
+  "I.2.1": { p: "", s: "Section One: Essence as Reflection Within Itself" },
+  "I.2.1.1": { p: "", s: "Chapter 1: Illusory Being" },
+  "I.2.1.2": { p: "", s: "Chapter 2: The Determinations of Reflection" },
+  "I.2.1.3": { p: "", s: "Chapter 3: Ground" },
+  "I.2.2": { p: "", s: "Section Two: Appearance" },
+  "I.2.2.1": { p: "", s: "Chapter 1: Existence" },
+  "I.2.2.2": { p: "", s: "Chapter 2: Appearance" },
+  "I.2.2.3": { p: "", s: "Chapter 3: The Essential Relation" },
+  "I.2.3": { p: "", s: "Section Three: Actuality" },
+  "I.2.3.1": { p: "", s: "Chapter 1: The Absolute" },
+  "I.2.3.2": { p: "", s: "Chapter 2: Actuality" },
+  "I.2.3.3": { p: "", s: "Chapter 3: The Absolute Relation" },
 
-  "I.1.2": { p: "Miller pp. 185–281", s: "Section Two: Magnitude (Quantity)" },
-  "I.1.2.1": { p: "Miller pp. 187–203", s: "Chapter 1: Quantity" },
-  "I.1.2.2": { p: "Miller pp. 204–270", s: "Chapter 2: Quantum" },
-  "I.1.2.3": { p: "Miller pp. 271–281", s: "Chapter 3: The Quantitative Relation" },
-
-  "I.1.3": { p: "Miller pp. 282–336", s: "Section Three: Measure" },
-  "I.1.3.1": { p: "Miller pp. 288–301", s: "Chapter 1: Specific Quantity" },
-  "I.1.3.2": { p: "Miller pp. 302–325", s: "Chapter 2: Real Measure" },
-  "I.1.3.3": { p: "Miller pp. 326–336", s: "Chapter 3: The Becoming of Essence" },
-
-  "I.2": { p: "Miller pp. 337–506", s: "Book Two: The Doctrine of Essence" },
-  "I.2.1": { p: "Miller pp. 340–417", s: "Section One: Essence as Reflection Within Itself" },
-  "I.2.1.1": { p: "Miller pp. 341–353", s: "Chapter 1: Illusory Being" },
-  "I.2.1.2": { p: "Miller pp. 354–385", s: "Chapter 2: The Determinations of Reflection" },
-  "I.2.1.3": { p: "Miller pp. 386–417", s: "Chapter 3: Ground" },
-
-  "I.2.2": { p: "Miller pp. 418–464", s: "Section Two: Appearance" },
-  "I.2.2.1": { p: "Miller pp. 420–436", s: "Chapter 1: Existence" },
-  "I.2.2.2": { p: "Miller pp. 437–448", s: "Chapter 2: Appearance" },
-  "I.2.2.3": { p: "Miller pp. 449–464", s: "Chapter 3: The Essential Relation" },
-
-  "I.2.3": { p: "Miller pp. 465–506", s: "Section Three: Actuality" },
-  "I.2.3.1": { p: "Miller pp. 466–476", s: "Chapter 1: The Absolute" },
-  "I.2.3.2": { p: "Miller pp. 477–488", s: "Chapter 2: Actuality" },
-  "I.2.3.3": { p: "Miller pp. 489–506", s: "Chapter 3: The Absolute Relation" },
-
-  "II.1": { p: "Miller pp. 507–843", s: "The Doctrine of the Notion" },
-  "II.1.1": { p: "Miller pp. 528–624", s: "Section One: Subjectivity" },
-  "II.1.1.1": { p: "Miller pp. 529–549", s: "Chapter 1: The Notion" },
-  "II.1.1.2": { p: "Miller pp. 550–587", s: "Chapter 2: The Judgment" },
-  "II.1.1.3": { p: "Miller pp. 588–624", s: "Chapter 3: The Syllogism" },
-
-  "II.1.2": { p: "Miller pp. 625–669", s: "Section Two: Objectivity" },
-  "II.1.2.1": { p: "Miller pp. 631–644", s: "Chapter 1: Mechanism" },
-  "II.1.2.2": { p: "Miller pp. 645–650", s: "Chapter 2: Chemism" },
-  "II.1.2.3": { p: "Miller pp. 651–669", s: "Chapter 3: Teleology" },
-
-  "II.1.3": { p: "Miller pp. 670–843", s: "Section Three: The Idea" },
-  "II.1.3.1": { p: "Miller pp. 676–688", s: "Chapter 1: Life" },
-  "II.1.3.2": { p: "Miller pp. 689–734", s: "Chapter 2: The Idea of Cognition" },
-  "II.1.3.3": { p: "Miller pp. 735–843", s: "Chapter 3: The Absolute Idea" }
+  "II": { p: "", s: "Volume Two: Subjective Logic" },
+  "II.1": { p: "", s: "The Doctrine of the Notion" },
+  "II.1.1": { p: "", s: "Section One: Subjectivity" },
+  "II.1.1.1": { p: "", s: "Chapter 1: The Notion" },
+  "II.1.1.2": { p: "", s: "Chapter 2: The Judgment" },
+  "II.1.1.3": { p: "", s: "Chapter 3: The Syllogism" },
+  "II.1.2": { p: "", s: "Section Two: Objectivity" },
+  "II.1.2.1": { p: "", s: "Chapter 1: Mechanism" },
+  "II.1.2.2": { p: "", s: "Chapter 2: Chemism" },
+  "II.1.2.3": { p: "", s: "Chapter 3: Teleology" },
+  "II.1.3": { p: "", s: "Section Three: The Idea" },
+  "II.1.3.1": { p: "", s: "Chapter 1: Life" },
+  "II.1.3.2": { p: "", s: "Chapter 2: The Idea of Cognition" },
+  "II.1.3.3": { p: "", s: "Chapter 3: The Absolute Idea" }
 };
 
 /* =========================================================
@@ -1076,7 +1081,7 @@ function esc(s) {
 function paraFor(node) {
   if (!ACTIVE) return null;
   if (node === ROOT) {
-    return { p: ACTIVE_PARAS[ROOT.id_]?.p || "—", holder: ROOT, exact: true, textKey: null };
+    return { p: ACTIVE_PARAS[ROOT.id_]?.p || "", holder: ROOT, exact: true, textKey: null };
   }
   let n = node;
   while (n) {
@@ -1306,24 +1311,39 @@ function renderPanel(node) {
   const pSect = document.getElementById("pSect");
   const pInherit = document.getElementById("pInherit");
 
-  if (info) {
-    pPara.innerHTML = '<span class="pnum">' + esc(fmtParagraph(info.p)) + "</span>";
-    pSect.textContent = info.s || sectionFor(node);
+  const entries = PARA_TEXTS[node.id_];
+  const hasEntries = Array.isArray(entries) && entries.length > 0;
 
-    if (info.exact === false && info.holder) {
-      pInherit.style.display = "block";
+  /* ---- Reference line ---- */
+  if (ACTIVE.id === "logic" && hasEntries) {
+    const firstNum = entries[0].p.replace(/[^0-9]/g, "");
+    const lastNum = entries[entries.length - 1].p.replace(/[^0-9]/g, "");
+    const range = firstNum === lastNum ? "§ " + firstNum : "§§ " + firstNum + "–" + lastNum;
+    pPara.innerHTML = '<span class="pnum">' + esc(range) + "</span>";
+  } else if (info && info.p) {
+    pPara.innerHTML = '<span class="pnum">' + esc(fmtParagraph(info.p)) + "</span>";
+  } else {
+    pPara.innerHTML = '<span class="pnum">—</span>';
+  }
+
+  /* ---- Section name ---- */
+  pSect.textContent = info ? (info.s || sectionFor(node)) : sectionFor(node);
+
+  /* ---- Inherit line ---- */
+  if (info && info.exact === false && info.holder) {
+    pInherit.style.display = "block";
+    if (ACTIVE.id === "logic") {
+      pInherit.innerHTML = "Listed here as a sub-division of <b>" + esc(info.holder.name) + "</b>.";
+    } else {
       pInherit.innerHTML =
         "Listed here as a sub-division of <b>" + esc(info.holder.name) + "</b> (" +
         esc(fmtParagraph(info.p)) + ").";
-    } else {
-      pInherit.style.display = "none";
     }
   } else {
-    pPara.innerHTML = '<span class="pnum">—</span>';
-    pSect.textContent = "";
     pInherit.style.display = "none";
   }
 
+  /* ---- Paragraph text section ---- */
   const secEl = document.getElementById("paraTextSection");
   const btn = document.getElementById("showParaBtn");
   const lbl = document.getElementById("showParaLabel");
@@ -1332,32 +1352,64 @@ function renderPanel(node) {
   display.style.display = "none";
   display.innerHTML = "";
 
-  const pnum = info ? info.p : null;
-  const isSingle = pnum && !/[–-]/.test(pnum);
-  const deep = node._depth >= ACTIVE.minDepth;
-  const entry = info && info.textKey ? PARA_TEXTS[info.textKey] : null;
-  const canShow = deep && entry && entry.text && (ACTIVE.allowRangesForText || isSingle);
+  let canShow = false;
+  let showLabel = "";
+  let renderFn = null;
+
+  if (ACTIVE.id === "encyclopedia") {
+    const pnum = info ? info.p : null;
+    const isSingle = pnum && !/[–-]/.test(pnum);
+    const deep = node._depth >= ACTIVE.minDepth;
+    const entry = info && info.textKey ? PARA_TEXTS[info.textKey] : null;
+    if (deep && entry && entry.text && isSingle) {
+      canShow = true;
+      showLabel = "Show § " + pnum;
+      renderFn = function () {
+        const titleLine = entry.title
+          ? '<div class="ptitle">§ ' + esc(pnum) + " — " + esc(entry.title) + "</div>"
+          : "";
+        return titleLine + '<div class="pbody">' + esc(entry.text) + "</div>";
+      };
+    }
+  } else {
+    const deep = node._depth >= ACTIVE.minDepth;
+    if (deep && hasEntries) {
+      canShow = true;
+      if (entries.length === 1) {
+        showLabel = "Show " + entries[0].p;
+      } else {
+        const firstNum = entries[0].p.replace(/[^0-9]/g, "");
+        const lastNum = entries[entries.length - 1].p.replace(/[^0-9]/g, "");
+        showLabel = "Show §§ " + firstNum + "–" + lastNum;
+      }
+      renderFn = function () {
+        return entries.map(function (e) {
+          return '<div class="ptitle">' + esc(e.p) + "</div>" +
+                 '<div class="pbody">' + esc(e.text) + "</div>";
+        }).join("");
+      };
+    }
+  }
 
   if (canShow) {
     secEl.style.display = "block";
     btn.style.display = "inline-flex";
-    lbl.textContent = ACTIVE.showLabel + " " + pnum;
+    lbl.textContent = showLabel;
     btn.onclick = function () {
       if (display.style.display === "none") {
-        display.innerHTML =
-          (entry.title ? '<div class="ptitle">' + esc(entry.title) + "</div>" : "") +
-          '<div class="pbody">' + esc(entry.text) + "</div>";
+        display.innerHTML = renderFn();
         display.style.display = "block";
-        lbl.textContent = "Hide " + pnum;
+        lbl.textContent = "Hide text";
       } else {
         display.style.display = "none";
-        lbl.textContent = ACTIVE.showLabel + " " + pnum;
+        lbl.textContent = showLabel;
       }
     };
   } else {
     secEl.style.display = "none";
   }
 
+  /* ---- Path ---- */
   const chain = [];
   let n = node;
   while (n) { chain.unshift(n); n = n._parent; }
