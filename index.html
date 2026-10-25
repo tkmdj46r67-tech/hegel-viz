@@ -12,17 +12,17 @@
     color-scheme: dark;
     --pw: clamp(320px, 34vw, 430px);
 
-    /* navia palette (shared by both datasets) */
-    --bg: #05203D;
-    --text: #F0EFC8;
-    --text-dim: #CDE19B;
-    --text-mute: #63A96D;
-    --accent: #CDE19B;
-    --accent-soft: #E0ECB8;
-    --tint-rgb: 205, 225, 155;
-    --shade-rgb: 5, 32, 61;
-    --panel-bg: rgba(5, 32, 61, 0.85);
-    --panel-border: rgba(205, 225, 155, 0.12);
+    /* OKLab palette (dark navy → teal → olive → gold → pale pink) */
+    --bg: #001858;          /* very dark navy (L≈0.25) */
+    --text: #FACBF8;        /* pale pink (L≈0.90) */
+    --text-dim: #F6A178;    /* warm peach (L≈0.78) */
+    --text-mute: #8E852E;   /* olive (L≈0.61) */
+    --accent: #FBA689;      /* bright peach (highlight) */
+    --accent-soft: #FACBF8;
+    --tint-rgb: 251, 166, 137;
+    --shade-rgb: 0, 24, 88;
+    --panel-bg: rgba(0, 24, 88, 0.85);
+    --panel-border: rgba(251, 166, 137, 0.14);
 
     --font: "Spline Sans", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
@@ -437,58 +437,53 @@ let firstNodeClick = true;
 let ACTIVE = null;
 let ACTIVE_PARAS = {};
 let PARA_TEXTS = {};
-let PAL = null;
 
 /* =========================================================
-   SHARED PALETTE (navia)
+   SHARED PALETTE (OKLab, converted to sRGB)
+   Background is very dark; text is very light; hover is bright warm;
+   branches are cool-mid. Three visually distinct zones.
    ========================================================= */
-const NAVIA_CSS = {
-  '--bg': '#05203D',
-  '--text': '#F0EFC8',
-  '--text-dim': '#CDE19B',
-  '--text-mute': '#63A96D',
-  '--accent': '#CDE19B',
-  '--accent-soft': '#E0ECB8',
-  '--tint-rgb': '205, 225, 155',
-  '--shade-rgb': '5, 32, 61',
-  '--panel-bg': 'rgba(5, 32, 61, 0.85)',
-  '--panel-border': 'rgba(205, 225, 155, 0.12)'
+const PAL_CSS = {
+  '--bg': '#001858',
+  '--text': '#FACBF8',
+  '--text-dim': '#F6A178',
+  '--text-mute': '#8E852E',
+  '--accent': '#FBA689',
+  '--accent-soft': '#FACBF8',
+  '--tint-rgb': '251, 166, 137',
+  '--shade-rgb': '0, 24, 88',
+  '--panel-bg': 'rgba(0, 24, 88, 0.85)',
+  '--panel-border': 'rgba(251, 166, 137, 0.14)'
 };
 
-const NAVIA_BASE = {
-  radialInner: 'rgba(46, 119, 140, 0.55)',
-  radialOuter: 'rgba(5, 32, 61, 0)',
-  diskStroke: 'rgba(205, 225, 155, 0.14)',
-  edgeRGB: '99, 169, 109',
-  edgeHoverRGB: '240, 239, 200',
-  nodeHover: '#F0EFC8',
-  nodeHoverStroke: 'rgba(240, 239, 200, 0.55)',
-  focusRing: 'rgba(205, 225, 155, 0.35)',
-  labelFocusRGB: '205, 225, 155',
-  labelHoverRGB: '240, 239, 200',
-  fallback: '#99CC6F',
-  svgLine: 'rgba(99, 169, 109, 0.22)',
-  svgPillFillRGB: '99, 169, 109',
-  svgPillActiveRGB: '240, 239, 200',
-  svgPillTextActive: '#F0EFC8',
-  svgPillTextNormal: '#CDE19B'
+const PAL = {
+  radialInner:   'rgba(21, 79, 98, 0.42)',
+  radialOuter:   'rgba(0, 24, 88, 0)',
+  diskStroke:    'rgba(251, 166, 137, 0.12)',
+  edgeRGB:       '70, 113, 80',
+  edgeHoverRGB:  '251, 166, 137',
+  nodeHover:     '#FBA689',
+  nodeHoverStroke: 'rgba(251, 166, 137, 0.60)',
+  focusRing:     'rgba(250, 203, 248, 0.35)',
+  labelFocusRGB: '250, 203, 248',
+  labelHoverRGB: '250, 203, 248',
+  labelStroke:   'rgba(20, 20, 20, 0.92)',
+  fallback:      '#8E852E',
+  svgLine:       'rgba(70, 113, 80, 0.22)',
+  svgPillFillRGB:   '251, 166, 137',
+  svgPillActiveRGB: '250, 203, 248',
+  svgPillTextActive: '#FACBF8',
+  svgPillTextNormal: '#F6A178'
 };
 
-const PALETTES = {
-  encyclopedia: Object.assign({}, NAVIA_BASE, {
-    css: NAVIA_CSS,
-    branches: ['#63A96D', '#2E778C', '#F0EFC8']
-  }),
-  logic: Object.assign({}, NAVIA_BASE, {
-    css: NAVIA_CSS,
-    branches: ['#63A96D', '#F0EFC8']
-  })
+const BRANCHES = {
+  encyclopedia: ['#154F62', '#3E6E55', '#8E852E'],
+  logic:        ['#154F62', '#8E852E']
 };
 
 function applyPalette() {
-  PAL = PALETTES.logic;
   const r = document.documentElement.style;
-  for (const k in NAVIA_CSS) r.setProperty(k, NAVIA_CSS[k]);
+  for (const k in PAL_CSS) r.setProperty(k, PAL_CSS[k]);
 }
 
 /* =========================================================
@@ -508,9 +503,9 @@ const DATASETS = {
     allowRangesForText: false,
     textKeyBy: "p",
     legend: [
-      { label: "Logic",  color: "#63A96D" },
-      { label: "Nature", color: "#2E778C" },
-      { label: "Spirit", color: "#F0EFC8" }
+      { label: "Logic",  color: "#154F62" },
+      { label: "Nature", color: "#3E6E55" },
+      { label: "Spirit", color: "#8E852E" }
     ],
     foot: "Paragraph numbers follow the 1830 edition of the <i>Encyclopaedia of Philosophical Sciences</i> (Werke, vols. 8–10).",
     loaded: false,
@@ -530,8 +525,8 @@ const DATASETS = {
     allowRangesForText: true,
     textKeyBy: "id",
     legend: [
-      { label: "Volume One", color: "#63A96D" },
-      { label: "Volume Two", color: "#F0EFC8" }
+      { label: "Volume One", color: "#154F62" },
+      { label: "Volume Two", color: "#8E852E" }
     ],
     foot: "Page ranges follow A. V. Miller’s translation of the <i>Science of Logic</i> (1969). The Logic has no numbered paragraphs; references are to Books, Sections, Chapters, and Miller pages.",
     loaded: false,
@@ -768,8 +763,7 @@ function prepare(data) {
     n._sx = 0; n._sy = 0;
   }
 
-  /* branch colors resolved by ACTIVE dataset (both use navia branches) */
-  const branches = PALETTES[ACTIVE.id].branches;
+  const branches = BRANCHES[ACTIVE.id];
   data._color = PAL.fallback;
   for (let i = 0; i < data._children.length; i++) {
     const col = branches[i % branches.length];
@@ -1000,6 +994,13 @@ function drawLabel(n, cx0, mode) {
     s = s.replace(/[\s,;:.\-]+$/, "") + "…";
   }
 
+  /* dark-gray outline for readability on top of the graph */
+  ctx.lineJoin = "round";
+  ctx.miterLimit = 2;
+  ctx.strokeStyle = PAL.labelStroke;
+  ctx.lineWidth = Math.max(2.2, Math.round(size * 0.28));
+  ctx.strokeText(s, tx, n._sy);
+
   ctx.fillStyle = color;
   ctx.fillText(s, tx, n._sy);
 }
@@ -1167,13 +1168,13 @@ function pillSVG(x, y, w, h, node, opts) {
   const fill = active
     ? "rgba(" + PAL.svgPillActiveRGB + ", 0.10)"
     : dim
-      ? "rgba(" + PAL.svgPillFillRGB + ", 0.025)"
-      : "rgba(" + PAL.svgPillFillRGB + ", 0.05)";
+      ? "rgba(" + PAL.svgPillFillRGB + ", 0.03)"
+      : "rgba(" + PAL.svgPillFillRGB + ", 0.06)";
   const stroke = active
     ? "rgba(" + PAL.svgPillActiveRGB + ", 0.72)"
     : dim
-      ? "rgba(" + PAL.svgPillFillRGB + ", 0.08)"
-      : "rgba(" + PAL.svgPillFillRGB + ", 0.14)";
+      ? "rgba(" + PAL.svgPillFillRGB + ", 0.10)"
+      : "rgba(" + PAL.svgPillFillRGB + ", 0.16)";
   const op = dim ? 0.72 : 1;
 
   const fontPx = compact ? 10 : 11.5;
@@ -1639,7 +1640,7 @@ async function loadDataset(key) {
     box.innerHTML =
       "<div><b>Could not load <code>" + esc(ds.treeFile) + "</code></b><br/><br/>" +
       "Make sure the file sits next to <code>index.html</code> and that you are serving the folder.<br/><br/>" +
-      '<span style="color:' + (PAL ? PAL.fallback : '#99CC6F') + ';font-size:12px">' + esc(err.message) + "</span></div>";
+      '<span style="color:' + PAL.fallback + ';font-size:12px">' + esc(err.message) + "</span></div>";
     throw err;
   }
 }
