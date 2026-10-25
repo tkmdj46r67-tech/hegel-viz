@@ -1,22 +1,244 @@
 {
-  "I.1.1.1.1": {
-    "title": "A. Being",
-    "text": "Being, pure being — without any further determination. In its indeterminate immediacy it is equal only to itself, and also not unequal with respect to an other; it has no difference within it, nor again without it. (Miller, p. 82)"
-  },
-  "I.1.1.1.2": {
-    "title": "B. Nothing",
-    "text": "Nothing, pure nothing: it is simply equality with itself, complete emptiness, absence of all determination and content — undifferentiatedness in itself. (Miller, p. 82)"
-  },
-  "I.1.1.1.3": {
-    "title": "C. Becoming",
-    "text": "Pure Being and pure Nothing are, therefore, the same. What is the truth is neither Being nor Nothing, but that Being does not pass over, but has passed over, into Nothing; and Nothing does not pass over, but has passed over, into Being. (Miller, pp. 82–83, 105)"
-  },
-  "I.1.1.2.1.1": {
-    "title": "a. Determinate Being in General",
-    "text": "Determinate being is being with a determinateness which is posited as a moment of being itself — not as an external mark, but as the very form in which being is present. (Miller, pp. 109–111)"
-  },
-  "I.2.1.1.1": {
-    "title": "A. The Essential and the Unessential",
-    "text": "Essence is being that has returned into itself. It is not immediate being, but being as sublated — being which is what it is only through the negation of immediacy. (Miller, pp. 341–342)"
-  }
+  "I.1.0": [
+    { "p": "§ 88", "text": "What philosophy begins with must be either mediated or immediate, and it is easy to show that it can be neither the one nor the other." },
+    { "p": "§ 89", "text": "The principle of a philosophy does, of course, also express a beginning." },
+    { "p": "§ 90", "text": "What is the first for thought ought also to be the first in the process of thinking." },
+    { "p": "§ 91", "text": "The logical beginning appears either as a mediated result or as an immediacy." },
+    { "p": "§ 92", "text": "There is nothing in heaven, or in nature or in mind or anywhere else which does not equally contain both immediacy and mediation." },
+    { "p": "§ 93", "text": "In logic, the presupposition is that which has proved itself to be the result of that phenomenological consideration." },
+    { "p": "§ 94", "text": "Logic is pure science, that is, pure knowledge in the entire range of its development." },
+    { "p": "§ 95", "text": "All that is needed to rid oneself of all other reflections and opinions whatever, simply to take up, what is there before us." },
+    { "p": "§ 96", "text": "Pure knowing is only simple immediacy." },
+    { "p": "§ 97", "text": "Simple immediacy is itself an expression of reflection and contains a reference to its distinction from what is mediated." },
+    { "p": "§ 98", "text": "If no presupposition is to made, all that is present is that we propose to consider thought as such." },
+    { "p": "§ 99", "text": "The beginning therefore is pure being." },
+    { "p": "§ 100", "text": "Preliminary prejudices must be disposed of within the science itself where their treatment should be awaited with patience." },
+    { "p": "§ 101", "text": "Absolute truth must be a result, and conversely, a result presupposes a prior truth." },
+    { "p": "§ 102", "text": "The advance is a retreat into the ground, to what is primary and true." },
+    { "p": "§ 103", "text": "It is equally necessary to consider as result that into which the movement returns as into its ground." },
+    { "p": "§ 104", "text": "Hence the line of the scientific advance becomes a circle." },
+    { "p": "§ 105", "text": "This progress in knowing must be determined by the nature of the subject matter itself and its content." },
+    { "p": "§ 106", "text": "The beginning is neither arbitrary nor a provisional assumption, but is subsequently shown to have been properly made." },
+    { "p": "§ 107", "text": "If it were determinate, it would have been taken as something mediated." },
+    { "p": "§ 108", "text": "Here at the start, where the subject matter itself is not yet to hand, philosophy is an empty word." },
+    { "p": "§ 109", "text": "The determination of being so far adopted for the beginning could also be omitted, so that the only demand would be that a pure beginning be made." },
+    { "p": "§ 110", "text": "The beginning therefore contains both, being and nothing, is the unity of being and nothing." },
+    { "p": "§ 111", "text": "In the beginning, being and nothing are present as distinguished from each other." },
+    { "p": "§ 112", "text": "Let those dissatisfied with being as a beginning, begin with the general idea of a beginning." },
+    { "p": "§ 113", "text": "This takes it for granted that everyone has roughly the same general idea of it." },
+    { "p": "§ 114", "text": "The beginning cannot be made with anything concrete, anything containing a relation within itself." },
+    { "p": "§ 115", "text": "What the subject matter is, that will be explicated in the development of the science, cannot be presupposed." },
+    { "p": "§ 116", "text": "Let those who are still dissatisfied with this beginning avoid these defects by beginning in some other way." },
+    { "p": "§ 117", "text": "Some begin with the ego, because the first truth must be something with which we are acquainted." },
+    { "p": "§ 118", "text": "But the ego is the most concrete of all things." },
+    { "p": "§ 119", "text": "The ego which formed the starting point is still entangled in the world of appearance." },
+    { "p": "§ 120", "text": "In logic we are concerned the determinate reality in thought of what is inner." },
+    { "p": "§ 121", "text": "This simple determination which has no other meaning, this emptiness, is therefore the beginning of philosophy." },
+    { "p": "§ 122", "text": "These preliminary were not so much intended to lead up to it as rather to eliminate all preliminaries." }
+  ],
+  "I.1.0b": [
+    { "p": "§ 123", "text": "Being is first, as against another in general; second, immanently self-determining; third, abstract indeterminateness." },
+    { "p": "§ 124", "text": "Being is distinct from essence, for later in its development it proves to be in its totality, only one sphere of the Notion." },
+    { "p": "§ 125", "text": "Being will posit itself in three determinations: quality, quantity and measure." },
+    { "p": "§ 126", "text": "With Kant these are supposed to be only titles for his categories though they are, in fact, themselves categories." },
+    { "p": "§ 127", "text": "Hitherto the determination of quantity has been made to precede quality, but the beginning is made with being as such." },
+    { "p": "§ 128", "text": "Measure is a relation, the specific relation between quality and quantity." },
+    { "p": "§ 129", "text": "Relation falls within the section Quality." }
+  ],
+  "I.1.1.1.1": [
+    { "p": "§ 132", "text": "Pure Being has no diversity within itself nor any with a reference outwards." }
+  ],
+  "I.1.1.1.2": [
+    { "p": "§ 133", "text": "Nothing is the same determination, or rather absence of determination, and thus altogether the same as, pure being." }
+  ],
+  "I.1.1.1.3.1": [
+    { "p": "§ 134", "text": "But it is equally true that they are not undistinguished from each other, that, on the contrary, they are not the same." }
+  ],
+  "I.1.1.1.3.R1": [
+    { "p": "§ 135", "text": "Nothing is usually opposed to something; but is already thereby distinguished from a determinate something." },
+    { "p": "§ 136", "text": "Heraclitus brought forward the concept of becoming and said: being as little is, as nothing is, or, all flows, all is a becoming." },
+    { "p": "§ 137", "text": "Those who maintain that nothing is just nothing, are unaware that they subscribe to the pantheism of the Eleatics and Spinoza." },
+    { "p": "§ 138", "text": "Nowhere in heaven or on earth is there anything which does not contain within itself both being and nothing." },
+    { "p": "§ 139", "text": "What is in question is not such concrete something but only the pure abstractions of being and nothing." },
+    { "p": "§ 140", "text": "It is not a matter of indifference to it whether a certain other content with which it is in relation is, or is not." },
+    { "p": "§ 141", "text": "Kant said that being is not a determination of the content of a thing." },
+    { "p": "§ 142", "text": "Ordinary thinking transforms the abstract being and nothing which should be apprehended into a definite being and nothing." },
+    { "p": "§ 143", "text": "The concept of a determinate existence, says Kant, gains nothing by its being perceived." },
+    { "p": "§ 144", "text": "What is the first in the science had of necessity to show itself historically as the first." },
+    { "p": "§ 145", "text": "The reference back from particular finite being to being in its abstract universality is the first theoretical demand and the first practical demand too." },
+    { "p": "§ 146", "text": "The abstract definition of God, on the other hand, is precisely that his Notion and his being are unseparated and inseparable." }
+  ],
+  "I.1.1.1.3.R2": [
+    { "p": "§ 147", "text": "The proposition: “being is the same as nothing” enunciates both determinations, being and nothing, and contains them as distinguished." },
+    { "p": "§ 148", "text": "The proposition contains the result, but the result is not itself expressed in the proposition." },
+    { "p": "§ 149", "text": "The deficiency is made good in the first place by adding the contrary proposition: being and nothing are not the same." },
+    { "p": "§ 150", "text": "The result which we have here before us is becoming, which is not merely the one-sided or abstract unity of being and nothing." },
+    { "p": "§ 151", "text": "The third in which being and nothing subsist must also present itself here, and it has done so; it is becoming." },
+    { "p": "§ 152", "text": "The challenge to distinguish between being and nothing also includes the challenge to say what, then, is being and what is nothing." }
+  ],
+  "I.1.1.1.3.R3": [
+    { "p": "§ 153", "text": "Transition is the same as becoming." },
+    { "p": "§ 154", "text": "We shall consider some of the results which appear when being and nothing are postulated in isolation." },
+    { "p": "§ 155", "text": "With Parmenides as with Spinoza, there is no progress from being ot absolute substance to the negative, to the finite." },
+    { "p": "§ 156", "text": "Jacobi recognised very clearly the insubstantial nature, the non ens, of abstraction." },
+    { "p": "§ 157", "text": "This abstract purity of continuity is the same as what the Indian calls Brahma, sitting for years on end looking at the tip of his nose." },
+    { "p": "§ 158", "text": "In this void, Jacobi says, he experiences the opposite of what Kant assures him he should experience." },
+    { "p": "§ 159", "text": "Is this still a synthesis if Jacobi omits precisely that which makes the unity a synthetic unity?" },
+    { "p": "§ 160", "text": "Consciousness can make empty space, empty time, its object , but it does not stop at that; it goes beyond it." },
+    { "p": "§ 161", "text": "It is the thought of such indeterminates that is to be demonstrated as null." },
+    { "p": "§ 162", "text": "Because being is devoid of all determination whatsoever, it is not being but nothing." },
+    { "p": "§ 163", "text": "Being is posited only as immediate, therefore nothing emerges in it. But all the subsequent determinations are more concrete." },
+    { "p": "§ 164", "text": "That nothing is the result and should make the beginning (as in Chinese philosophy), need not cause us to lift a finger." },
+    { "p": "§ 165", "text": "The dialectic employed by Plato in treating of the One in the Parmenides is also a dialectic of external reflection." },
+    { "p": "§ 166", "text": "Being, taken as it is immediately, belongs to a subject, is something enunciated." },
+    { "p": "§ 167", "text": "Nothing, taken in its immediacy, shows itself as affirmative, as being." },
+    { "p": "§ 168", "text": "Just as little is seen in pure light as in pure darkness." },
+    { "p": "§ 169", "text": "The transition of being and nothing into each other is to be understood as it is without any further elaboration of the transition by reflection." }
+  ],
+  "I.1.1.1.3.R4": [
+    { "p": "§ 170", "text": "Let us consider the Kantian antinomy which proves that a beginning of the world, or of anything, is impossible." },
+    { "p": "§ 171", "text": "If the world, or anything, is supposed to have begun, then it must have begun in nothing." },
+    { "p": "§ 172", "text": "In this proof nothing is brought forward against becoming, or beginning and ceasing, against this unity of being and nothing." },
+    { "p": "§ 173", "text": "With the absolute separateness of being from nothing presupposed, then of course beginning or becoming is something incomprehensible." },
+    { "p": "§ 174", "text": "There is nothing which is not an intermediate state between being and nothing." },
+    { "p": "§ 175", "text": "We call dialectic the higher movement of reason in which such seemingly utterly separate terms pass over into each other spontaneously." }
+  ],
+  "I.1.1.1.3.2": [
+    { "p": "§ 176", "text": "Becoming is the unseparatedness of being and nothing, not the unity which abstracts from being and nothing." },
+    { "p": "§ 177", "text": "Becoming therefore contains being and nothing as two such unities, each of which is itself a unity of being and nothing." },
+    { "p": "§ 178", "text": "Becoming is in this way in a double determination." },
+    { "p": "§ 179", "text": "They are not reciprocally sublated, but each sublates itself in itself." }
+  ],
+  "I.1.1.1.3.3": [
+    { "p": "§ 180", "text": "Becoming is an unstable unrest which settles into a stable result." },
+    { "p": "§ 181", "text": "Becoming is the vanishing of being and nothing; but at the same time it rests on the distinction between them." },
+    { "p": "§ 182", "text": "This stable oneness is being, yet no longer as a determination on its own but as a determination of the whole." },
+    { "p": "§ 183", "text": "Becoming, as this transition into the unity of being and nothing, is determinate being." }
+  ],
+  "I.1.1.1.3.RS": [
+    { "p": "§ 184", "text": "To sublate constitutes one of the most important notions in philosophy which repeatedly occurs throughout the whole of philosophy." },
+    { "p": "§ 185", "text": "‘To sublate’ has a twofold meaning in the language: on the one hand it means to preserve, to maintain, and equally it also means to cause to cease, to put an end to." },
+    { "p": "§ 186", "text": "It is remarkable to find that a language has come to use one and the same word for two opposite meanings." },
+    { "p": "§ 187", "text": "Being and nothing are the same; but just because they are the same they are no longer being and nothing, but now have a different significance." }
+  ],
+  "I.1.1.2.1.1": [
+    { "p": "§ 191", "text": "From becoming there issues determinate being, which is the simple oneness of being and nothing." },
+    { "p": "§ 192", "text": "It is not mere being, but determinate being [Dasein], there-being." },
+    { "p": "§ 193", "text": "Only that which is posited in a Notion belongs in the dialectical development of that Notion to its content." },
+    { "p": "§ 194", "text": "Determinate being is concrete." }
+  ],
+  "I.1.1.2.1.2": [
+    { "p": "§ 195", "text": "Determinateness has not yet severed itself from being." },
+    { "p": "§ 196", "text": "Determinateness thus isolated by itself in the form of being is quality." },
+    { "p": "§ 197", "text": "Quality, taken in the distinct character of being, is reality." },
+    { "p": "§ 198", "text": "Negation taken as mere deficiency would be equivalent to nothing; but it is a determinate being." }
+  ],
+  "I.1.1.2.1.RQ": [
+    { "p": "§ 199", "text": "Reality may seem to be a word of various meanings because it is used of different, indeed of opposed determinations." },
+    { "p": "§ 200", "text": "God was defined as the sum-total of all realities, and of this sum-total it was said that no contradiction was contained in it." },
+    { "p": "§ 201", "text": "Reality as thus conceived is assumed to survive when all negation has been thought away." },
+    { "p": "§ 202", "text": "If reality is taken in its determinateness, then the sum-total of all realities becomes a sum-total of all negations, all contradictions." },
+    { "p": "§ 203", "text": "Negation is as little an ultimate for philosophy as reality is for it truth." },
+    { "p": "§ 204", "text": "Spinoza grasped thought and being as attributes, as not having a separate existence, a self-subsistent being of their own." },
+    { "p": "§ 205", "text": "Negation stands directly opposed to reality." },
+    { "p": "§ 206", "text": "Quality is especially a property only where, in an external relation, it manifests itself as an immanent determination." },
+    { "p": "§ 207", "text": "Jacob Boehme's 'Qualierung' or 'Inqualierung' signify quality's own internal unrest by which it produces and maintains itself only in conflict." }
+  ],
+  "I.1.1.2.1.3": [
+    { "p": "§ 208", "text": "In determinate being its determinateness has been distinguished as quality, but there is distinction of reality and negation." },
+    { "p": "§ 209", "text": "This sublatedness of the distinction is determinate being's own determinateness, a something." },
+    { "p": "§ 210", "text": "Determinate being, life, thought, etc., determine themselves to become a determinate being, a living creature, a thinker (ego)." },
+    { "p": "§ 211", "text": "Something is the negation of the negation in the form of being." },
+    { "p": "§ 212", "text": "Something as a becoming is a transition, the moments of which are themselves somethings." }
+  ],
+  "I.1.1.2.2.1": [
+    { "p": "§ 214", "text": "1. Something and other are, in the first place, both determinate beings or somethings." },
+    { "p": "§ 215", "text": "Otherness thus appears as a determination alien to the determinate being." },
+    { "p": "§ 216", "text": "Both are determined equally as something and as other, and are thus the same." },
+    { "p": "§ 217", "text": "The other is to be taken as isolated, as in relation to itself, abstractly as the other." },
+    { "p": "§ 218", "text": "The otherness, which is at the same time a moment of it, is distinct from it and does not appertain to the something itself." },
+    { "p": "§ 219", "text": "2. Something preserves itself in the negative of its determinate being." },
+    { "p": "§ 220", "text": "Determinate being as such is immediate, without relation to an other." },
+    { "p": "§ 221", "text": "Being-for-other and being-in-itself are, therefore, posited as moments of one and the same something." },
+    { "p": "§ 222", "text": "Non-being is, in this unity of being and non-being, not negative determinate being in general, but an other." },
+    { "p": "§ 223", "text": "Being-in-itself has also present in it non-being itself, for it is itself the non-being of being-for-other." },
+    { "p": "§ 224", "text": "Being-for-other is negative determinate being which points to being-in-itself as to its own being." },
+    { "p": "§ 225", "text": "3. Both moments are determinations of what is one and the same, namely, the something." },
+    { "p": "§ 226", "text": "People fancy that they are saying something lofty with the 'in itself'; but what something is only in itself, is an abstract determination." },
+    { "p": "§ 227", "text": "Things are called ‘in themselves’ in so far as abstraction is made from all being-for-other." },
+    { "p": "§ 228", "text": "In Being, the meaning of each opposite is complete even without its other; in Essence, the opposites are meaningless without one another." },
+    { "p": "§ 229", "text": "Determinateness reflected into itself is, therefore, again in the simple form of being, a Quality." }
+  ],
+  "I.1.1.2.2.2": [
+    { "p": "§ 230", "text": "The in-itself into which something is reflected into itself out of its being-for-other is no longer an abstract in-itself." },
+    { "p": "§ 231", "text": "1. The quality of the essential unity of the in-itself in the simple something with its other moment, is the determination of the in-itself." },
+    { "p": "§ 232", "text": "The determination of man is thinking reason; by it he is distinguished from the brute." },
+    { "p": "§ 233", "text": "2. The filling of the in-itself with determinateness is distinct from the determinateness which is only being-for-other." },
+    { "p": "§ 234", "text": "It is the quality of something to be open to external influences and to have a constitution." },
+    { "p": "§ 235", "text": "In so far as something alters, the alteration falls within its constitution." },
+    { "p": "§ 236", "text": "Determination and constitution are thus distinguished from each other." },
+    { "p": "§ 237", "text": "The first was only an implicit alteration belonging to the inner Notion; now alteration is also posited in the something." },
+    { "p": "§ 238", "text": "The transition of determination and constitution into each other is sublation of their difference, resulting in the positing of something in general." },
+    { "p": "§ 239", "text": "There is a single determinateness of both: this determinateness is limit." },
+    { "p": "§ 240", "text": "3. Being-for-other is the indeterminate, affirmative community of something with its other." },
+    { "p": "§ 241", "text": "[a] Something, therefore, is immediate, self-related determinate being, and has a limit, in the first place, relatively to an other." },
+    { "p": "§ 242", "text": "The limit is simple negation or the first negation, whereas the other is, at the same time, the negation of the negation." },
+    { "p": "§ 243", "text": "Something is the limit relatively to another something, but the limit is present in the something itself." },
+    { "p": "§ 244", "text": "[b] The negative determinate being and the determinate being of the something fall outside each other." },
+    { "p": "§ 245", "text": "In accordance with this difference of something from its limit, the line appears as line only outside its limit, the point." },
+    { "p": "§ 246", "text": "[c] But further, something as it is outside the limit, the unlimited something, is only a determinate being in general." },
+    { "p": "§ 247", "text": "Something with its immanent limit posited as the contradiction of itself, directed and forced out of and beyond itself, is the finite." }
+  ],
+  "I.1.1.2.2.3.1": [
+    { "p": "§ 250", "text": "The thought of the finitude of things brings this sadness with it because it is qualitative negation pushed to its extreme." },
+    { "p": "§ 251", "text": "No philosophy or opinion will let itself be tied to the standpoint that the finite is absolute." },
+    { "p": "§ 252", "text": "This nothing is supposed to be only nothing." }
+  ],
+  "I.1.1.2.2.3.2": [
+    { "p": "§ 253", "text": "This contradiction is abstractly present simply in the circumstance that the something is finite, or that the finite is." },
+    { "p": "§ 254", "text": "Determination and constitution showed themselves as sides for external reflection." },
+    { "p": "§ 255", "text": "In order that the limit in something should be a limitation, something must at the same time in its own self transcend the limit." },
+    { "p": "§ 256", "text": "The ought therefore contains the determination in double form." },
+    { "p": "§ 257", "text": "The finite has thus determined itself as the relation of its determination to its limit." },
+    { "p": "§ 258", "text": "What ought to be is, and at the same time is not. If it were, we could not say that it ought merely to be." },
+    { "p": "§ 259", "text": "The limitation of the finite is not something external to it; on the contrary, its own determination is also its limitation." },
+    { "p": "§ 260", "text": "The finite as the ought transcends its limitation; its limit is also not its limit." },
+    { "p": "§ 261", "text": "Something has a limitation in so far as it has negation in its determination." }
+  ],
+  "I.1.1.2.2.3.RO": [
+    { "p": "§ 262", "text": "The ought has recently played a great part in philosophy, especially in connection with morality." },
+    { "p": "§ 263", "text": "'You can, because you ought'." },
+    { "p": "§ 264", "text": "In the Ought the transcendence of finitude, that is, infinity, begins." },
+    { "p": "§ 265", "text": "The very fact that something is determined as a limitation implies that the limitation is already transcended." },
+    { "p": "§ 266", "text": "The sentient creature, in the limitation of hunger, thirst, etc., is the urge to overcome this limitation and it does overcome it." },
+    { "p": "§ 267", "text": "Leibniz said that if a magnet possessed consciousness it would regard its pointing to the north as a determination of its will." },
+    { "p": "§ 268", "text": "Reason and Law are not in such a bad way that they only ought to be." }
+  ],
+  "I.1.1.2.2.3.3": [
+    { "p": "§ 269", "text": "The ought as such contains limitation, and limitation contains the ought." }
+  ],
+  "I.1.1.2.3.1": [
+    { "p": "§ 273", "text": "The infinite is the negation of the negation, affirmation, being which has restored itself out of limitedness." },
+    { "p": "§ 274", "text": "It is the very nature of the finite to transcend itself, to negate its negation and to become infinite." }
+  ],
+  "I.1.1.2.3.2": [
+    { "p": "§ 275", "text": "The immediate being of the infinite resuscitates the being of its negation." },
+    { "p": "§ 276", "text": "Finitude is limitation posited as limitation; infinity is the nothing of the finite." },
+    { "p": "§ 277", "text": "The infinite posited over against the finite, in a relation wherein they are as qualitatively distinct others, is the spurious infinite." },
+    { "p": "§ 278", "text": "The finite remains as a determinate being opposed to the infinite; there are two worlds, one infinite and one finite." },
+    { "p": "§ 279", "text": "This contradiction develops its content into more explicit forms." },
+    { "p": "§ 280", "text": "As thus separated they are just as much essentially connected by the very negation which separates them." },
+    { "p": "§ 281", "text": "The infinite only emerges in the finite and the finite in the infinite." },
+    { "p": "§ 282", "text": "In this void beyond the finite, again there arises the void, in which a new limit, is encountered - and so on to infinity." },
+    { "p": "§ 283", "text": "The finite is finite only in its relation to the ought or to the infinite, and the latter is only infinite in its relation to the finite." },
+    { "p": "§ 284", "text": "The progress is a contradiction which is not resolved but is always only enunciated as present." },
+    { "p": "§ 285", "text": "The progress to infinity is only the perpetual repetition of one and the same tedious alternation of finite and infinite." },
+    { "p": "§ 286", "text": "The infinity of the infinite progress remains burdened with the finite as such, is thereby limited and is itself finite." }
+  ],
+  "I.1.1.2.3.3": [
+    { "p": "§ 287", "text": "In this alternating of the finite and the infinite, their truth is already implicitly present." },
+    { "p": "§ 288", "text": "The finite is only that which must be transcended, the negation of itself in its own self, which is infinity." },
+    { "p": "§ 289", "text": "The infinite and the finite viewed as connected with each other." },
+    { "p": "§ 290", "text": "This yields the decried unity of the finite and the infinite." }
+  ]
 }
